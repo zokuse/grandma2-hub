@@ -1,0 +1,18 @@
+[
+  { "name": "Acme Fresnel Zoom", "mode": "2ch", "weight": 8.6, "watt": 150 },
+  { "name": "Dage Av-2320", "mode": "20ch", "weight": 15.0, "watt": 300 },
+  { "name": "LED Bar Capture", "mode": "8ch", "weight": 0, "watt": 0 },
+  { "name": "Stormy", "mode": "14ch", "weight": 7.5, "watt": 1000 },
+  { "name": "TRF A64 RGBW", "mode": "4ch", "weight": 6.0, "watt": 300 },
+  { "name": "TRF A64 RGBW", "mode": "8ch", "weight": 6.0, "watt": 300 },
+  { "name": "TRF Clara S", "mode": "16ch", "weight": 17.0, "watt": 600 },
+  { "name": "TRF Fresnel", "mode": "8ch", "weight": 6.0, "watt": 300 },
+  { "name": "TRF Fresnel Zoom", "mode": "8ch", "weight": 6.0, "watt": 300 },
+  { "name": "TRF LED Bar", "mode": "10ch", "weight": 7.5, "watt": 1000 },
+  { "name": "TRF LED Bar", "mode": "48ch", "weight": 7.5, "watt": 1000 },
+  { "name": "TRF LED Bar", "mode": "8ch", "weight": 7.5, "watt": 1000 },
+  { "name": "TRF Minibrute", "mode": "12ch", "weight": 10.0, "watt": 400 },
+  { "name": "TRF Stormy", "mode": "11ch", "weight": 7.5, "watt": 1000 },
+  { "name": "Xmlite LLP400", "mode": "Standard 16ch", "weight": 22.0, "watt": 420 },
+  { "name": "Xmlite LLP400", "mode": "Extended 19ch", "weight": 22.0, "watt": 420 }
+]

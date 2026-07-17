@@ -1,0 +1,896 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="styles/fixture+layer+layers@html@default.xsl"?>
+<?xml-stylesheet type="text/xsl" href="styles/fixture+layer+layers@csv.xsl" alternate="yes"?>
+<MA xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.malighting.de/grandma2/xml/MA" xsi:schemaLocation="http://schemas.malighting.de/grandma2/xml/MA http://schemas.malighting.de/grandma2/xml/3.9.60/MA.xsd" major_vers="3" minor_vers="9" stream_vers="60">
+	<Info datetime="2026-07-17T17:38:43" showfile="lighting cks 2026 versi 3.9.60 basic 1" />
+	<Layer index="1" name="BEAM">
+		<Fixture index="0" name="SPOT" fixture_id="101">
+			<FixtureType name="15 Xmlite LLP400 Extended 19ch">
+				<No>15</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>1</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="-2.729" y="4.55" z="3.829" />
+					<Rotation x="-0" y="-0" z="-180" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+				<Channel index="8" />
+				<Channel index="9" />
+				<Channel index="10" />
+				<Channel index="11" />
+				<Channel index="12" />
+				<Channel index="13" />
+				<Channel index="14" />
+				<Channel index="15" />
+				<Channel index="16" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="1" name="SPOT" fixture_id="102">
+			<FixtureType name="15 Xmlite LLP400 Extended 19ch">
+				<No>15</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>17</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="-2.256" y="3.218" z="5.287" />
+					<Rotation x="-0" y="-0" z="-177.5" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+				<Channel index="8" />
+				<Channel index="9" />
+				<Channel index="10" />
+				<Channel index="11" />
+				<Channel index="12" />
+				<Channel index="13" />
+				<Channel index="14" />
+				<Channel index="15" />
+				<Channel index="16" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="2" name="SPOT" fixture_id="103">
+			<FixtureType name="15 Xmlite LLP400 Extended 19ch">
+				<No>15</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>33</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="-0.733" y="3.218" z="5.287" />
+					<Rotation x="-0" y="-0" z="-177.5" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+				<Channel index="8" />
+				<Channel index="9" />
+				<Channel index="10" />
+				<Channel index="11" />
+				<Channel index="12" />
+				<Channel index="13" />
+				<Channel index="14" />
+				<Channel index="15" />
+				<Channel index="16" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="3" name="SPOT" fixture_id="104">
+			<FixtureType name="15 Xmlite LLP400 Extended 19ch">
+				<No>15</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>49</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="0.715" y="3.218" z="5.287" />
+					<Rotation x="-0" y="-0" z="-177.5" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+				<Channel index="8" />
+				<Channel index="9" />
+				<Channel index="10" />
+				<Channel index="11" />
+				<Channel index="12" />
+				<Channel index="13" />
+				<Channel index="14" />
+				<Channel index="15" />
+				<Channel index="16" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="4" name="SPOT" fixture_id="105">
+			<FixtureType name="15 Xmlite LLP400 Extended 19ch">
+				<No>15</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>65</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="2.229" y="3.218" z="5.287" />
+					<Rotation x="-0" y="-0" z="-177.5" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+				<Channel index="8" />
+				<Channel index="9" />
+				<Channel index="10" />
+				<Channel index="11" />
+				<Channel index="12" />
+				<Channel index="13" />
+				<Channel index="14" />
+				<Channel index="15" />
+				<Channel index="16" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="5" name="SPOT" fixture_id="106">
+			<FixtureType name="15 Xmlite LLP400 Extended 19ch">
+				<No>15</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>81</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="2.66" y="4.55" z="3.815" />
+					<Rotation x="-0" y="-0" z="-180" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+				<Channel index="8" />
+				<Channel index="9" />
+				<Channel index="10" />
+				<Channel index="11" />
+				<Channel index="12" />
+				<Channel index="13" />
+				<Channel index="14" />
+				<Channel index="15" />
+				<Channel index="16" />
+			</SubFixture>
+		</Fixture>
+	</Layer>
+	<Layer index="2" name="FRESNEL">
+		<Fixture index="0" name="FRESNEL" fixture_id="601">
+			<FixtureType name="16 TRF Fresnel 8ch">
+				<No>16</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>0</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="-1.799" y="-0.56" z="5.125" />
+					<Rotation x="24.2" y="0" z="-0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="1" name="FRESNEL" fixture_id="602">
+			<FixtureType name="16 TRF Fresnel 8ch">
+				<No>16</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>0</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="-0.491" y="-0.57" z="5.125" />
+					<Rotation x="24.2" y="0" z="-0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="2" name="FRESNEL" fixture_id="603">
+			<FixtureType name="16 TRF Fresnel 8ch">
+				<No>16</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>0</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="0.484" y="-0.556" z="5.125" />
+					<Rotation x="24.2" y="0" z="-0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="3" name="FRESNEL" fixture_id="604">
+			<FixtureType name="16 TRF Fresnel 8ch">
+				<No>16</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>0</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="1.767" y="-0.56" z="5.125" />
+					<Rotation x="24.2" y="0" z="-0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+			</SubFixture>
+		</Fixture>
+	</Layer>
+	<Layer index="3" name="PARLED">
+		<Fixture index="0" name="LED" fixture_id="202">
+			<FixtureType name="17 TRF A64 RGBW 8ch">
+				<No>17</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>101</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="0" y="0" z="0" />
+					<Rotation x="0" y="-0" z="0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="1" name="LED" fixture_id="203">
+			<FixtureType name="17 TRF A64 RGBW 8ch">
+				<No>17</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>109</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="0" y="0" z="0" />
+					<Rotation x="0" y="-0" z="0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="2" name="LED" fixture_id="204">
+			<FixtureType name="17 TRF A64 RGBW 8ch">
+				<No>17</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>117</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="0" y="0" z="0" />
+					<Rotation x="0" y="-0" z="0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="3" name="LED" fixture_id="205">
+			<FixtureType name="17 TRF A64 RGBW 8ch">
+				<No>17</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>125</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="0" y="0" z="0" />
+					<Rotation x="0" y="-0" z="0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="4" name="LED" fixture_id="207">
+			<FixtureType name="17 TRF A64 RGBW 8ch">
+				<No>17</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>133</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="0" y="0" z="0" />
+					<Rotation x="0" y="-0" z="0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="5" name="LED" fixture_id="208">
+			<FixtureType name="17 TRF A64 RGBW 8ch">
+				<No>17</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>141</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="0" y="0" z="0" />
+					<Rotation x="0" y="-0" z="0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="6" name="LED" fixture_id="209">
+			<FixtureType name="17 TRF A64 RGBW 8ch">
+				<No>17</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>149</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="0" y="0" z="0" />
+					<Rotation x="0" y="-0" z="0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="7" name="LED" fixture_id="210">
+			<FixtureType name="17 TRF A64 RGBW 8ch">
+				<No>17</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>157</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="0" y="0" z="0" />
+					<Rotation x="0" y="-0" z="0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="8" name="LED" fixture_id="211">
+			<FixtureType name="17 TRF A64 RGBW 8ch">
+				<No>17</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>165</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="0" y="0" z="0" />
+					<Rotation x="0" y="-0" z="0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="9" name="LED" fixture_id="212">
+			<FixtureType name="17 TRF A64 RGBW 8ch">
+				<No>17</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>173</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="0" y="0" z="0" />
+					<Rotation x="0" y="-0" z="0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="10" name="LED" fixture_id="213">
+			<FixtureType name="17 TRF A64 RGBW 8ch">
+				<No>17</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>181</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="0" y="0" z="0" />
+					<Rotation x="0" y="-0" z="0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="11" name="LED" fixture_id="214">
+			<FixtureType name="17 TRF A64 RGBW 8ch">
+				<No>17</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>189</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="0" y="0" z="0" />
+					<Rotation x="0" y="-0" z="0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+			</SubFixture>
+		</Fixture>
+	</Layer>
+	<Layer index="4" name="BLINDER">
+		<Fixture index="0" name="BLIN" fixture_id="301">
+			<FixtureType name="18 TRF Minibrute 12ch">
+				<No>18</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>321</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="-4.726" y="-0.958" z="5.41" />
+					<Rotation x="-90.2" y="-0" z="0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="1" name="BLIN" fixture_id="302">
+			<FixtureType name="18 TRF Minibrute 12ch">
+				<No>18</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>329</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="4.702" y="-0.938" z="5.41" />
+					<Rotation x="-90.2" y="-0" z="0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+			</SubFixture>
+		</Fixture>
+	</Layer>
+	<Layer index="5" name="STORMY">
+		<Fixture index="0" name="STR" fixture_id="501">
+			<FixtureType name="19 Stormy 14ch">
+				<No>19</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>201</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="-2.871" y="4.385" z="4.154" />
+					<Rotation x="0" y="-90" z="0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+				<Channel index="8" />
+				<Channel index="9" />
+				<Channel index="10" />
+				<Channel index="11" />
+				<Channel index="12" />
+				<Channel index="13" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="1" name="STR" fixture_id="502">
+			<FixtureType name="19 Stormy 14ch">
+				<No>19</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>208</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="-2.868" y="4.385" z="2.957" />
+					<Rotation x="0" y="-90" z="0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+				<Channel index="8" />
+				<Channel index="9" />
+				<Channel index="10" />
+				<Channel index="11" />
+				<Channel index="12" />
+				<Channel index="13" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="2" name="STR" fixture_id="503">
+			<FixtureType name="19 Stormy 14ch">
+				<No>19</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>215</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="-2.866" y="4.385" z="1.95" />
+					<Rotation x="0" y="-90" z="0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+				<Channel index="8" />
+				<Channel index="9" />
+				<Channel index="10" />
+				<Channel index="11" />
+				<Channel index="12" />
+				<Channel index="13" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="3" name="STR" fixture_id="504">
+			<FixtureType name="19 Stormy 14ch">
+				<No>19</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>222</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="2.854" y="4.385" z="4.129" />
+					<Rotation x="0" y="-90" z="0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+				<Channel index="8" />
+				<Channel index="9" />
+				<Channel index="10" />
+				<Channel index="11" />
+				<Channel index="12" />
+				<Channel index="13" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="4" name="STR" fixture_id="505">
+			<FixtureType name="19 Stormy 14ch">
+				<No>19</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>229</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="2.857" y="4.385" z="2.932" />
+					<Rotation x="0" y="-90" z="0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+				<Channel index="8" />
+				<Channel index="9" />
+				<Channel index="10" />
+				<Channel index="11" />
+				<Channel index="12" />
+				<Channel index="13" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="5" name="STR" fixture_id="506">
+			<FixtureType name="19 Stormy 14ch">
+				<No>19</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>236</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="2.859" y="4.385" z="1.925" />
+					<Rotation x="0" y="-90" z="0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+				<Channel index="8" />
+				<Channel index="9" />
+				<Channel index="10" />
+				<Channel index="11" />
+				<Channel index="12" />
+				<Channel index="13" />
+			</SubFixture>
+		</Fixture>
+	</Layer>
+	<Layer index="6" name="WW">
+		<Fixture index="0" name="WW" fixture_id="401">
+			<FixtureType name="20 TRF LED Bar 10ch">
+				<No>20</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>271</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="-1.798" y="4.316" z="0.63" />
+					<Rotation x="171" y="0" z="-0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+				<Channel index="8" />
+				<Channel index="9" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="1" name="WW" fixture_id="402">
+			<FixtureType name="20 TRF LED Bar 10ch">
+				<No>20</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>276</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="-0.541" y="4.316" z="0.63" />
+					<Rotation x="171" y="0" z="-0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+				<Channel index="8" />
+				<Channel index="9" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="2" name="WW" fixture_id="403">
+			<FixtureType name="20 TRF LED Bar 10ch">
+				<No>20</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>281</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="0.541" y="4.316" z="0.63" />
+					<Rotation x="171" y="0" z="-0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+				<Channel index="8" />
+				<Channel index="9" />
+			</SubFixture>
+		</Fixture>
+		<Fixture index="3" name="WW" fixture_id="404">
+			<FixtureType name="20 TRF LED Bar 10ch">
+				<No>20</No>
+			</FixtureType>
+			<SubFixture index="0" react_to_grandmaster="true" color="ffffff">
+				<Patch>
+					<Address>286</Address>
+				</Patch>
+				<AbsolutePosition>
+					<Location x="1.798" y="4.316" z="0.63" />
+					<Rotation x="171" y="0" z="-0" />
+					<Scaling x="1" y="1" z="1" />
+				</AbsolutePosition>
+				<Channel index="0" />
+				<Channel index="1" />
+				<Channel index="2" />
+				<Channel index="3" />
+				<Channel index="4" />
+				<Channel index="5" />
+				<Channel index="6" />
+				<Channel index="7" />
+				<Channel index="8" />
+				<Channel index="9" />
+			</SubFixture>
+		</Fixture>
+	</Layer>
+</MA>

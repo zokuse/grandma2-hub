@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GrandMA2 Visual Cloner</title>
+    
+    
+    <link rel="stylesheet" href="../shared.css" />
+    <link rel="stylesheet" href="style.css" />
+    
+    <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+</head>
+<body>
+
+    <div class="status-header-card glassy-surface">
+        <div>
+            <h1 class="main-title">GrandMA2 Visual Cloner</h1>
+        </div>
+        <div class="header-actions">
+            <div class="project-name-wrapper" title="Edit Export Filename" style="margin-right: 4px; color: #fff;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                <input type="text" id="export-filename" class="project-name-input" value="MA2_CLONE_MACROS" placeholder="Enter Export File Name...">
+            </div>
+            
+            <button class="btn-header btn-header-ghost" onclick="window.location.reload()" title="Start a new session">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 1 0 2.6-6.4L2 9"/></svg> New Session
+            </button>
+            
+            <div class="header-divider"></div>
+
+            <button class="btn-header btn-header-pull" onclick="pullFromGrandMA2()" title="Pull Layout and Patch directly from GrandMA2 via Telnet">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="16" width="6" height="6" rx="1"></rect><rect x="2" y="16" width="6" height="6" rx="1"></rect><rect x="9" y="2" width="6" height="6" rx="1"></rect><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"></path><path d="M12 12V8"></path></svg> Pull from MA2
+            </button>
+            <button class="btn-header btn-header-ghost" onclick="importMA2LayoutNative()" title="Select Layout XML File">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg> Layout XML
+            </button>
+            <button class="btn-header btn-header-ghost" onclick="importPatchXMLNative()" title="Select Patch XML File">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg> Patch XML
+            </button>
+            
+            <div class="header-divider"></div>
+            
+            <button class="btn-header btn-header-send" onclick="sendToConsole()" title="Send directly to MA2 via Telnet">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="16" width="6" height="6" rx="1"></rect><rect x="2" y="16" width="6" height="6" rx="1"></rect><rect x="9" y="2" width="6" height="6" rx="1"></rect><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"></path><path d="M12 12V8"></path></svg> Send to MA2
+            </button>
+            <button class="btn-header btn-header-primary" onclick="exportMacroXML()" title="Export Macro XML">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Export XML
+            </button>
+            
+            <div class="header-divider"></div>
+            
+            <button class="btn-header btn-header-ghost" onclick="toggleHelp()" title="Keyboard Shortcuts" style="padding: 0 12px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="layout-grid">
+        <div class="glassy-surface sidebar-card h-fit">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h2 class="list-header" style="margin:0; border:none; padding:0;">Macro Pool Setup</h2>
+                </div>
+                <div class="grid-2" style="margin-bottom: 8px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Macro Pool Slot</label>
+                        <input type="number" id="macro-index" class="form-control" value="1">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Macro Name</label>
+                        <input type="text" id="macro-name" class="form-control" value="" placeholder="Macro Name">
+                    </div>
+                </div>
+                <button class="btn-accent-action" onclick="addCurrentToMacroPool()" style="margin-bottom: 8px;">+ Add Current Links to Pool</button>
+                <button id="btn-pool-toggle" class="btn-outline" onclick="togglePoolPanel()">
+                    <svg id="pool-btn-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                    <span id="pool-btn-text">View Pool List</span>
+                </button>
+            </div>
+
+            <div style="border-top: 1px solid var(--surface-border); padding-top: 24px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h2 class="list-header" id="inspector-title" style="margin:0; border:none; padding:0;">Draft New Fixture</h2>
+                </div>
+                <div id="inspector-form">
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Fixture ID</label>
+                            <input type="text" id="f-id" class="form-control" autocomplete="off" placeholder="Target ID" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        </div>
+                        <div class="form-group">
+                            <label>Type / Label</label>
+                            <input type="text" id="f-type" class="form-control" autocomplete="off" placeholder="Fixture Type">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Copy From ID (Optional)</label>
+                        <input type="text" id="f-src" class="form-control" autocomplete="off" placeholder="Source ID" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    </div>
+                    
+                    <div class="grid-2" style="margin-bottom: 12px; display: none;" id="align-panel">
+                        <button class="btn-outline" onclick="alignSelectedX()" title="Align to first selected X">Align X</button>
+                        <button class="btn-outline" onclick="alignSelectedY()" title="Align to first selected Y">Align Y</button>
+                    </div>
+                    
+                    <button id="btn-main-action" class="btn-accent-action" onclick="handleMainAction()">Add to Layout</button>
+                    
+                    <div id="memory-panel" class="memory-panel" style="display: none;">
+                        <label style="display:block; font-size:12px; font-weight:600; margin-bottom:8px; color:var(--info-color); text-transform: uppercase;">Link Memory Workflow</label>
+                        <div class="grid-2">
+                            <button id="btn-mem-copy" class="btn-outline btn-glass-info" onclick="copySelectionAsSource()" title="Ctrl+C">Copy Source</button>
+                            <button id="btn-mem-paste" class="btn-primary" style="background: rgba(41, 182, 246, 0.2); border-color: #29b6f6; color: #fff;" onclick="pasteSourcesToSelection()" disabled title="Ctrl+V">Paste</button>
+                        </div>
+                        
+                        <div class="grid-2" style="margin-top: 16px;">
+                            <button id="btn-clear-src" class="btn-outline" onclick="clearSources()">Clear Links</button>
+                            <button class="btn-outline btn-glass-danger" onclick="deleteSelected()">Delete</button>
+                        </div>
+                        <button class="btn-outline" style="width: 100%; margin-top: 8px;" onclick="selectAllOfType()">Select All of Same Type</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glassy-surface workspace-container" style="position: relative;">
+            <div class="workspace-header">
+                <div class="workspace-header-title">
+                    <span>LAYOUT VIEW</span>
+                    <span style="color: var(--surface-border);">|</span>
+                    <div class="search-wrapper">
+                        <input type="text" id="search-fixtures" class="search-input" placeholder="Search ID or Type..." oninput="handleSearch()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </div>
+                </div>
+                
+                <div class="zoom-controls">
+                    <button class="btn-icon" id="btn-undo" onclick="undo()" disabled title="Undo (Ctrl+Z)"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg></button>
+                    <button class="btn-icon" id="btn-redo" onclick="redo()" disabled title="Redo (Ctrl+Y)"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"></path><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"></path></svg></button>
+                    <div class="header-divider" style="height: 16px;"></div>
+
+                    <button class="btn-icon" onclick="adjustZoomButton(-0.1)" title="Zoom Out">-</button>
+                    <span id="zoom-display" style="font-size:12px; color:var(--text-muted-color); min-width: 45px; text-align:center; font-variant-numeric: tabular-nums;">100%</span>
+                    <button class="btn-icon" onclick="adjustZoomButton(0.1)" title="Zoom In">+</button>
+                    <button class="btn-icon" onclick="zoomToFit()" title="Fit to Screen">[ ] Fit</button>
+                </div>
+            </div>
+            
+            <div class="workspace-viewport" id="workspace-viewport">
+                <div class="empty-state" id="empty-state">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                    <h3>No Layout Loaded</h3>
+                    <p>Pull a layout directly from GrandMA2 or import a Layout XML file.</p>
+                </div>
+                <div id="selection-box" class="selection-box"></div>
+                <div class="workspace-canvas" id="workspace-canvas"></div>
+                
+                <div class="pool-panel minimized" id="pool-panel">
+                    <button class="btn-toggle-pool-panel" onclick="togglePoolPanel()">
+                        <svg id="pool-panel-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                    <div class="pool-panel-header">
+                        <h2 class="list-header" style="margin:0; border:none; padding:0; color: #fff;">Macro Pool List</h2>
+                        <span id="pool-count-panel" style="font-size: 13px; color: var(--accent-color); font-weight: bold;">0</span>
+                    </div>
+                    <div class="pool-panel-content" style="padding: 0;">
+                        <div id="macro-pool-list" style="padding: 16px; display:flex; flex-direction:column; gap:4px;"></div>
+                    </div>
+                </div>
+
+                <div class="fixtures-panel minimized" id="fixtures-panel">
+                    <button class="btn-toggle-panel" onclick="toggleFixturesPanel()">
+                        <svg id="panel-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    </button>
+                    <div class="fixtures-panel-header">
+                        <h2 class="list-header" style="margin:0; border:none; padding:0; color: #fff;">Fixtures in Layout</h2>
+                        <span id="fixture-count" style="font-size: 13px; color: var(--accent-color); font-weight: bold;">0</span>
+                    </div>
+                    <div class="fixtures-panel-content" id="fixture-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="help-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="toggleHelp()">✕</button>
+            <h2 style="margin-top: 0; border-bottom: 1px solid var(--surface-border); padding-bottom: 12px;">Keyboard Shortcuts & Workflow</h2>
+            
+            <div class="shortcut-grid">
+                <div><span class="sc-key">Shift + Click</span><span class="sc-desc">Add/Remove to selection order</span></div>
+                <div><span class="sc-key">Click + Drag</span><span class="sc-desc">Box selection (respects drag direction)</span></div>
+                <div><span class="sc-key">Ctrl + C</span><span class="sc-desc">Copy Memory Source Link</span></div>
+                <div><span class="sc-key">Ctrl + V</span><span class="sc-desc">Paste Memory Source Link</span></div>
+                <div><span class="sc-key">Ctrl + D</span><span class="sc-desc">Clone selected fixtures + auto-increment ID</span></div>
+                <div><span class="sc-key">Ctrl + A</span><span class="sc-desc">Select all fixtures</span></div>
+                <div><span class="sc-key">Delete</span><span class="sc-desc">Delete selected fixtures</span></div>
+                <div><span class="sc-key">Arrows</span><span class="sc-desc">Nudge layout 20px (Shift = 1px)</span></div>
+                <div><span class="sc-key">Ctrl + Drag</span><span class="sc-desc">Pan canvas</span></div>
+            </div>
+
+            <h3 style="font-size: 14px; margin-top: 24px; color: var(--info-color);">Memory Link Workflow (Like Console)</h3>
+            <p style="font-size: 13px; color: #aaa; line-height: 1.5; margin-bottom: 0;">
+                1. Select your SOURCE fixtures in the exact order you want them.<br>
+                2. Press <strong>Ctrl+C</strong> to copy them into memory.<br>
+                3. Clear your selection, then select your TARGET fixtures.<br>
+                4. Press <strong>Ctrl+V</strong>. The sources will wrap/map to targets perfectly!
+            </p>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+        <div id="loading-text" class="loading-text">Communicating...</div>
+    </div>
+
+    <div class="modal-overlay" id="login-modal">
+        <div class="modal-content" style="width: 340px;">
+            <button class="modal-close" onclick="closeModal('login-modal')">✕</button>
+            <h2 class="modal-header-title">MA2 Console Login</h2>
+            <div class="form-group">
+                <label for="login-ip">IP Address</label>
+                <input type="text" id="login-ip" class="form-control" placeholder="Select or type IP..." list="ip-list" onfocus="this.value=''">
+                <datalist id="ip-list"></datalist>
+            </div>
+            <div class="form-group">
+                <label for="login-user">Username</label>
+                <input type="text" id="login-user" class="form-control" value="administrator">
+            </div>
+            <div class="form-group">
+                <label for="login-pass">Password</label>
+                <input type="password" id="login-pass" class="form-control" value="admin">
+            </div>
+            <button class="btn-primary" style="width: 100%; margin-top: 8px;" onclick="submitLogin()">Save & Connect</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="macro-modal">
+        <div class="modal-content" style="width: 320px;">
+            <button class="modal-close" onclick="closeModal('macro-modal')">✕</button>
+            <h2 class="modal-header-title no-color">Send to GrandMA2</h2>
+            <div class="form-group">
+                <label>Starting Macro Offset (e.g. 100)</label>
+                <input type="text" id="macro-target-id" class="form-control" placeholder="Leave empty to use pool IDs">
+            </div>
+            <button class="btn-primary" style="width: 100%; margin-top: 8px;" onclick="submitMacroSend()">Send to GrandMA2</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="layout-modal">
+        <div class="modal-content" style="width: 320px;">
+            <button class="modal-close" onclick="closeModal('layout-modal')">✕</button>
+            <h2 class="modal-header-title no-color">Pull Layout</h2>
+            <div class="form-group">
+                <label>Enter Layout Number to Pull:</label>
+                <input type="text" id="layout-target-id" class="form-control" value="1" placeholder="e.g. 1">
+            </div>
+            <button class="btn-primary" style="width: 100%; margin-top: 8px;" onclick="submitLayoutPull()">Pull Layout</button>
+        </div>
+    </div>
+
+
+    <div id="toast-container"></div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

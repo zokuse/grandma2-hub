@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrandMA2 Patch List</title>
+    
+    <link rel="stylesheet" href="../shared.css" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+</head>
+<body>
+
+    <div class="status-header-card glassy-surface">
+        <div>
+            <h1 class="main-title">GrandMA2 Patch List</h1>
+        </div>
+        <div class="header-actions">
+            <div class="project-name-wrapper" title="Edit PDF Filename" style="margin-right: 4px; color: #fff;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                <input type="text" id="export-filename" class="project-name-input" value="MA2_PATCH_LIST" placeholder="PDF File Name...">
+            </div>
+            
+            <button class="btn-header btn-header-ghost" onclick="clearPatchList()" title="Clear List and start a new session">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 1 0 2.6-6.4L2 9"/></svg> New Session
+            </button>
+            <div style="width: 1px; height: 24px; background: var(--surface-border); margin: 0 4px;"></div>
+            
+            <button class="btn-header btn-header-pull" onclick="pullFromGrandMA2()" title="Pull directly from GrandMA2 via Telnet">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="16" width="6" height="6" rx="1"></rect><rect x="2" y="16" width="6" height="6" rx="1"></rect><rect x="9" y="2" width="6" height="6" rx="1"></rect><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"></path><path d="M12 12V8"></path></svg> Pull from MA2
+            </button>
+            
+            <button class="btn-header btn-header-ghost" onclick="importPatchXMLNative()" title="Select Patch XML File">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg> Import XML
+            </button>
+            <div style="width: 1px; height: 24px; background: var(--surface-border); margin: 0 4px;"></div>
+
+
+
+            <button class="btn-header btn-header-primary" onclick="openPDFModal()" title="Export list to PDF">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Export PDF
+            </button>
+        </div>
+    </div>
+
+    <div class="glassy-surface table-container">
+        <div class="table-header-controls">
+            <div class="search-wrapper">
+                <input type="text" id="search-fixtures" class="search-input" placeholder="Search ID, Name, or Patch..." oninput="handleSearch()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
+            <div class="match-stats">
+                <div class="match-stat muted"><span id="fixture-count">0</span> Fixtures</div>
+                <div class="match-stat muted"><span id="total-watt">0</span> W</div>
+                <div class="match-stat muted"><span id="total-weight">0</span> kg</div>
+            </div>
+        </div>
+        
+        <div class="table-scroll-wrapper" style="position: relative; flex-grow: 1;">
+            <div class="empty-state" id="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                <h3>No Patch Loaded</h3>
+                <p>Pull directly from GrandMA2 or import a Patch XML to view fixtures.</p>
+            </div>
+            <table id="patch-table">
+                <thead>
+                    <tr>
+                        <th onclick="sortBy('unit')">Unit <span class="sort-icon" id="sort-unit">&#9650;</span></th>
+                        <th onclick="sortBy('id')">Fixture ID <span class="sort-icon" id="sort-id">&#9650;</span></th>
+                        <th onclick="sortBy('name')">Name <span class="sort-icon" id="sort-name">&#9650;</span></th>
+                        <th onclick="sortBy('type')">Type <span class="sort-icon" id="sort-type">↕</span></th>
+                        <th onclick="sortBy('patch')">Patch <span class="sort-icon" id="sort-patch">↕</span></th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+        <div id="loading-text" class="loading-text">Communicating...</div>
+    </div>
+
+    <div class="modal-overlay" id="login-modal">
+        <div class="modal-content" style="width: 340px;">
+            <button class="modal-close" onclick="closeModal('login-modal')">✕</button>
+            <h2 class="modal-header-title">MA2 Console Login</h2>
+            <div class="form-group">
+                <label for="login-ip">IP Address</label>
+                <input type="text" id="login-ip" class="form-control" placeholder="Select or type IP..." list="ip-list" onfocus="this.value=''">
+                <datalist id="ip-list"></datalist>
+            </div>
+            <div class="form-group">
+                <label for="login-user">Username</label>
+                <input type="text" id="login-user" class="form-control" value="administrator">
+            </div>
+            <div class="form-group">
+                <label for="login-pass">Password</label>
+                <input type="password" id="login-pass" class="form-control" value="admin">
+            </div>
+            <button class="btn-primary" style="width: 100%; margin-top: 8px;" onclick="submitLogin()">Save & Connect</button>
+        </div>
+    </div>
+
+
+    <div class="modal-overlay" id="export-pdf-modal">
+        <div class="modal-content" style="width: 540px;">
+            <button class="modal-close" onclick="closeModal('export-pdf-modal')">✕</button>
+            <h2 class="modal-header-title no-color" style="margin-bottom: 24px;">Export PDF Options</h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                <!-- Kiri: Options & Format -->
+                <div style="display: flex; flex-direction: column; justify-content: space-between;">
+                    <div style="margin-bottom: 16px;">
+                        <p style="font-size: 13px; margin-bottom: 8px; color: #aaa; text-align: left;">Formatting Options:</p>
+                        <div style="background: rgba(0,0,0,0.2); padding: 14px; border-radius: var(--radius-m); border: 1px solid var(--surface-border); display: flex; flex-direction: column; gap: 14px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <input type="checkbox" id="page-break-checkbox" style="width: 16px; height: 16px; cursor: pointer;">
+                                <label for="page-break-checkbox" style="font-size: 13px; color: #eee; cursor: pointer; user-select: none;">Start each layer on a new page</label>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <input type="checkbox" id="watermark-checkbox" style="width: 16px; height: 16px; cursor: pointer;" checked>
+                                <label for="watermark-checkbox" style="font-size: 13px; color: #eee; cursor: pointer; user-select: none;">Include Watermark</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <p style="font-size: 13px; margin-bottom: 8px; color: #aaa; text-align: left;">Choose format to generate:</p>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <button class="btn-outline" style="flex-direction: column; height: 90px; font-size: 13px; gap: 6px; line-height: 1.2;" onclick="submitPDFExport(false)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect></svg>
+                                <div>Export<br>Portrait</div>
+                            </button>
+                            <button class="btn-primary" style="flex-direction: column; height: 90px; font-size: 13px; gap: 6px; line-height: 1.2;" onclick="submitPDFExport(true)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect></svg>
+                                <div>Export<br>Landscape</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kanan: Layers -->
+                <div style="display: flex; flex-direction: column;">
+                    <p style="font-size: 13px; margin-bottom: 8px; color: #aaa; text-align: left;">Include Layers in Export:</p>
+                    <div id="layer-exclusion-list" style="flex-grow: 1; height: 218px; overflow-y: auto; background: rgba(0,0,0,0.2); border: 1px solid var(--surface-border); border-radius: var(--radius-m); padding: 12px; display: flex; flex-direction: column; gap: 12px;">
+                        <!-- checkboxes will be populated here by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div id="toast-container"></div>
+    <script src="script.js"></script>
+</body>
+</html>
