@@ -1,4 +1,4 @@
-const { ipcMain, dialog } = require('electron');
+const { ipcMain, dialog, app } = require('electron');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -352,9 +352,21 @@ function registerIpcHandlers() {
         }
     });
 
-    // File paths
-    const configPath = path.join(os.homedir(), '.ma2_hub_config.json');
-    const dmxDictPath = path.join(os.homedir(), '.ma2_hub_dmx_dict.json');
+    // File paths — stored in AppData\Roaming\grandma2-hub\
+    const userData = app.getPath('userData');
+    const dmxDictPath = path.join(userData, '.ma2_hub_dmx_dict.json');
+
+    // One-time migration: move old homedir DMX dict to AppData if needed
+    const oldDmxDictPath = path.join(os.homedir(), '.ma2_hub_dmx_dict.json');
+    if (fs.existsSync(oldDmxDictPath) && !fs.existsSync(dmxDictPath)) {
+        try {
+            fs.copyFileSync(oldDmxDictPath, dmxDictPath);
+            fs.unlinkSync(oldDmxDictPath);
+            console.log('[ipcHandlers] Migrated DMX dict to AppData.');
+        } catch (e) {
+            console.error('[ipcHandlers] Migration failed for DMX dict:', e.message);
+        }
+    }
 
     // ---- DMX Dictionary ----
     ipcMain.handle('get_dmx_dict', () => {
@@ -413,7 +425,7 @@ function registerIpcHandlers() {
                 for (let j = 0; j < m.lines.length; j++) {
                     const line = m.lines[j];
                     const safeLine = (typeof line === 'string' ? line : (line.command || "")).replace(/"/g, "'").replace(/\r/g, "").replace(/\n/g, "");
-                    await socket.sendCommand(`Store Macro ${mId}.${j+1} "${safeLine}"`);
+                    await socket.sendCommand(`Store Macro 1.${mId}.${j+1} "${safeLine}"`);
                 }
                 await socket.sendCommand(`Label Macro ${mId} "${name}"`);
                 

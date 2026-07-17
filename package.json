@@ -1,23 +1,65 @@
 {
-  "name": "grandma2-hub-electron",
+  "name": "grandma2-hub",
   "productName": "GrandMA2 Hub",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.1",
+  "description": "A smart utility and bridge application for managing the MA Lighting GrandMA2 console.",
   "main": "main.js",
-  "scripts": {
-    "start": "electron .",
-    "build-exe": "electron-packager . \"GrandMA2 Hub\" --platform=win32 --arch=x64 --icon=assets/icon.ico --out=dist --overwrite"
-  },
-  "keywords": [],
-  "author": "",
+  "author": "zokuse",
   "license": "ISC",
   "type": "commonjs",
+  "scripts": {
+    "start": "electron .",
+    "build-installer": "electron-builder --win"
+  },
+  "keywords": [],
   "devDependencies": {
     "electron": "^43.1.0",
-    "electron-packager": "^17.1.2"
+    "electron-builder": "^26.0.0"
   },
   "dependencies": {
+    "electron-updater": "^6.3.0",
     "fast-xml-parser": "^5.10.0",
     "pdf-lib": "^1.17.1"
+  },
+  "build": {
+    "appId": "com.zokuse.grandma2hub",
+    "productName": "GrandMA2 Hub",
+    "asar": true,
+    "asarUnpack": [
+      "node_modules/electron-updater/**/*"
+    ],
+    "files": [
+      "main.js",
+      "preload.js",
+      "backend/**/*",
+      "assets/**/*",
+      "node_modules/**/*",
+      "!node_modules/.cache/**/*",
+      "!assets/shell-app/node_modules/**/*",
+      "!assets/home-app/node_modules/**/*",
+      "!assets/settings-app/node_modules/**/*",
+      "!assets/shell-app/src/**/*",
+      "!assets/home-app/src/**/*",
+      "!assets/settings-app/src/**/*",
+      "!**/*.map",
+      "!**/test-folder/**/*"
+    ],
+    "publish": {
+      "provider": "github",
+      "owner": "zokuse",
+      "repo": "grandma2-hub"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false,
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "shortcutName": "GrandMA2 Hub"
+    }
   }
 }
