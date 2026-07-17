@@ -445,7 +445,7 @@ function getBase64Image(url) {
 }
 
 // FUNGSI UTAMA EXPORT PDF
-async function submitPDFExport(isLandscape) {
+async function submitPDFExport(layoutMode) {
     let separatePages = document.getElementById('page-break-checkbox').checked;
     let useWatermark = document.getElementById('watermark-checkbox').checked;
     closeModal('export-pdf-modal');
@@ -530,29 +530,38 @@ async function submitPDFExport(isLandscape) {
         <style>
             ${watermarkCSS}
             @page {
-                size: A4 ${isLandscape ? 'landscape' : 'portrait'};
-                margin: 15mm 10mm;
+                size: ${layoutMode === 'a5-2up' ? 'A5 landscape' : (layoutMode === 'landscape' ? 'A4 landscape' : 'A4 portrait')};
+                margin: ${layoutMode === 'a5-2up' ? '8mm 6mm' : '15mm 10mm'};
             }
             body { font-family: Arial, Helvetica, sans-serif; color: #000; font-size: 12px; margin: 0; padding: 0; }
             .main-table { width: 100%; border-collapse: collapse; border: none; }
             .main-table > thead > tr > td, .main-table > tbody > tr > td { padding: 0; border: none; }
             .layer-table { border-collapse: collapse; width: 100%; margin-bottom: 25px; }
-            .layer-table th { background-color: #333333; color: #ffffff; padding: 8px 6px; text-align: left; border-right: 1px solid #555; }
+            .layer-table th { background-color: #333333; color: #ffffff; padding: ${layoutMode === 'a5-2up' ? '6px 6px' : '8px 6px'}; text-align: left; border-right: 1px solid #555; }
             .layer-table th:last-child { border-right: none; }
-            .layer-table td { padding: 8px 6px; color: #000; border-bottom: 1px solid #ccc; }
-            .layer-container { page-break-before: ${separatePages ? 'always' : 'auto'}; }
+            .layer-table td { padding: ${layoutMode === 'a5-2up' ? '6px 6px' : '8px 6px'}; color: #000; border-bottom: 1px solid #ccc; }
+            .layer-container { 
+                page-break-before: ${separatePages ? 'always' : 'auto'}; 
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
             .layer-container:first-of-type { page-break-before: avoid; }
             thead { display: table-header-group; break-inside: avoid; page-break-inside: avoid; break-after: avoid; page-break-after: avoid; }
             tr { page-break-inside: avoid; }
         </style>
     </head>
     <body>
-        ${watermarkHTML}
+        ${watermarkHTML}`;
+        
+    let mainHeaderPadding = layoutMode === 'a5-2up' ? '8px' : '10px';
+    let mainHeaderMargin = layoutMode === 'a5-2up' ? '12px' : '20px';
+
+    htmlContent += `
         <table class="main-table">
             <thead>
                 <tr>
                     <td>
-                        <div style="display: flex; justify-content: space-between; align-items: flex-end; font-size: 9px; color: #777; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #ddd; padding-bottom: 10px; margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-end; font-size: 9px; color: #777; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #ddd; padding-bottom: ${mainHeaderPadding}; margin-bottom: ${mainHeaderMargin};">
                             <div style="flex: 1; padding-right: 15px; line-height: 1.4; text-align: left;">
                                 <div style="margin-bottom: 2px;">Fixture Patch List</div>
                                 <strong style="color: #000; font-size: 12px;">${exportFilename}</strong>
@@ -580,43 +589,58 @@ async function submitPDFExport(isLandscape) {
                     <td>`;
     
     layersArray.forEach(([layerName, layerFixtures]) => {
-        htmlContent += `
-        <div class="layer-container">
-            <table class="layer-table">
-                <thead>
-                    <tr>
-                        <th colspan="5" style="background-color: transparent; padding: 15px 0px 8px 0px; border-bottom: none; border-right: none;">
-                            <div style="font-size: 18px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #000000; text-align: left;">${escXML(layerName)}</div>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th width="8%">Unit</th>
-                        <th width="12%">Fixture ID</th>
-                        <th width="30%">Name</th>
-                        <th width="35%">Type</th>
-                        <th width="15%">Patch</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-            
-        layerFixtures.forEach((f, fIndex) => {
-            let rowBgColor = (fIndex % 2 === 0) ? "transparent" : "rgba(0, 0, 0, 0.04)";
-            let avoidBreak = (fIndex < 3 && fIndex < layerFixtures.length - 1) ? "page-break-after: avoid; break-after: avoid;" : "";
+        let maxRows = layoutMode === 'a5-2up' ? 13 : 35;
+        let totalPages = Math.ceil(layerFixtures.length / maxRows);
+        let rowsPerPage = Math.ceil(layerFixtures.length / totalPages);
+
+        let chunks = [];
+        for (let i = 0; i < layerFixtures.length; i += rowsPerPage) {
+            chunks.push(layerFixtures.slice(i, i + rowsPerPage));
+        }
+
+        chunks.forEach((chunk, chunkIndex) => {
+            let isContinued = chunkIndex > 0 ? " (Cont.)" : "";
+            let breakBefore = chunkIndex > 0 ? "page-break-before: always;" : "";
+            let headerPadding = layoutMode === 'a5-2up' ? "padding: 8px 0px 4px 0px;" : "padding: 15px 0px 8px 0px;";
 
             htmlContent += `
-                    <tr style="background-color: ${rowBgColor}; ${avoidBreak}">
-                        <td>${f.unit}</td>
-                        <td style="font-weight: bold;">${escXML(f.displayId)}</td>
-                        <td>${escXML(f.name)}</td>
-                        <td>${escXML(f.type)}</td>
-                        <td>${escXML(f.patch)}</td>
-                    </tr>`;
-        });
+            <div class="layer-container" style="${breakBefore}">
+                <table class="layer-table">
+                    <thead>
+                        <tr>
+                            <th colspan="5" style="background-color: transparent; ${headerPadding}; border-bottom: none; border-right: none;">
+                                <div style="font-size: 18px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #000000; text-align: left;">${escXML(layerName)}${isContinued}</div>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th width="8%">Unit</th>
+                            <th width="12%">Fixture ID</th>
+                            <th width="30%">Name</th>
+                            <th width="35%">Type</th>
+                            <th width="15%">Patch</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+                
+            chunk.forEach((f, fIndex) => {
+                let rowBgColor = (fIndex % 2 === 0) ? "transparent" : "rgba(0, 0, 0, 0.04)";
+                let avoidBreak = (fIndex < 3 && fIndex < chunk.length - 1) ? "page-break-after: avoid; break-after: avoid;" : "";
 
-        htmlContent += `
-                </tbody>
-            </table>
-        </div>`;
+                htmlContent += `
+                        <tr style="background-color: ${rowBgColor}; ${avoidBreak}">
+                            <td>${f.unit}</td>
+                            <td style="font-weight: bold;">${escXML(f.displayId)}</td>
+                            <td>${escXML(f.name)}</td>
+                            <td>${escXML(f.type)}</td>
+                            <td>${escXML(f.patch)}</td>
+                        </tr>`;
+            });
+
+            htmlContent += `
+                    </tbody>
+                </table>
+            </div>`;
+        });
     });
 
     htmlContent += `
@@ -629,7 +653,7 @@ async function submitPDFExport(isLandscape) {
 
     if(pyBridge) {
         updateLoadingOverlay("Processing PDF Export...");
-        pyBridge.export_pdf(htmlContent, exportFilename, isLandscape, function(resStr) {
+        pyBridge.export_pdf(htmlContent, exportFilename, layoutMode, function(resStr) {
             let response = JSON.parse(resStr);
             if(response.success) {
                 if (response.status === "started") {

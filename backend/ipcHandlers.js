@@ -474,7 +474,7 @@ function registerIpcHandlers() {
         }
     });
 
-    ipcMain.handle('export_pdf', async (e, htmlContent, filename, landscape = true) => {
+    ipcMain.handle('export_pdf', async (e, htmlContent, filename, layoutMode = 'portrait') => {
         const { BrowserWindow } = require('electron');
         const { canceled, filePath } = await dialog.showSaveDialog({
             title: "Export to PDF",
@@ -486,7 +486,10 @@ function registerIpcHandlers() {
         
         let targetPath = filePath.endsWith('.pdf') ? filePath : filePath + '.pdf';
         
-        const win = new BrowserWindow({ show: false, webPreferences: { offscreen: true } });
+        // Set viewport to match the target page size at 96dpi so layout renders correctly
+        const winWidth  = (layoutMode === 'a5-2up') ? 794 : 1123;  // A5-L: 210mm | A4: 297mm @ 96dpi
+        const winHeight = (layoutMode === 'a5-2up') ? 559 : 794;   // A5-L: 148mm | A4: 210mm @ 96dpi
+        const win = new BrowserWindow({ show: false, width: winWidth, height: winHeight, webPreferences: { offscreen: true } });
         
         return new Promise((resolve) => {
             let timeout = setTimeout(() => {
@@ -497,15 +500,45 @@ function registerIpcHandlers() {
             win.webContents.on('did-finish-load', async () => {
                 try {
                     const pdfData = await win.webContents.printToPDF({
-                        landscape: landscape,
+                        landscape: layoutMode === 'landscape' || layoutMode === 'a5-2up',
                         printBackground: true,
                         displayHeaderFooter: true,
                         headerTemplate: '<div></div>',
                         footerTemplate: '<div style="font-size: 9px; font-family: Arial, sans-serif; width: 100%; text-align: right; padding-right: 15mm; color: #555;">Page <span class="pageNumber"></span></div>',
-                        margins: { marginType: 'custom', top: 0, bottom: 0.4, left: 0, right: 0 },
-                        pageSize: 'A4'
+                        margins: { marginType: 'none' },  // let @page CSS control all margins
+                        pageSize: layoutMode === 'a5-2up' ? 'A5' : 'A4'
                     });
-                    fs.writeFileSync(targetPath, pdfData);
+                    
+                    let finalPdfData = pdfData;
+                    
+                    if (layoutMode === 'a5-2up') {
+                        try {
+                            const { PDFDocument } = require('pdf-lib');
+                            const srcDoc = await PDFDocument.load(pdfData);
+                            const outDoc = await PDFDocument.create();
+                            // pdfData is a Buffer (Uint8Array), embedPdf can accept it directly
+                            const embeddedPages = await outDoc.embedPdf(pdfData, srcDoc.getPageIndices());
+                            
+                            // A4 size in points: 595.28 x 841.89
+                            // A5 landscape size in points: 595.28 x 420.945
+                            for (let i = 0; i < embeddedPages.length; i += 2) {
+                                const outPage = outDoc.addPage([595.28, 841.89]);
+                                // Top half — scale to exactly fill the top half of A4
+                                outPage.drawPage(embeddedPages[i], { x: 0, y: 420.945, width: 595.28, height: 420.945 });
+                                // Bottom half
+                                if (i + 1 < embeddedPages.length) {
+                                    outPage.drawPage(embeddedPages[i + 1], { x: 0, y: 0, width: 595.28, height: 420.945 });
+                                }
+                            }
+                            const outBytes = await outDoc.save();
+                            finalPdfData = Buffer.from(outBytes);
+                        } catch (err) {
+                            console.error("Error creating 2-up PDF:", err);
+                            // Fallback to original A5 pdfData if merging fails
+                        }
+                    }
+
+                    fs.writeFileSync(targetPath, finalPdfData);
                     clearTimeout(timeout);
                     win.destroy();
                     resolve(JSON.stringify({ success: true, path: targetPath }));
