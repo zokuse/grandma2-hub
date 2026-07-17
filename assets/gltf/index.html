@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>glTF Unpacker</title>
+    
+    <link rel="stylesheet" href="../shared.css" />
+    
+    <link rel="stylesheet" href="style.css" />
+    <!-- Three.js for 3D Visualizer -->
+    
+    
+    
+    
+    
+    
+    <!-- QWebChannel -->
+    <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+</head>
+<body>
+
+    <div class="status-header-card glassy-surface">
+        <div>
+            <h1 class="main-title">glTF Unpacker</h1>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header btn-header-ghost" onclick="selectFile()" title="Select a .glb or .gltf file">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg> Load glTF/GLB
+            </button>
+            <div class="header-divider"></div>
+            <button class="btn-header btn-header-primary" id="btn-unpack" onclick="unpackGLB()" disabled title="Extract all textures to a local folder">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Unpack to Folder
+            </button>
+        </div>
+    </div>
+
+    <div class="layout-grid">
+        <div class="glassy-surface sidebar-card">
+            <div>
+                <h2 class="list-header">File Details</h2>
+                <div class="detail-row">
+                    <span class="detail-label">File</span>
+                    <span class="detail-value" id="lbl-filename">None Selected</span>
+                </div>
+                
+                <h2 class="list-header" style="margin-top: 24px;">Analytics</h2>
+                <div class="detail-row">
+                    <span class="detail-label">Size</span>
+                    <span class="detail-value" id="lbl-size">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Meshes</span>
+                    <span class="detail-value" id="lbl-meshes">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Materials</span>
+                    <span class="detail-value" id="lbl-materials">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Animations</span>
+                    <span class="detail-value" id="lbl-animations">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Textures</span>
+                    <span class="detail-value" id="lbl-textures">0</span>
+                </div>
+            </div>
+
+            <div>
+                <h2 class="list-header">View Mode</h2>
+                <div class="view-toggle">
+                    <div class="view-btn active" id="tab-2d" onclick="switchView('2d')">2D Textures</div>
+                    <div class="view-btn" id="tab-3d" onclick="switchView('3d')">3D Preview</div>
+                </div>
+            </div>
+            
+            <div style="flex-grow: 1;"></div>
+            
+            <div style="border-top: 1px solid var(--surface-border); padding-top: 16px;">
+                <h2 class="list-header" style="margin-bottom: 8px;">Log</h2>
+                <div id="log-output" style="font-size: 11px; color: var(--text-muted-color); font-family: monospace; white-space: pre-wrap; height: 100px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 4px;">Waiting for file...</div>
+            </div>
+        </div>
+
+        <div class="glassy-surface workspace-container">
+            <div class="workspace-header">
+                <div class="workspace-header-title">PREVIEW WORKSPACE</div>
+                <div class="search-wrapper" style="display: none;" id="texture-search-container">
+                    <input type="text" id="texture-search" class="search-input" placeholder="Search textures..." onkeyup="filterTextures()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </div>
+            </div>
+            
+            <div class="workspace-viewport">
+                <!-- Empty State -->
+                <div class="empty-state" id="empty-state">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    <h3>No Model Loaded</h3>
+                    <p>Load a .glb or .gltf file to preview its textures and 3D geometry.</p>
+                </div>
+
+                <!-- 2D Texture Grid -->
+                <div class="texture-grid" id="texture-grid"></div>
+
+                <!-- 3D Model Viewer -->
+                <div id="model-view-container">
+                    <div id="loading-bar-container" style="display: none;">
+                        <div class="loading-text" id="loading-text">Loading Model...</div>
+                        <div class="loading-track">
+                            <div class="loading-fill" id="loading-fill"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        <!-- Drag Overlay -->
+    <div class="drag-overlay" id="drag-overlay">
+        <div class="drag-content">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            <h2>Drop to Analyze Model</h2>
+        </div>
+    </div>
+    
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <span class="lightbox-close">&times;</span>
+        <img class="lightbox-content" id="lightbox-img">
+        <div class="lightbox-caption" id="lightbox-caption"></div>
+    </div>
+
+
+    <!-- Toast Notification -->
+    <div id="toast-container"></div>
+    
+    <script src="script.bundle.js"></script>
+</body>
+</html>

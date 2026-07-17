@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GrandMA2 XYZ Injector</title>
+    
+    <link rel="stylesheet" href="../shared.css" />
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Three.js for 3D Visualizer -->
+    
+    
+    
+
+    <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div class="status-header-card glassy-surface">
+        <div>
+            <h1 class="main-title">GrandMA2 XYZ Injector</h1>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header btn-header-ghost" onclick="window.location.reload()" title="Start a new session">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 1 0 2.6-6.4L2 9"/></svg> New Session
+            </button>
+
+            <div style="width: 1px; height: 24px; background: var(--surface-border); margin: 0 4px;"></div>
+
+            <button class="btn-header btn-header-pull" onclick="pullFromGrandMA2()" title="Pull patch from MA2 via Telnet">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg> Pull from MA2
+            </button>
+            <button class="btn-header btn-header-ghost" onclick="importCaptureXML()" title="Import Capture XML file">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Import Capture XML
+            </button>
+
+            <div class="header-divider"></div>
+
+            <button class="btn-header btn-header-send" id="btn-automatch" onclick="runAutoMatch()" disabled title="Auto-match based on DMX Address and Fixture ID">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg> Auto-Match
+            </button>
+            <button class="btn-header btn-header-danger" id="btn-clear-match" onclick="clearAllMappings()" disabled title="Clear all mappings">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> Clear Mapping
+            </button>
+
+            <div class="header-divider"></div>
+
+            <button class="btn-header btn-header-primary" id="btn-inject" onclick="triggerSendToMA2()" disabled title="Build macro in MA2 with fixture positions via Telnet">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="16" width="6" height="6" rx="1"></rect><rect x="2" y="16" width="6" height="6" rx="1"></rect><rect x="9" y="2" width="6" height="6" rx="1"></rect><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"></path><path d="M12 12V8"></path></svg> Send to MA2
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN VIEW CONTAINER -->
+    <div class="glassy-surface table-container" id="main-view">
+        
+        <!-- DATA TABLE VIEW (Default) -->
+        <div id="data-table-view" style="display: flex; flex-direction: column; flex-grow: 1; min-height: 0;">
+            <div class="table-header-controls">
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <div class="search-wrapper">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search ID or type..." oninput="handleSearch()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </div>
+                    <button class="btn-icon" id="btn-show-unmatched" onclick="toggleFilterUnmatched()">Show Unmatched</button>
+                </div>
+
+                <div class="stats-container">
+                    <div class="stat-badge" id="badge-ma2">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+                        MA2 Patch <span id="ma2-count" class="stat-count">Not loaded</span>
+                    </div>
+                    
+                    <div class="stat-badge" id="badge-cap">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        Capture XML <span id="cap-count" class="stat-count">Not loaded</span>
+                    </div>
+
+                    <div class="match-stats">
+                        <div class="match-stat success"><span id="stat-auto">0</span> Auto</div>
+                        <div class="match-stat warning"><span id="stat-manual">0</span> Manual</div>
+                        <div class="match-stat muted"><span id="stat-none">0</span> Unmatched</div>
+                    </div>
+                    
+                    <div class="header-divider" style="height:24px; margin: 0 8px;"></div>
+                    <button class="btn-icon" onclick="toggle3DView()" title="Toggle 3D Visualizer" id="btn-toggle-3d" style="border-color: var(--accent-color); color: var(--accent-color); min-width: 100px; justify-content: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg> 3D View
+                    </button>
+                </div>
+            </div>
+
+            <div class="mapping-col-header" id="col-headers" style="display:none;">
+                <div class="col-h">FID</div>
+                <div class="col-h">MA2 Target</div>
+                <div class="col-h">Capture Source</div>
+                <div class="col-h center">Status</div>
+                <div class="col-h center">Flip Z</div>
+            </div>
+
+            <!-- Rows injected here -->
+            <div class="table-scroll-wrapper" id="mapping-table">
+                <div class="empty-state" id="empty-state">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg>
+                    <h3>Load both sources to start</h3>
+                    <p>Pull the MA2 patch via Telnet, then import a Capture XML export.<br>Fixtures will be auto-matched instantly.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3D VISUALIZER VIEW (Hidden) -->
+        <div id="visualizer-view" style="display: none; flex-direction: column; flex-grow: 1; min-height: 0; background: #0a0a0a;">
+            
+            <div class="visualizer-toolbar">
+                  <div style="display: flex; gap: 12px; align-items: center;">
+                      <div class="view-toggle">
+                          <div class="view-btn active" id="btn-view-split" onclick="setVisualizerMode('split')">Split Screen</div>
+                          <div class="view-btn" id="btn-view-ma2" onclick="setVisualizerMode('ma2')">MA2 Target Only</div>
+                          <div class="view-btn" id="btn-view-capture" onclick="setVisualizerMode('capture')">Capture Source Only</div>
+                      </div>
+                      <div class="view-toggle">
+                          <div class="view-btn" id="btn-toggle-labels" onclick="toggleLabels()">Show Labels</div>
+                      </div>
+                  </div>
+                  <div style="display: flex; gap: 15px; align-items: center;">
+                      <div class="visualizer-status">Synced Cameras</div>
+                      <div class="header-divider" style="height:24px; margin: 0 4px;"></div>
+                      <button class="btn-icon" onclick="toggle3DView()" title="Close 3D Visualizer" style="border-color: #ff5252; color: #ff5252; min-width: 100px; justify-content: center;">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> Close 3D
+                      </button>
+                  </div>
+              </div>
+
+            <div class="viewport-container" id="viewport-container">
+                <div class="viewport-split" id="viewport-ma2">
+                    <div class="viewport-label">MA2 Target Positions</div>
+                    <div id="canvas-ma2" class="canvas-3d"></div>
+                </div>
+                <div class="viewport-divider" id="viewport-divider"></div>
+                <div class="viewport-split" id="viewport-capture">
+                    <div class="viewport-label">Capture Source Positions</div>
+                    <div id="canvas-capture" class="canvas-3d"></div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- LOADING OVERLAY -->
+    <div class="modal-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+        <div id="loading-text" class="loading-text">Communicating...</div>
+    </div>
+
+    <!-- LOGIN MODAL -->
+    <div class="modal-overlay" id="login-modal">
+        <div class="modal-content" style="width:340px;">
+            <button class="modal-close" onclick="closeModal('login-modal')">✕</button>
+            <h2 class="modal-header-title">MA2 Console Login</h2>
+            <div class="form-group">
+                <label for="login-ip">IP Address</label>
+                <input type="text" id="login-ip" class="form-control" placeholder="Select or type IP..." list="ip-list" onfocus="this.value=''">
+                <datalist id="ip-list"></datalist>
+            </div>
+            <div class="form-group">
+                <label for="login-user">Username</label>
+                <input type="text" id="login-user" class="form-control" value="administrator">
+            </div>
+            <div class="form-group">
+                <label for="login-pass">Password</label>
+                <input type="password" id="login-pass" class="form-control" value="admin">
+            </div>
+            <button class="btn-primary" style="width:100%; margin-top:8px;" onclick="submitLogin()">Save &amp; Connect</button>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="script.bundle.js"></script>
+</body>
+</html>

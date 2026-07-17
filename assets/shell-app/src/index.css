@@ -1,0 +1,129 @@
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    background-color: #1e1e1e;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+    position: relative;
+}
+
+#root {
+    width: 100%;
+    height: 100%;
+}
+
+#sidebar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 64px;
+    background-color: #121212;
+    border-right: 1px solid #333333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    transition: width 0.2s ease-out, box-shadow 0.2s ease-out;
+    will-change: width;
+    z-index: 100;
+}
+
+#sidebar:hover, #sidebar.expanded {
+    transition: width 0.2s ease-out, box-shadow 0.2s ease-out;
+    width: 200px;
+    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.4);
+    border-right: 1px solid #444444;
+}
+
+.nav-btn {
+    display: flex;
+    align-items: center;
+    width: calc(100% - 10px);
+    margin: 4px 5px;
+    padding: 12px 10px;
+    cursor: pointer;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    outline: none;
+    text-align: left;
+    position: relative;
+    min-height: 44px;
+    box-sizing: border-box;
+    transition: background-color 0.2s, border 0.2s;
+}
+
+.nav-btn:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.nav-btn.active {
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fdd835;
+}
+
+.nav-btn.active svg path, .nav-btn.active svg polyline, .nav-btn.active svg line, .nav-btn.active svg rect, .nav-btn.active svg circle {
+    stroke: #fdd835 !important;
+}
+
+.nav-icon {
+    width: 32px;
+    min-width: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.nav-icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+.nav-label {
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+    margin-left: 10px;
+}
+
+#sidebar:hover .nav-label, #sidebar.expanded .nav-label {
+    transition: opacity 0.2s ease;
+    opacity: 1;
+}
+
+.divider {
+    height: 1px;
+    width: calc(100% - 20px);
+    background-color: rgba(255, 255, 255, 0.08);
+    margin: 5px 10px;
+}
+
+.spacer {
+    flex-grow: 1;
+}
+
+#content {
+    position: absolute;
+    left: 64px;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: #1e1e1e;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
