@@ -129,14 +129,18 @@
                     
                     <div>
                         <p style="font-size: 13px; margin-bottom: 8px; color: #aaa; text-align: left;">Choose format to generate:</p>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                            <button class="btn-outline" style="flex-direction: column; height: 90px; font-size: 13px; gap: 6px; line-height: 1.2;" onclick="submitPDFExport(false)">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect></svg>
-                                <div>Export<br>Portrait</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+                            <button class="btn-outline" style="flex-direction: column; height: 90px; font-size: 11px; gap: 6px; line-height: 1.2; padding: 4px;" onclick="submitPDFExport('portrait')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect></svg>
+                                <div>A4<br>Portrait</div>
                             </button>
-                            <button class="btn-primary" style="flex-direction: column; height: 90px; font-size: 13px; gap: 6px; line-height: 1.2;" onclick="submitPDFExport(true)">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect></svg>
-                                <div>Export<br>Landscape</div>
+                            <button class="btn-outline" style="flex-direction: column; height: 90px; font-size: 11px; gap: 6px; line-height: 1.2; padding: 4px;" onclick="submitPDFExport('landscape')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect></svg>
+                                <div>A4<br>Landscape</div>
+                            </button>
+                            <button class="btn-primary" style="flex-direction: column; height: 90px; font-size: 11px; gap: 6px; line-height: 1.2; padding: 4px;" onclick="submitPDFExport('a5-2up')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="4" y1="12" x2="20" y2="12"></line></svg>
+                                <div>A5 2-up<br>(on A4)</div>
                             </button>
                         </div>
                     </div>
