@@ -127,3 +127,121 @@ iframe {
     top: 0;
     left: 0;
 }
+
+/* ─── Version Badge ──────────────────────────────────────────────────── */
+.version-badge {
+    width: 100%;
+    padding: 8px 0 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.version-text {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.2);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    white-space: nowrap;
+    user-select: none;
+    transition: color 0.2s;
+}
+
+#sidebar:hover .version-text,
+#sidebar.expanded .version-text {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+/* ─── Update Banner ──────────────────────────────────────────────────── */
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.update-banner {
+    position: absolute;
+    top: 0;
+    left: 64px; /* aligns with #content, not the sidebar */
+    right: 0;
+    z-index: 200;
+    animation: slideDown 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.update-banner__inner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #1a1200 0%, #2a1f00 100%);
+    border-bottom: 1px solid rgba(253, 216, 53, 0.35);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+}
+
+.update-banner__icon {
+    width: 16px;
+    height: 16px;
+    color: #fdd835;
+    flex-shrink: 0;
+}
+
+.update-banner__text {
+    flex: 1;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.85);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.update-banner__text strong {
+    color: #fdd835;
+    font-weight: 700;
+}
+
+.update-banner__btn {
+    padding: 6px 16px;
+    background: #fdd835;
+    color: #111;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    letter-spacing: 0.03em;
+    transition: background 0.15s, transform 0.1s;
+    flex-shrink: 0;
+}
+
+.update-banner__btn:hover {
+    background: #ffe566;
+    transform: scale(1.03);
+}
+
+.update-banner__btn:active {
+    transform: scale(0.98);
+}
+
+.update-banner__dismiss {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 4px;
+    line-height: 1;
+    transition: color 0.15s, background 0.15s;
+    flex-shrink: 0;
+}
+
+.update-banner__dismiss:hover {
+    color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.08);
+}

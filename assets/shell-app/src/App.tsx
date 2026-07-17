@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './index.css';
 
+declare const __APP_VERSION__: string;
+
 const TOOLS = [
   { id: 'home', label: 'Home', url: '../../home-app/dist/index.html', icon: <svg viewBox="0 0 24 24" fill="none" stroke="#e0e0e0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg> },
   { id: 'divider-1', isDivider: true },
@@ -27,6 +29,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [expanded, setExpanded] = useState(false);
   const [loadedTabs, setLoadedTabs] = useState<Set<string>>(new Set(['home']));
+  const [updateReady, setUpdateReady] = useState<{ version: string } | null>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -35,6 +38,13 @@ function App() {
       setActiveTab(tabId);
       setLoadedTabs(prev => new Set(prev).add(tabId));
     };
+
+    // Listen for update-ready event from the auto-updater
+    if ((window as any).electronUpdater) {
+      (window as any).electronUpdater.onUpdateReady((info: { version: string }) => {
+        setUpdateReady(info);
+      });
+    }
 
     const handleClickOutside = (e: MouseEvent) => {
       if (sidebarRef.current && !sidebarRef.current.contains(e.target as Node)) {
@@ -78,7 +88,42 @@ function App() {
             </button>
           );
         })}
+
+        {/* Version Badge — always visible at bottom of sidebar */}
+        <div className="version-badge">
+          <span className="version-text">v{__APP_VERSION__}</span>
+        </div>
       </div>
+
+      {/* Update Banner — slides in when update is downloaded */}
+      {updateReady && (
+        <div className="update-banner" role="alert">
+          <div className="update-banner__inner">
+            <svg className="update-banner__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="23 4 23 10 17 10" />
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+            </svg>
+            <span className="update-banner__text">
+              GrandMA2 Hub <strong>v{updateReady.version}</strong> is ready to install.
+            </span>
+            <button
+              id="btn-restart-update"
+              className="update-banner__btn"
+              onClick={() => (window as any).electronUpdater?.restartAndInstall()}
+            >
+              Restart &amp; Update
+            </button>
+            <button
+              id="btn-dismiss-update"
+              className="update-banner__dismiss"
+              onClick={() => setUpdateReady(null)}
+              aria-label="Dismiss update notification"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
 
       <div id="content">
         {TOOLS.filter(t => !t.isDivider && !t.isSpacer).map((tool) => (

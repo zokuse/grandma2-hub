@@ -3,17 +3,52 @@ const path = require('path');
 const os = require('os');
 const { exec } = require('child_process');
 const net = require('net');
-const { safeStorage } = require('electron');
+const { app, safeStorage } = require('electron');
 
 class MA2Client {
+    _getUserDataDir() {
+        const dir = app.getPath('userData');
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+        return dir;
+    }
+
     constructor() {
-        this.configFile = path.join(os.homedir(), '.ma2_hub_config.json');
+        const userData = this._getUserDataDir();
+        this.configFile = path.join(userData, '.ma2_hub_config.json');
+        this.fixtureSpecsFile = path.join(userData, '.ma2_fixture_specs.json');
+        this._migrateFromHomedir();
         this.credentials = this.loadCredentials();
         this.baseDir = this.findMA2Dir();
         this.layoutDir = path.join(this.baseDir, 'importexport');
         this.patchDir = path.join(this.baseDir, 'fixture_layers');
         this.macroDir = path.join(this.baseDir, 'macros');
-        this.fixtureSpecsFile = path.join(os.homedir(), '.ma2_fixture_specs.json');
+    }
+
+    _migrateFromHomedir() {
+        const oldConfigFile = path.join(os.homedir(), '.ma2_hub_config.json');
+        const oldSpecsFile = path.join(os.homedir(), '.ma2_fixture_specs.json');
+
+        if (fs.existsSync(oldConfigFile) && !fs.existsSync(this.configFile)) {
+            try {
+                fs.copyFileSync(oldConfigFile, this.configFile);
+                fs.unlinkSync(oldConfigFile);
+                console.log('[MA2Client] Migrated config to AppData.');
+            } catch (e) {
+                console.error('[MA2Client] Migration failed for config:', e.message);
+            }
+        }
+
+        if (fs.existsSync(oldSpecsFile) && !fs.existsSync(this.fixtureSpecsFile)) {
+            try {
+                fs.copyFileSync(oldSpecsFile, this.fixtureSpecsFile);
+                fs.unlinkSync(oldSpecsFile);
+                console.log('[MA2Client] Migrated fixture specs to AppData.');
+            } catch (e) {
+                console.error('[MA2Client] Migration failed for fixture specs:', e.message);
+            }
+        }
     }
 
     findMA2Dir() {

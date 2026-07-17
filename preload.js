@@ -104,3 +104,17 @@ window.QWebChannel = function(transport, callback) {
         });
     }, 50);
 };
+
+// ─── Update Bridge ─────────────────────────────────────────────────────────
+// Exposes a clean API for the shell app to respond to auto-update events.
+window.electronUpdater = {
+    onUpdateReady: (callback) => {
+        ipcRenderer.on('update-ready', (event, info) => {
+            callback(info);
+        });
+    },
+    restartAndInstall: () => {
+        ipcRenderer.send('restart-and-install');
+    }
+};
+// ──────────────────────────────────────────────────────────────────────────
