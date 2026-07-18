@@ -208,11 +208,10 @@ function generateXMLFromState() {
     const startTimecodeIndex = parseInt(document.getElementById('start-tc').value, 10);
     const tcName = document.getElementById('tc-name').value;
 
-    const enableAssign = document.getElementById('enable-assign').checked;
-    const executor = enableAssign ? {
+    const executor = {
         page: parseInt(document.getElementById('exec-page').value, 10) || 1,
         number: parseInt(document.getElementById('exec-number').value, 10) || 1
-    } : null;
+    };
 
     currentXML = generateMA2XML(currentParsedData, exportMode, fps, customOffset, {
         startSequenceIndex,
@@ -281,7 +280,7 @@ function doSend(credsStr) {
     const exportMode = document.getElementById('export-mode').value;
     const startSequenceIndex = parseInt(document.getElementById('start-seq').value, 10);
     const startTimecodeIndex = parseInt(document.getElementById('start-tc').value, 10);
-    const enableAssign = document.getElementById('enable-assign').checked;
+
     
     // We send currentXML, creds, and instructions on what to import via Telnet
     if (pyBridge.send_timecode_to_ma2) {
@@ -290,7 +289,7 @@ function doSend(credsStr) {
             startTimecodeIndex,
             exportMode,
             followUpCommands: currentFollowUpCommands,
-            executor: enableAssign ? { page: parseInt(document.getElementById('exec-page').value, 10) || 1, number: parseInt(document.getElementById('exec-number').value, 10) || 1 } : null
+            executor: { page: parseInt(document.getElementById('exec-page').value, 10) || 1, number: parseInt(document.getElementById('exec-number').value, 10) || 1 }
         })).then(resStr => { hideLoading(); showToast('Success', 'success'); }).catch(err => { hideLoading(); showToast('Error: ' + err, 'error'); });
     } else {
         hideLoading();
