@@ -334,16 +334,13 @@ function closeModal(id) {
     document.getElementById(id).classList.remove('active');
 }
 
-function showToast(message, type = 'info', duration = 3200) {
+function showToast(message, type = 'default', duration = 3000) {
     const container = document.getElementById('toast-container');
-    if (!container) return;
-    const icons = { success: '✓', error: '✕', info: 'ℹ', warning: '⚠' };
     const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    const escapedMessage = String(message)
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-    toast.innerHTML = `<span>${icons[type] || '●'}</span><span style="margin-left: 6px;">${escapedMessage}</span>`;
+    toast.className = 'toast';
+    const colors = { success: '#00e676', error: '#ff5252', info: '#29b6f6', warning: '#ffa726', default: '#e0e0e0' };
+    toast.style.borderLeft = `3px solid ${colors[type] || colors.default}`;
+    toast.textContent = message;
     container.appendChild(toast);
     setTimeout(() => toast.classList.add('visible'), 10);
     setTimeout(() => {
