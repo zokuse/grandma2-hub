@@ -1,1 +1,0 @@
-const fs = require('fs'); const { parseReaperProject } = require('./src/lib/ReaperParser.js'); const content = fs.readFileSync('C:/Users/zokuse/Documents/CKS 2025 LS/CKS 2025 LS.rpp', 'utf-8'); console.log(JSON.stringify(parseReaperProject(content).audioFiles, null, 2));
