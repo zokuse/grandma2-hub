@@ -367,7 +367,8 @@ async function unpackGlb(filePath, sendProgress) {
 
 function saveSingleTexture(filePath, texIndex, dataUrl, texName) {
     const baseDir = path.dirname(filePath);
-    const savePath = path.join(baseDir, texName);
+    const safeTexName = path.basename(texName).replace(/[^a-zA-Z0-9 \-_.]/g, '').trim();
+    const savePath = path.join(baseDir, safeTexName);
 
     try {
         const { gltf, binOffset, isGlb } = readHeaders(filePath);

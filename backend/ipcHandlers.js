@@ -510,8 +510,9 @@ function registerIpcHandlers() {
             let followUpErrors = 0;
             if (settings.followUpCommands && settings.followUpCommands.length > 0) {
                 e.sender.send('progress_update', `Applying Cues and Sequence settings...`);
-                for (const cmd of settings.followUpCommands) {
+                for (let cmd of settings.followUpCommands) {
                     try {
+                        cmd = (cmd || "").replace(/\r/g, "").replace(/\n/g, "");
                         const response = await socket.sendCommand(cmd, 3000);
                     } catch (cmdErr) {
                         console.error(`Failed to execute follow-up command: ${cmd}`, cmdErr);
