@@ -1,4 +1,5 @@
 const { ipcRenderer } = require('electron');
+window.appVersion = require('./package.json').version;
 
 let activeRequester = null;
 let instanceCounter = 0;
@@ -73,6 +74,7 @@ window.QWebChannel = function(transport, callback) {
         save_global_credentials: makeInvoke('save_global_credentials'),
         send_to_console: makeInvoke('send_to_console'),
         send_xyz_macro: makeInvoke('send_xyz_macro'),
+        send_timecode_to_ma2: makeInvoke('send_timecode_to_ma2'),
         select_file: makeInvoke('select_file'),
         analyze_glb: makeInvoke('analyze_glb'),
         unpack_glb: makeInvoke('unpack_glb'),

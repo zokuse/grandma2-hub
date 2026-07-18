@@ -1,0 +1,86 @@
+.file-drop-zone {
+    flex-grow: 1;
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-m);
+    padding: 24px 12px;
+    text-align: center;
+    color: var(--text-muted-color);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    height: 100%;
+}
+.file-drop-zone:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.02);
+}
+.file-drop-zone.dragover {
+    border-color: var(--accent-color);
+    background: rgba(253, 216, 53, 0.05);
+    color: #fff;
+}
+.file-drop-zone.loaded {
+    display: none; /* Hide when loaded */
+}
+
+.settings-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.settings-section-title {
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #888;
+    margin: 0 0 8px 0;
+    letter-spacing: 0.5px;
+}
+
+/* ===== MAIN TABLE CONTAINER ===== */
+.mapping-col-header {
+    display: grid;
+    grid-template-columns: 50px 100px 1fr 70px;
+    align-items: center; gap: 12px;
+    padding: 8px 16px;
+    border-bottom: 2px solid var(--surface-border);
+    background: #111; flex-shrink: 0;
+}
+.col-h { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #888; font-weight: 700; }
+.col-h.center { text-align: center; }
+
+.table-scroll-wrapper { padding: 0; gap: 0; border-radius: 0 0 var(--radius-l) var(--radius-l); }
+
+/* ===== MAPPING ROWS (DATA TABLE) ===== */
+.mapping-row {
+    display: grid;
+    grid-template-columns: 50px 100px 1fr 70px;
+    align-items: center; gap: 12px;
+    background: #181818;
+    border-bottom: 1px solid var(--surface-border);
+    padding: 10px 16px;
+    animation: fadein 0.15s ease both;
+}
+.mapping-row:nth-child(even) { background: #1c1c1c; }
+.mapping-row:hover { background: #2a2a2a; }
+
+@keyframes fadein { from { opacity:0; } to { opacity:1; } }
+
+/* Cells */
+.tc-cue { font-size: 12px; font-weight: 600; color: #ccc; text-align: center; }
+.tc-timecode { font-size: 12px; font-weight: 600; color: #ccc; font-family: monospace; text-align: center; }
+.tc-name-group { display: flex; align-items: center; gap: 8px; overflow: hidden; }
+.tc-name { font-size: 12px; font-weight: 500; color: #eee; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tc-name-group .dot { width: 8px; height: 8px; border-radius: 50%; background-color: #2962ff; flex-shrink: 0; }
+.tc-length { font-size: 12px; font-weight: 500; color: #ccc; text-align: center; }
+
+.header-checkbox { font-size: 10px; font-weight: 700; color: #ccc; display: inline-flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; margin-top: 4px; cursor: pointer; }
+.header-checkbox input { accent-color: var(--accent-color); cursor: pointer; }
+
+.settings-group .form-group {
+    margin-bottom: 0;
+}

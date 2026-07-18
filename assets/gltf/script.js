@@ -126,6 +126,12 @@ document.addEventListener('drop', (e) => {
     e.preventDefault();
     dragCounter = 0;
     elDragOverlay.classList.remove('active');
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        const file = e.dataTransfer.files[0];
+        if (file.path && (file.path.toLowerCase().endsWith('.glb') || file.path.toLowerCase().endsWith('.gltf'))) {
+            handleDroppedFile(file.path);
+        }
+    }
 });
 
 // Lightbox Logic

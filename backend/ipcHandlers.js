@@ -486,6 +486,65 @@ function registerIpcHandlers() {
         }
     });
 
+    ipcMain.handle('send_timecode_to_ma2', async (e, loginStr, xmlData, settingsStr) => {
+        try {
+            const creds = JSON.parse(loginStr);
+            ma2Client.saveCredentials(creds);
+            const settings = JSON.parse(settingsStr);
+            
+            if (!fs.existsSync(ma2Client.layoutDir)) {
+                fs.mkdirSync(ma2Client.layoutDir, { recursive: true });
+            }
+            const filename = "tc_creator_temp.xml";
+            const filePath = path.join(ma2Client.layoutDir, filename);
+            fs.writeFileSync(filePath, xmlData, 'utf8');
+
+            const socket = await ma2Client.telnetSession(creds, msg => e.sender.send('progress_update', msg));
+            
+            const doMain = settings.exportMode.includes('main') || settings.exportMode.includes('sub');
+            const doTc = !settings.exportMode.includes('only') || settings.exportMode === 'tc-only' || settings.exportMode.includes('tc');
+
+            if (doMain) {
+                // Sequence is now built entirely through followUpCommands via 'Store Sequence' commands
+            }
+            let followUpErrors = 0;
+            if (settings.followUpCommands && settings.followUpCommands.length > 0) {
+                e.sender.send('progress_update', `Applying Cues and Sequence settings...`);
+                for (const cmd of settings.followUpCommands) {
+                    try {
+                        const response = await socket.sendCommand(cmd, 3000);
+                    } catch (cmdErr) {
+                        console.error(`Failed to execute follow-up command: ${cmd}`, cmdErr);
+                        followUpErrors++;
+                    }
+                }
+            }
+
+            if (doTc) {
+                e.sender.send('progress_update', `Importing Timecode...`);
+                await socket.sendCommand(`Import "${filename}" At Timecode ${settings.startTimecodeIndex} /noconfirm`, 10000);
+                
+                if (settings.executor) {
+                    e.sender.send('progress_update', `Linking Timecode to Executor...`);
+                    await socket.sendCommand(`Assign Executor ${settings.executor.page}.${settings.executor.number} At Timecode ${settings.startTimecodeIndex} Track 1`, 3000);
+                }
+            }
+
+            await new Promise(r => setTimeout(r, 1000));
+            socket.destroy();
+            
+            try { fs.unlinkSync(filePath); } catch(err) {}
+
+            if (followUpErrors > 0) {
+                e.sender.send('macros_sent', JSON.stringify({ success: true, message: `Timecode imported, but ${followUpErrors} styling commands failed. Check executor/cue states.` }));
+            } else {
+                e.sender.send('macros_sent', JSON.stringify({ success: true, message: `Successfully imported Timecode data to MA2!` }));
+            }
+        } catch (err) {
+            e.sender.send('macros_sent', JSON.stringify({ success: false, error: err.message }));
+        }
+    });
+
     ipcMain.handle('export_pdf', async (e, htmlContent, filename, layoutMode = 'portrait') => {
         const { BrowserWindow } = require('electron');
         const { canceled, filePath } = await dialog.showSaveDialog({
