@@ -38,7 +38,7 @@
         
         <!-- SIDEBAR: Settings Panel -->
         <div class="glassy-surface sidebar-card h-fit">
-            <div style="display: flex; flex-direction: column; gap: 16px;">
+
                 <div class="settings-group">
                     <h3 class="settings-section-title">Timecode Options</h3>
                     <div class="form-group" style="margin-bottom: 8px;">
@@ -51,18 +51,20 @@
                         </select>
                     </div>
                     
-                    <div class="form-group" style="margin-bottom: 8px;">
-                        <label for="tc-offset">Offset</label>
-                        <input type="text" id="tc-offset" class="form-control" value="00:00:00.00" title="Leave as 00:00:00.00 to use PROJOFFS from .rpp">
-                    </div>
-                    <div class="form-group" style="margin-bottom: 8px;">
-                        <label for="fps">FPS</label>
-                        <select id="fps" class="form-control">
-                            <option value="30">30 fps</option>
-                            <option value="60">60 fps</option>
-                            <option value="25">25 fps</option>
-                            <option value="24">24 fps</option>
-                        </select>
+                    <div style="display: flex; gap: 8px;">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="tc-offset">Offset</label>
+                            <input type="text" id="tc-offset" class="form-control" value="00:00:00.00" title="Leave as 00:00:00.00 to use PROJOFFS from .rpp">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label for="fps">FPS</label>
+                            <select id="fps" class="form-control">
+                                <option value="30">30 fps</option>
+                                <option value="60">60 fps</option>
+                                <option value="25">25 fps</option>
+                                <option value="24">24 fps</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -74,28 +76,30 @@
                         <label for="tc-name">Sequence & Timecode Name</label>
                         <input type="text" id="tc-name" class="form-control" value="Generated TC">
                     </div>
-                    <div class="form-group" style="margin-bottom: 8px;">
-                        <label for="start-seq">Start Seq #</label>
-                        <div class="number-stepper">
-                            <button type="button" class="stepper-btn minus" onclick="stepNumber('start-seq', -1)">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                            </button>
-                            <input type="number" id="start-seq" class="form-control stepper-input" value="1" min="1">
-                            <button type="button" class="stepper-btn plus" onclick="stepNumber('start-seq', 1)">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                            </button>
+                    <div style="display: flex; gap: 8px;">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="start-seq">Start Seq #</label>
+                            <div class="number-stepper">
+                                <button type="button" class="stepper-btn minus" onclick="stepNumber('start-seq', -1)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                </button>
+                                <input type="number" id="start-seq" class="form-control stepper-input" value="1" min="1">
+                                <button type="button" class="stepper-btn plus" onclick="stepNumber('start-seq', 1)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 8px;">
-                        <label for="start-tc">Start TC #</label>
-                        <div class="number-stepper">
-                            <button type="button" class="stepper-btn minus" onclick="stepNumber('start-tc', -1)">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                            </button>
-                            <input type="number" id="start-tc" class="form-control stepper-input" value="1" min="1">
-                            <button type="button" class="stepper-btn plus" onclick="stepNumber('start-tc', 1)">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                            </button>
+                        <div class="form-group" style="flex: 1;">
+                            <label for="start-tc">Start TC #</label>
+                            <div class="number-stepper">
+                                <button type="button" class="stepper-btn minus" onclick="stepNumber('start-tc', -1)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                </button>
+                                <input type="number" id="start-tc" class="form-control stepper-input" value="1" min="1">
+                                <button type="button" class="stepper-btn plus" onclick="stepNumber('start-tc', 1)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -104,32 +108,33 @@
 
                 <div class="settings-group">
                     <h3 class="settings-section-title">Executor Binding</h3>
-                    <div class="form-group" style="margin-bottom: 8px;">
-                        <label for="exec-page">Page</label>
-                        <div class="number-stepper">
-                            <button type="button" class="stepper-btn minus" onclick="stepNumber('exec-page', -1)">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                            </button>
-                            <input type="number" id="exec-page" class="form-control stepper-input" value="1" min="1">
-                            <button type="button" class="stepper-btn plus" onclick="stepNumber('exec-page', 1)">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                            </button>
+                    <div style="display: flex; gap: 8px;">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="exec-page">Page</label>
+                            <div class="number-stepper">
+                                <button type="button" class="stepper-btn minus" onclick="stepNumber('exec-page', -1)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                </button>
+                                <input type="number" id="exec-page" class="form-control stepper-input" value="1" min="1">
+                                <button type="button" class="stepper-btn plus" onclick="stepNumber('exec-page', 1)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 8px;">
-                        <label for="exec-number">Number</label>
-                        <div class="number-stepper">
-                            <button type="button" class="stepper-btn minus" onclick="stepNumber('exec-number', -1)">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                            </button>
-                            <input type="number" id="exec-number" class="form-control stepper-input" value="1" min="1">
-                            <button type="button" class="stepper-btn plus" onclick="stepNumber('exec-number', 1)">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                            </button>
+                        <div class="form-group" style="flex: 1;">
+                            <label for="exec-number">Number</label>
+                            <div class="number-stepper">
+                                <button type="button" class="stepper-btn minus" onclick="stepNumber('exec-number', -1)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                </button>
+                                <input type="number" id="exec-number" class="form-control stepper-input" value="1" min="1">
+                                <button type="button" class="stepper-btn plus" onclick="stepNumber('exec-number', 1)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
         </div>
 
         <!-- WORKSPACE: File Drop & Preview -->
