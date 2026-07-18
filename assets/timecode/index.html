@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MA2 Timecode Creator</title>
+    
+    <link rel="stylesheet" href="../shared.css" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div class="status-header-card glassy-surface">
+        <div>
+            <h1 class="main-title">MA2 Timecode Creator</h1>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header btn-header-ghost" id="btn-browse" onclick="browseFile()" title="Browse for a REAPER Project file">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Browse .rpp
+            </button>
+
+            <div class="header-divider"></div>
+
+            <button class="btn-header btn-header-ghost" id="btn-download-xml" onclick="downloadXML()" disabled title="Generate and download the MA2 XML file">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download XML
+            </button>
+            
+            <button class="btn-header btn-header-primary" id="btn-send-to-ma2" onclick="triggerSendToMA2()" disabled title="Import Sequence & Timecode directly into MA2 via Telnet">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg> Send to MA2
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="layout-grid">
+        
+        <!-- SIDEBAR: Settings Panel -->
+        <div class="glassy-surface sidebar-card h-fit">
+            <div>
+                <div class="settings-group">
+                    <h3 class="settings-section-title">Timecode Options</h3>
+                    <div class="form-group" style="margin-bottom: 8px;">
+                        <label for="export-mode">Export Mode</label>
+                        <select id="export-mode" class="form-control">
+                            <option value="main-tc">Main Cues + Timecode</option>
+                            <option value="main-sub-tc">All Sequences + Timecode</option>
+                            <option value="sub-tc">Track Sequences + Timecode</option>
+                            <option value="tc-only">Timecode Only</option>
+                        </select>
+                    </div>
+                    
+                    <div style="display: flex; gap: 8px;">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="tc-offset">Offset</label>
+                            <input type="text" id="tc-offset" class="form-control" value="00:00:00.00" title="Leave as 00:00:00.00 to use PROJOFFS from .rpp">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label for="fps">FPS</label>
+                            <select id="fps" class="form-control">
+                                <option value="30">30 fps</option>
+                                <option value="60">60 fps</option>
+                                <option value="25">25 fps</option>
+                                <option value="24">24 fps</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="width: 100%; height: 1px; background: var(--surface-border); margin: 12px 0;"></div>
+
+                <div class="settings-group">
+                    <h3 class="settings-section-title">MA2 Indices & Label</h3>
+                    <div class="form-group" style="margin-bottom: 8px;">
+                        <label for="tc-name">Sequence & Timecode Name</label>
+                        <input type="text" id="tc-name" class="form-control" value="Generated TC">
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="start-seq">Start Seq #</label>
+                            <input type="number" id="start-seq" class="form-control" value="1" min="1">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label for="start-tc">Start TC #</label>
+                            <input type="number" id="start-tc" class="form-control" value="1" min="1">
+                        </div>
+                    </div>
+                </div>
+
+                <div style="width: 100%; height: 1px; background: var(--surface-border); margin: 12px 0;"></div>
+
+                <div class="settings-group">
+                    <h3 class="settings-section-title">Executor Binding</h3>
+                    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                        <div class="form-group" style="flex: 1;">
+                            <label for="exec-page">Page</label>
+                            <input type="number" id="exec-page" class="form-control" value="1" min="1">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label for="exec-number">Number</label>
+                            <input type="number" id="exec-number" class="form-control" value="1" min="1">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="header-checkbox" style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; cursor: pointer;">
+                            <input type="checkbox" id="enable-assign" checked> Assign to Executor
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- WORKSPACE: File Drop & Preview -->
+        <div class="glassy-surface workspace-container" style="display: flex; flex-direction: column; position: relative; height: calc(100vh - 120px);">
+            <input type="file" id="file-input" accept=".rpp" style="display:none;">
+
+            <!-- Empty State / Drop Zone -->
+            <div id="file-drop-zone" class="file-drop-zone" onclick="browseFile()">
+                <div class="empty-state" id="empty-state" style="pointer-events: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="12" y1="18" x2="12" y2="12"/>
+                        <polyline points="9 15 12 12 15 15"/>
+                    </svg>
+                    <h3>No Project Loaded</h3>
+                    <p>Click or drag a REAPER .rpp file here to get started.</p>
+                </div>
+            </div>
+
+            <div id="table-view" style="display: none; flex-direction: column; flex-grow: 1; overflow: hidden;">
+                <div class="mapping-col-header" style="padding-right: 16px;">
+                    <div class="col-h center">Cue</div>
+                    <div class="col-h center">Timecode</div>
+                    <div class="col-h">Name</div>
+                    <div class="col-h center">Length</div>
+                </div>
+                
+                <div class="table-scroll-wrapper" id="preview-container" style="flex-grow: 1; overflow-y: auto; padding-bottom: 16px;">
+                    <!-- Rows rendered here by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOADING OVERLAY -->
+    <div class="modal-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+        <div id="loading-text" class="loading-text">Communicating...</div>
+    </div>
+
+    <!-- LOGIN MODAL -->
+    <div class="modal-overlay" id="login-modal">
+        <div class="modal-content" style="width:340px;">
+            <button class="modal-close" onclick="closeModal('login-modal')">✕</button>
+            <h2 class="modal-header-title">MA2 Console Login</h2>
+            <div class="form-group">
+                <label for="login-ip">IP Address</label>
+                <input type="text" id="login-ip" class="form-control" placeholder="Select or type IP..." list="ip-list" onfocus="this.value=''">
+                <datalist id="ip-list"></datalist>
+            </div>
+            <div class="form-group">
+                <label for="login-user">Username</label>
+                <input type="text" id="login-user" class="form-control" value="administrator">
+            </div>
+            <div class="form-group">
+                <label for="login-pass">Password</label>
+                <input type="password" id="login-pass" class="form-control" value="admin">
+            </div>
+            <button class="btn-primary" style="width:100%; margin-top:8px;" onclick="submitLogin()">Save &amp; Connect</button>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <script type="module" src="script.js?v=4"></script>
+</body>
+</html>

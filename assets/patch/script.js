@@ -141,15 +141,13 @@ function escXML(str) {
 
 // Fungsi untuk mereset/membersihkan list patch
 function clearPatchList() {
-    if (fixtures.length === 0) {
-        showToast("Patch list is already empty.", "info");
-        return;
-    }
     fixtures = [];
     document.getElementById('fixture-count').textContent = '0';
     if(document.getElementById('total-watt')) document.getElementById('total-watt').textContent = '0';
     if(document.getElementById('total-weight')) document.getElementById('total-weight').textContent = '0';
     document.getElementById('search-fixtures').value = '';
+    const exportNameInput = document.getElementById('export-filename');
+    if (exportNameInput) exportNameInput.value = '';
     renderTable();
     showToast("Patch list cleared. Ready for a new patch!", "success");
 }
