@@ -359,7 +359,7 @@ function renderTable() {
 
     if (fixtures.length === 0) {
         if (emptyState) emptyState.style.display = 'flex';
-        if (patchTable) patchTable.style.display = 'none';
+        
         return;
     } else {
         if (emptyState) emptyState.style.display = 'none';
