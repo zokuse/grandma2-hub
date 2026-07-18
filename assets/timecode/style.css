@@ -84,3 +84,59 @@
 .settings-group .form-group {
     margin-bottom: 0;
 }
+
+/* ===== NUMBER STEPPER ===== */
+.number-stepper {
+    display: flex;
+    align-items: center;
+    background-color: var(--input-bg-color);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-m);
+    transition: all var(--motion-duration);
+    height: 40px;
+    overflow: hidden;
+}
+.number-stepper:focus-within {
+    border-color: rgba(253, 216, 53, 0.5);
+    box-shadow: 0 0 0 2px rgba(253, 216, 53, 0.2);
+}
+.number-stepper .stepper-input {
+    border: none !important;
+    border-radius: 0 !important;
+    text-align: center;
+    padding: 0;
+    height: 100%;
+    flex-grow: 1;
+    min-width: 40px;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+.number-stepper .stepper-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted-color);
+    width: 32px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    outline: none;
+}
+.number-stepper .stepper-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+}
+.number-stepper .stepper-btn:active {
+    background: rgba(255, 255, 255, 0.1);
+}
+/* Hide native arrows */
+.stepper-input::-webkit-inner-spin-button,
+.stepper-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.stepper-input[type=number] {
+    -moz-appearance: textfield;
+}
