@@ -263,7 +263,20 @@ function triggerSendToMA2() {
     }
 }
 
+window.stepNumber = function(id, delta) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    let val = parseInt(el.value, 10) || parseInt(el.min, 10) || 1;
+    let min = parseInt(el.min, 10) || 1;
+    val += delta;
+    if (val < min) val = min;
+    el.value = val;
+    // Dispatch input event to trigger any reactive updates if needed
+    el.dispatchEvent(new Event('input'));
+};
+
 function submitLogin() {
+
     closeModal('login-modal');
     const creds = {
         ip:       (document.getElementById('login-ip').value || '').split(' ')[0] || '127.0.0.1',
