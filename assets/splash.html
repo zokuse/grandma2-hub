@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>GrandMA2 Hub Loading...</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+            -webkit-app-region: drag;
+        }
+        
+        .splash-card {
+            width: 360px;
+            height: 240px;
+            background: #141414; /* Solid, highly performant dark background */
+            border: 1px solid #333;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .logo-container {
+            margin-bottom: 24px;
+        }
+
+        .logo-container img {
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+            /* Removed heavy drop-shadow filter */
+        }
+
+        h1 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0 0 6px 0;
+            letter-spacing: 0.05em;
+            color: #fff;
+            /* Removed text-shadow */
+        }
+
+        p {
+            font-size: 11px;
+            color: #888;
+            margin: 0 0 24px 0;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .progress-container {
+            width: 60%;
+            height: 3px;
+            background: #2a2a2a;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: #fdd835;
+            border-radius: 3px;
+            /* Simplified animation, no glows */
+            animation: load 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes load {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-card">
+        <div class="logo-container">
+            <img src="icon.ico" alt="" onerror="this.style.display='none'" />
+        </div>
+        <h1>GrandMA2 Hub</h1>
+        <p>Initializing...</p>
+        <div class="progress-container">
+            <div class="progress-bar"></div>
+        </div>
+    </div>
+</body>
+</html>

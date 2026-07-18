@@ -27,7 +27,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 1 0 2.6-6.4L2 9"/></svg> New Session
             </button>
 
-            <div style="width: 1px; height: 24px; background: var(--surface-border); margin: 0 4px;"></div>
+            <div class="header-divider"></div>
 
             <button class="btn-header btn-header-pull" onclick="pullFromGrandMA2()" title="Pull patch from MA2 via Telnet">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg> Pull from MA2
@@ -84,7 +84,7 @@
                         <div class="match-stat muted"><span id="stat-none">0</span> Unmatched</div>
                     </div>
                     
-                    <div class="header-divider" style="height:24px; margin: 0 8px;"></div>
+                    <div class="header-divider"></div>
                     <button class="btn-icon" onclick="toggle3DView()" title="Toggle 3D Visualizer" id="btn-toggle-3d" style="border-color: var(--accent-color); color: var(--accent-color); min-width: 100px; justify-content: center;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg> 3D View
                     </button>
@@ -101,7 +101,7 @@
 
             <!-- Rows injected here -->
             <div class="table-scroll-wrapper" id="mapping-table">
-                <div class="empty-state" id="empty-state">
+                <div class="xyz-empty-state" id="empty-state">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg>
                     <h3>Load both sources to start</h3>
                     <p>Pull the MA2 patch via Telnet, then import a Capture XML export.<br>Fixtures will be auto-matched instantly.</p>
@@ -125,7 +125,7 @@
                   </div>
                   <div style="display: flex; gap: 15px; align-items: center;">
                       <div class="visualizer-status">Synced Cameras</div>
-                      <div class="header-divider" style="height:24px; margin: 0 4px;"></div>
+                      <div class="header-divider"></div>
                       <button class="btn-icon" onclick="toggle3DView()" title="Close 3D Visualizer" style="border-color: #ff5252; color: #ff5252; min-width: 100px; justify-content: center;">
                           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> Close 3D
                       </button>
@@ -176,6 +176,7 @@
     </div>
 
     <div id="toast-container"></div>
+    <div class="copyright-text">© GrandMA2 Hub</div>
     <script src="script.bundle.js"></script>
 </body>
 </html>

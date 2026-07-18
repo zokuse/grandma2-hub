@@ -16,7 +16,7 @@ body {
 #sidebar {
     position: absolute;
     left: 0;
-    top: 0;
+    top: 32px;
     bottom: 0;
     width: 64px;
     background-color: #121212;
@@ -114,7 +114,7 @@ body {
     position: absolute;
     left: 64px;
     right: 0;
-    top: 0;
+    top: 32px;
     bottom: 0;
     background-color: #1e1e1e;
 }
@@ -168,7 +168,7 @@ iframe {
 
 .update-banner {
     position: absolute;
-    top: 0;
+    top: 32px;
     left: 64px; /* aligns with #content, not the sidebar */
     right: 0;
     z-index: 200;
@@ -244,4 +244,77 @@ iframe {
 .update-banner__dismiss:hover {
     color: rgba(255, 255, 255, 0.7);
     background: rgba(255, 255, 255, 0.08);
+}
+
+/* ─── Titlebar ───────────────────────────────────────────────────────── */
+.titlebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 32px;
+    background-color: #111;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    -webkit-app-region: drag;
+    user-select: none;
+}
+
+.titlebar-left {
+    display: flex;
+    align-items: center;
+    padding-left: 12px;
+    gap: 8px;
+}
+
+.titlebar-icon-img {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+}
+
+.titlebar-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: #aaa;
+    letter-spacing: 0.5px;
+}
+
+/* We need a wrapper to hold the buttons that catches pointer events */
+.window-controls {
+    display: flex;
+    -webkit-app-region: no-drag;
+    pointer-events: auto;
+}
+
+.window-controls button {
+    background: transparent;
+    border: none;
+    width: 46px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    cursor: pointer;
+    transition: background-color 0.1s, color 0.1s;
+    padding: 0;
+}
+
+.window-controls button svg {
+    width: 12px;
+    height: 12px;
+}
+
+.window-controls button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.window-controls button.close:hover {
+    background-color: #e81123;
+    color: #fff;
 }

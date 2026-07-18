@@ -7,7 +7,8 @@ let fixtureSpecs = [];
 function getSpecsForType(typeName) {
     let typeUpper = typeName.toUpperCase();
     for (let spec of fixtureSpecs) {
-        if (typeUpper.includes(spec.name.toUpperCase()) && typeUpper.includes(spec.mode.toUpperCase())) {
+        let modeRegex = new RegExp("\\\\b" + spec.mode.toUpperCase() + "\\\\b");
+        if (typeUpper.includes(spec.name.toUpperCase()) && modeRegex.test(typeUpper)) {
             return { watt: spec.watt, weight: spec.weight };
         }
     }
@@ -78,6 +79,7 @@ function initBridge() {
                 pyBridge.get_fixture_specs(function(resStr) {
                     try {
                         fixtureSpecs = JSON.parse(resStr) || [];
+                        if (fixtures.length > 0) recalculateSpecsAndRender();
                     } catch(e) {
                         console.error("Error parsing fixture specs:", e);
                         fixtureSpecs = []; 
@@ -117,21 +119,19 @@ function hideLoadingOverlay() {
 }
 
 // Fungsi untuk memunculkan notifikasi Toast
-function showToast(message, type = 'info') {
-    const container = document.getElementById('toast-container'); 
-    if (!container) return;
-    const toast = document.createElement('div'); toast.className = `toast ${type}`;
-    
-    let icon = '';
-    if (type === 'success') icon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-    else if (type === 'error') icon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
-    else icon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
-    
-    let escapedMessage = String(message).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-    toast.innerHTML = `${icon} <span style="margin-left: 6px;">${escapedMessage}</span>`; 
+function showToast(message, type = 'default', duration = 3000) {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    const colors = { success: '#00e676', error: '#ff5252', info: '#29b6f6', warning: '#ffa726', default: '#e0e0e0' };
+    toast.style.borderLeft = `3px solid ${colors[type] || colors.default}`;
+    toast.textContent = message;
     container.appendChild(toast);
     setTimeout(() => toast.classList.add('visible'), 10);
-    setTimeout(() => { toast.classList.remove('visible'); setTimeout(() => toast.remove(), 400); }, 3000);
+    setTimeout(() => {
+        toast.classList.remove('visible');
+        setTimeout(() => toast.remove(), 400);
+    }, duration);
 }
 
 // Fungsi helper untuk sanitize string ke HTML
@@ -209,21 +209,16 @@ function parsePatchXML(xmlString) {
         const layers = xmlDoc.querySelectorAll('Layer'); 
         
         fixtures = []; 
-        let layerIndexCounter = 1;
 
         // Kumpulkan semua data tanpa memberi nomor Unit terlebih dahulu
         if (layers.length === 0) {
             const fallbackNodes = xmlDoc.querySelectorAll('Fixture');
-            fallbackNodes.forEach(n => processFixtureNode(n, 1, "Default Layer"));
+            fallbackNodes.forEach(n => processFixtureNode(n, "Default Layer"));
         } else {
             layers.forEach(layerNode => {
                 let layerName = layerNode.getAttribute('name') || "Unknown Layer";
-                let layerIndexRaw = layerNode.getAttribute('index');
-                let layerIndex = layerIndexRaw !== null ? (parseInt(layerIndexRaw) + 1) : layerIndexCounter;
-                
                 const nodes = layerNode.querySelectorAll('Fixture'); 
-                nodes.forEach(n => processFixtureNode(n, layerIndex, layerName));
-                layerIndexCounter++;
+                nodes.forEach(n => processFixtureNode(n, layerName));
             });
         }
         
@@ -233,18 +228,13 @@ function parsePatchXML(xmlString) {
 
         // B. Berikan nomor Unit secara berurutan per tipe lampu
         let unitCounters = {};
-        let totalWatt = 0;
-        let totalWeight = 0;
         fixtures.forEach(f => {
             unitCounters[f.type] = (unitCounters[f.type] || 0) + 1;
             f.unit = unitCounters[f.type];
-            totalWatt += (f.watt || 0);
-            totalWeight += (f.weight || 0);
         });
         
         document.getElementById('fixture-count').textContent = `${fixtures.length}`;
-        if (document.getElementById('total-watt')) document.getElementById('total-watt').textContent = `${totalWatt.toLocaleString('en-US')}`;
-        if (document.getElementById('total-weight')) document.getElementById('total-weight').textContent = `${totalWeight.toLocaleString('en-US')}`;
+        recalculateSpecsAndRender();
         
         // C. Terapkan sorting tabel sesuai dengan yang sedang aktif (misal user sedang sort by Patch)
         applyCurrentSort();
@@ -255,8 +245,22 @@ function parsePatchXML(xmlString) {
     }
 }
 
-// 2. UPDATE FUNGSI processFixtureNode (Hapus parameter unitCounters)
-function processFixtureNode(n, layerIndex, layerName) {
+function recalculateSpecsAndRender() {
+    let totalWatt = 0;
+    let totalWeight = 0;
+    fixtures.forEach(f => {
+        let specs = getSpecsForType(f.type);
+        f.watt = specs.watt;
+        f.weight = specs.weight;
+        totalWatt += f.watt;
+        totalWeight += f.weight;
+    });
+    if (document.getElementById('total-watt')) document.getElementById('total-watt').textContent = `${totalWatt.toLocaleString('en-US')}`;
+    if (document.getElementById('total-weight')) document.getElementById('total-weight').textContent = `${totalWeight.toLocaleString('en-US')}`;
+}
+
+// 2. UPDATE FUNGSI processFixtureNode (Hapus parameter layerIndex dan kalkulasi specs)
+function processFixtureNode(n, layerName) {
     let rawFid = parseInt(n.getAttribute('fixture_id') || "0");
     let rawCid = parseInt(n.getAttribute('channel_id') || "0");
     
@@ -281,10 +285,6 @@ function processFixtureNode(n, layerIndex, layerName) {
         if (/^\d+\s+(.*)/.test(type)) type = type.match(/^\d+\s+(.*)/)[1];
     }
     
-    let specs = getSpecsForType(type);
-    let watt = specs.watt;
-    let weight = specs.weight;
-
     let patch = "Unpatched";
     const addressNode = n.querySelector('SubFixture Patch Address');
     if (addressNode) {
@@ -298,7 +298,7 @@ function processFixtureNode(n, layerIndex, layerName) {
     }
 
     // Set nilai unit ke 0 sementara, nanti akan diisi secara otomatis setelah diurutkan
-    fixtures.push({ layerIndex, layerName, unit: 0, displayId, id: sortId, name, type, patch, watt, weight });
+    fixtures.push({ layerName, unit: 0, displayId, id: sortId, name, type, patch, watt: 0, weight: 0 });
 }
 
 // 3. TAMBAHKAN FUNGSI BARU applyCurrentSort (Agar urutan tidak acak saat update)
@@ -562,7 +562,7 @@ async function submitPDFExport(layoutMode) {
                         <div style="display: flex; justify-content: space-between; align-items: flex-end; font-size: 9px; color: #777; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #ddd; padding-bottom: ${mainHeaderPadding}; margin-bottom: ${mainHeaderMargin};">
                             <div style="flex: 1; padding-right: 15px; line-height: 1.4; text-align: left;">
                                 <div style="margin-bottom: 2px;">Fixture Patch List</div>
-                                <strong style="color: #000; font-size: 12px;">${exportFilename}</strong>
+                                <strong style="color: #000; font-size: 12px;">${escXML(exportFilename)}</strong>
                             </div>
                             <div style="display: flex; gap: 25px; text-align: right; white-space: nowrap; line-height: 1.4;">
                                 <div>

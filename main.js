@@ -1,5 +1,10 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+const log = require('electron-log');
+
+// Enable crash logging
+Object.assign(console, log.functions);
+log.errorHandler.startCatching();
 
 // ─── Single Instance Lock ──────────────────────────────────────────────────
 const gotTheLock = app.requestSingleInstanceLock();
@@ -17,6 +22,22 @@ if (!gotTheLock) {
 // ──────────────────────────────────────────────────────────────────────────
 
 let mainWindow = null;
+let splashWindow = null;
+
+function createSplashWindow() {
+    splashWindow = new BrowserWindow({
+        width: 400,
+        height: 300,
+        transparent: true,
+        frame: false,
+        alwaysOnTop: true,
+        icon: path.join(__dirname, 'assets', 'icon.ico')
+    });
+    splashWindow.loadFile(path.join(__dirname, 'assets', 'splash.html'));
+    splashWindow.on('closed', () => {
+        splashWindow = null;
+    });
+}
 
 function createWindow() {
     mainWindow = new BrowserWindow({
@@ -25,6 +46,9 @@ function createWindow() {
         title: 'GrandMA2 Hub',
         backgroundColor: '#1e1e1e',
         icon: path.join(__dirname, 'assets', 'icon.ico'),
+        frame: false,
+        titleBarStyle: 'hidden',
+        show: false,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: false,
@@ -39,8 +63,16 @@ function createWindow() {
     // Load the shell app — works in both dev and packaged (asar) contexts
     mainWindow.loadFile(path.join(__dirname, 'assets', 'shell-app', 'dist', 'index.html'));
 
-    // Uncomment to open Developer Tools automatically
     // mainWindow.webContents.openDevTools();
+
+    mainWindow.once('ready-to-show', () => {
+        setTimeout(() => {
+            if (splashWindow) {
+                splashWindow.close();
+            }
+            mainWindow.show();
+        }, 1200); // 1.2s delay to ensure React iframes fully mount
+    });
 
     mainWindow.on('closed', () => {
         mainWindow = null;
@@ -60,8 +92,26 @@ app.whenReady().then(() => {
             console.error('[AutoUpdater] quitAndInstall failed:', e.message);
         }
     });
+    
+    // ─── Window Controls ──────────────────────────────────────────────────
+    ipcMain.on('window-minimize', (event) => {
+        const win = BrowserWindow.fromWebContents(event.sender);
+        if (win) win.minimize();
+    });
+    ipcMain.on('window-maximize', (event) => {
+        const win = BrowserWindow.fromWebContents(event.sender);
+        if (win) {
+            if (win.isMaximized()) win.restore();
+            else win.maximize();
+        }
+    });
+    ipcMain.on('window-close', (event) => {
+        const win = BrowserWindow.fromWebContents(event.sender);
+        if (win) win.close();
+    });
     // ──────────────────────────────────────────────────────────────────────
 
+    createSplashWindow();
     createWindow();
 
     app.on('activate', function () {

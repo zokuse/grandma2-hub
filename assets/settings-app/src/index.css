@@ -43,7 +43,6 @@ body {
     gap: var(--space-l);
 }
 
-body::before { background-attachment: fixed; background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0); background-size: 20px 20px; content: ""; height: 100%; left: 0; position: fixed; top: 0; width: 100%; z-index: -1; }
 
 .glassy-surface { background-color: var(--surface-color); border: 1px solid var(--surface-border); border-radius: var(--radius-l); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); overflow: hidden; }
 

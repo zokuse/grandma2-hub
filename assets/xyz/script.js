@@ -237,9 +237,10 @@ function tryAutoMatch() {
         // Priority 1: DMX address match (Most reliable physical match)
         if (mf.dmx_address && byDmx[mf.dmx_address]) {
             const candidates = byDmx[mf.dmx_address];
-            let matched = candidates.length === 1 ? candidates[0] : (candidates.find(c => c.fixture_id === id) || candidates[0]);
+            let found = candidates.find(c => c.fixture_id === id);
+            let matched = candidates.length === 1 ? candidates[0] : (found || candidates[0]);
             state.mappings[id]     = matched;
-            state.matchMethod[id]  = 'auto';
+            state.matchMethod[id]  = (candidates.length > 1 && !found) ? 'auto-ambiguous' : 'auto';
             autoCount++;
             return;
         }
@@ -400,6 +401,7 @@ function buildRow(mf, idx) {
     statusCol.style.textAlign = 'center';
     let statusLabel = 'None';
     if (method === 'auto') statusLabel = 'Auto';
+    if (method === 'auto-ambiguous') statusLabel = 'Auto (Ambiguous)';
     if (method === 'manual') statusLabel = 'Manual';
     statusCol.innerHTML = `<span class="status-text">${statusLabel}</span>`;
     row.appendChild(statusCol);
@@ -468,7 +470,7 @@ function updateStats() {
     let auto = 0, manual = 0, none = 0;
     state.ma2Fixtures.forEach(mf => {
         const m = state.matchMethod[mf.fixture_id];
-        if (m === 'auto')   auto++;
+        if (m === 'auto' || m === 'auto-ambiguous') auto++;
         else if (m === 'manual') manual++;
         else none++;
     });
@@ -516,7 +518,7 @@ function triggerSendToMA2() {
     state.ma2Fixtures.forEach(mf => {
         const cf = state.mappings[mf.fixture_id];
         if (!cf) return;
-        let rotZ = cf.rot_z;
+        let rotZ = parseFloat(cf.rot_z) || 0;
         if (state.flipZ[mf.fixture_id]) {
             rotZ += 180;
         }
@@ -591,14 +593,13 @@ function hideLoading() {
 // ============================================================
 // TOAST
 // ============================================================
-function showToast(message, type = 'info', duration = 3200) {
+function showToast(message, type = 'default', duration = 3000) {
     const container = document.getElementById('toast-container');
-    if (!container) return;
-    const icons = { success: '✓', error: '✕', info: 'ℹ', warning: '⚠' };
     const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    let escapedMessage = String(message).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-    toast.innerHTML = `<span>${icons[type] || '●'}</span><span style="margin-left: 6px;">${escapedMessage}</span>`;
+    toast.className = 'toast';
+    const colors = { success: '#00e676', error: '#ff5252', info: '#29b6f6', warning: '#ffa726', default: '#e0e0e0' };
+    toast.style.borderLeft = `3px solid ${colors[type] || colors.default}`;
+    toast.textContent = message;
     container.appendChild(toast);
     setTimeout(() => toast.classList.add('visible'), 10);
     setTimeout(() => {
@@ -624,8 +625,9 @@ function setText(id, val) {
     if (el) el.textContent = val;
 }
 function fmt(n) { return (typeof n === 'number' ? n : parseFloat(n) || 0).toFixed(3); }
+// HTML Escape Helper
 function esc(s) {
-    return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
 }
 
 // ============================================================
