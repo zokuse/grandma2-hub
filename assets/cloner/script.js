@@ -98,19 +98,19 @@ function escXML(str) {
     return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
 }
 
-function showToast(message, type = 'info') {
-    const container = document.getElementById('toast-container'); if (!container) return;
-    const toast = document.createElement('div'); toast.className = `toast ${type}`;
-    let icon = '';
-    if (type === 'success') icon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-    else if (type === 'error') icon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
-    else icon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
-    
-    let escapedMessage = String(message).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-    toast.innerHTML = `${icon} <span style="margin-left: 6px;">${escapedMessage}</span>`; 
+function showToast(message, type = 'default', duration = 3000) {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    const colors = { success: '#00e676', error: '#ff5252', info: '#29b6f6', warning: '#ffa726', default: '#e0e0e0' };
+    toast.style.borderLeft = `3px solid ${colors[type] || colors.default}`;
+    toast.textContent = message;
     container.appendChild(toast);
     setTimeout(() => toast.classList.add('visible'), 10);
-    setTimeout(() => { toast.classList.remove('visible'); setTimeout(() => toast.remove(), 400); }, 3000);
+    setTimeout(() => {
+        toast.classList.remove('visible');
+        setTimeout(() => toast.remove(), 400);
+    }, duration);
 }
 
 function importMA2LayoutNative() {
@@ -613,12 +613,12 @@ function loadMacroToLayout(index) {
 function renderMacroPool() {
     const container = document.getElementById('macro-pool-list'); container.innerHTML = "";
     macroPool.sort((a,b) => parseInt(a.index) - parseInt(b.index)).forEach(m => {
-        let el = document.createElement('div'); el.className = "subscription-item"; 
+        let el = document.createElement('div'); el.className = "list-item"; 
         el.onclick = (e) => {
             if(e.target.tagName.toLowerCase() === 'button') return;
             loadMacroToLayout(m.index);
         };
-        el.innerHTML = `<div class="subscription-info"><div class="subscription-username"><span style="color: var(--accent-color); margin-right: 4px;">[${m.index}]</span> ${m.name}</div><div class="subscription-meta">${m.lines.length} command lines</div></div><button onclick="deleteFromPool('${m.index}', event)" class="btn-delete">✕</button>`; container.appendChild(el);
+        el.innerHTML = `<div class="list-info"><div class="list-title"><span style="color: var(--accent-color); margin-right: 4px;">[${m.index}]</span> ${escXML(m.name)}</div><div class="list-meta">${m.lines.length} command lines</div></div><button onclick="deleteFromPool('${m.index}', event)" class="btn-delete">✕</button>`; container.appendChild(el);
     });
     let panelCount = document.getElementById('pool-count-panel'); if(panelCount) panelCount.textContent = macroPool.length;
 }
@@ -632,7 +632,7 @@ function updateInspectorForm() {
     } else if (activeFixtureIds.length > 1) {
         inspectorTitle.textContent = "Multi-Fixture Inspector"; btnMainAction.textContent = "Clone Setup"; memPanel.style.display = "block"; inpId.disabled = false; inpSrc.disabled = false; inpType.disabled = false; btnMainAction.disabled = false; btnMemPaste.disabled = (copiedMemoryFids.length === 0);
         const allSameId = activeFixtureIds.every(id => fixtures.find(fx=>fx.uid===id)?.fid === fixtures.find(fx=>fx.uid===activeFixtureIds[0])?.fid); const allSameSrc = activeFixtureIds.every(id => fixtures.find(fx=>fx.uid===id)?.srcFid === fixtures.find(fx=>fx.uid===activeFixtureIds[0])?.srcFid); const allSameType = activeFixtureIds.every(id => fixtures.find(fx=>fx.uid===id)?.type === fixtures.find(fx=>fx.uid===activeFixtureIds[0])?.type);
-        inpId.value = allSameId ? fixtures.find(fx=>fx.uid===activeFixtureIds[0])?.fid : ''; inpSrc.value = allSameSrc ? fixtures.find(fx=>fx.uid===activeFixtureIds[0])?.srcFid : ''; inpType.value = (allSameType && fixtures.find(fx=>fx.uid===activeFixtureIds[0])?.type.trim() !== "") ? fixtures.find(fx=>fx.uid===activeFixtureIds[0])?.type : ''; inpId.placeholder = allSameId ? '' : 'Mixed values'; inpSrc.placeholder = allSameSrc ? '' : 'Mixed values'; inpType.placeholder = allSameType ? 'Fixture Type' : 'Mixed types';
+        inpId.value = allSameId ? fixtures.find(fx=>fx.uid===activeFixtureIds[0])?.fid : ''; inpSrc.value = allSameSrc ? fixtures.find(fx=>fx.uid===activeFixtureIds[0])?.srcFid : ''; inpType.value = (allSameType && (fixtures.find(fx=>fx.uid===activeFixtureIds[0])?.type || '').trim() !== "") ? fixtures.find(fx=>fx.uid===activeFixtureIds[0])?.type : ''; inpId.placeholder = allSameId ? '' : 'Mixed values'; inpSrc.placeholder = allSameSrc ? '' : 'Mixed values'; inpType.placeholder = allSameType ? 'Fixture Type' : 'Mixed types';
     } else {
         inspectorTitle.textContent = "Draft New Fixture"; btnMainAction.textContent = "Add to Layout"; memPanel.style.display = "none"; inpId.disabled = false; inpSrc.disabled = false; inpType.disabled = false; btnMainAction.disabled = false; 
         if (document.activeElement !== inpId && document.activeElement !== inpSrc && document.activeElement !== inpType) { inpId.value = nextFid; inpSrc.value = ""; inpType.value = ""; }
@@ -642,7 +642,7 @@ function updateInspectorForm() {
 
 function selectFixtures(idsArray) {
     activeFixtureIds = idsArray; updateInspectorForm();
-    document.querySelectorAll('#fixture-list .subscription-item').forEach(el => { if(activeFixtureIds.includes(el.dataset.uid)) el.classList.add('active'); else el.classList.remove('active'); });
+    document.querySelectorAll('#fixture-list .list-item').forEach(el => { if(activeFixtureIds.includes(el.dataset.uid)) el.classList.add('active'); else el.classList.remove('active'); });
     document.querySelectorAll('.draggable-fixture').forEach(el => {
         const uid = el.dataset.uid; const isActive = activeFixtureIds.includes(uid);
         if (isActive) { el.classList.add('active'); el.style.zIndex = "50"; let badge = el.querySelector('.selection-order-badge'); if (activeFixtureIds.length > 1) { if (!badge) { badge = document.createElement('div'); badge.className = 'selection-order-badge'; el.insertBefore(badge, el.firstChild); } badge.textContent = activeFixtureIds.indexOf(uid) + 1; badge.style.display = 'flex'; } else if (badge) { badge.style.display = 'none'; } } else { el.classList.remove('active'); el.style.zIndex = "1"; let badge = el.querySelector('.selection-order-badge'); if (badge) badge.style.display = 'none'; }
@@ -668,7 +668,7 @@ function selectFixtures(idsArray) {
                 if(fEl) { fEl.textContent = f.type; fEl.style.display = (f.type.trim() !== "") ? 'block' : 'none'; } 
             }
         }); 
-        document.querySelectorAll('#fixture-list .subscription-item.active').forEach(el => { const uid = el.dataset.uid; const f = fixtures.find(fx => fx.uid === uid); if(f) { let typeBadgeHtml = (f.type && f.type.trim() !== "") ? `<span class="type-badge">${f.type}</span>` : ""; el.querySelector('.subscription-username').innerHTML = `Fixture ${f.fid || '?'} ${typeBadgeHtml}`; el.querySelector('.subscription-meta').textContent = f.srcFid ? `<- copy from ${f.srcFid}` : 'No source mapped'; el.style.borderLeftColor = f.srcFid ? "var(--success-color)" : "transparent"; } });
+        document.querySelectorAll('#fixture-list .list-item.active').forEach(el => { const uid = el.dataset.uid; const f = fixtures.find(fx => fx.uid === uid); if(f) { let safeType = escXML(f.type || ''); let typeBadgeHtml = (safeType.trim() !== "") ? `<span class="type-badge">${safeType}</span>` : ""; el.querySelector('.list-title').innerHTML = `Fixture ${escXML(f.fid) || '?'} ${typeBadgeHtml}`; el.querySelector('.list-meta').textContent = f.srcFid ? `<- copy from ${f.srcFid}` : 'No source mapped'; el.style.borderLeftColor = f.srcFid ? "var(--success-color)" : "transparent"; } });
     });
 });
 
@@ -683,20 +683,20 @@ function render() {
     let sortedFixtures = [...fixtures].sort((a, b) => parseInt(a.fid) - parseInt(b.fid));
     sortedFixtures.forEach((f) => {
         const isActive = activeFixtureIds.includes(f.uid);
-        const listItem = document.createElement('div'); listItem.className = `subscription-item ${isActive ? 'active' : ''}`; listItem.dataset.uid = f.uid; listItem.style.borderLeftColor = f.srcFid ? "var(--success-color)" : "transparent";
+        const listItem = document.createElement('div'); listItem.className = `list-item ${isActive ? 'active' : ''}`; listItem.dataset.uid = f.uid; listItem.style.borderLeftColor = f.srcFid ? "var(--success-color)" : "transparent";
         listItem.onclick = (e) => { const currentlyActive = activeFixtureIds.includes(f.uid); if (e.shiftKey) { if (currentlyActive) selectFixtures(activeFixtureIds.filter(id => id !== f.uid)); else selectFixtures([...activeFixtureIds, f.uid]); } else { selectFixtures([f.uid]); } }; 
-        let typeBadgeHtml = (f.type && f.type.trim() !== "") ? `<span class="type-badge">${f.type}</span>` : "";
-        listItem.innerHTML = `<div class="subscription-info"><div class="subscription-username">Fixture ${f.fid || '?'} ${typeBadgeHtml}</div><div class="subscription-meta">${f.srcFid ? `<- copy from ${f.srcFid}` : 'No source mapped'}</div></div><button onclick="deleteFixture('${f.uid}', event)" class="btn-delete" title="Delete">✕</button>`;
+        let safeType = escXML(f.type || ''); let typeBadgeHtml = (safeType.trim() !== "") ? `<span class="type-badge">${safeType}</span>` : "";
+        listItem.innerHTML = `<div class="list-info"><div class="list-title">Fixture ${escXML(f.fid) || '?'} ${typeBadgeHtml}</div><div class="list-meta">${f.srcFid ? `<- copy from ${f.srcFid}` : 'No source mapped'}</div></div><button onclick="deleteFixture('${f.uid}', event)" class="btn-delete" title="Delete">✕</button>`;
         fixtureList.appendChild(listItem);
 
         const el = document.createElement('div'); el.className = `draggable-fixture ${isActive ? 'active' : ''}`; el.dataset.uid = f.uid; el.style.left = `${f.x}px`; el.style.top = `${f.y}px`;
         const colors = getFixtureColor(f.fid); el.style.borderTop = `4px solid ${colors.border}`; el.style.backgroundColor = colors.bg; if(isActive) el.style.zIndex = "50";
         let badgeHtml = ""; if (isActive && activeFixtureIds.length > 1) { let orderIndex = activeFixtureIds.indexOf(f.uid) + 1; badgeHtml = `<div class="selection-order-badge" style="display:flex;">${orderIndex}</div>`; }
         
-        let canvasTypeHtml = (f.type && f.type.trim() !== "") ? `<div class="fix-type-label">${f.type}</div>` : ""; 
+        let safeTypeCanvas = escXML(f.type || ''); let canvasTypeHtml = (safeTypeCanvas.trim() !== "") ? `<div class="fix-type-label">${safeTypeCanvas}</div>` : ""; 
         let srcDisplay = f.srcFid ? 'block' : 'none';
         
-        el.innerHTML = `${badgeHtml}${canvasTypeHtml}<div class="fix-id-label">${f.fid || '?'}</div><div class="fix-src-label" style="display: ${srcDisplay};">At ${f.srcFid}</div>`;
+        el.innerHTML = `${badgeHtml}${canvasTypeHtml}<div class="fix-id-label">${escXML(f.fid) || '?'}</div><div class="fix-src-label" style="display: ${srcDisplay};">At ${f.srcFid}</div>`;
 
         el.addEventListener('pointerdown', (e) => {
             toggleFixturesPanel('close'); togglePoolPanel('close'); if (e.button !== 0 || e.altKey) return; e.stopPropagation(); el.setPointerCapture(e.pointerId);

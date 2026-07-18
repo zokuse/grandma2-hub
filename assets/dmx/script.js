@@ -5,6 +5,10 @@ const MAX_CHANNELS = 512;
 let dmxDictionary = {};
 let uniqueFixtureTypes = {};
 
+function escXML(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     initUniverseSelector();
     
@@ -131,21 +135,19 @@ function hideLoadingOverlay() {
     if (overlay) overlay.classList.remove('active');
 }
 
-function showToast(message, type = 'info') {
-    const container = document.getElementById('toast-container'); 
-    if (!container) return;
-    const toast = document.createElement('div'); toast.className = `toast ${type}`;
-    
-    let icon = '';
-    if (type === 'success') icon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-    else if (type === 'error') icon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
-    else icon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
-    
-    let escapedMessage = String(message).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-    toast.innerHTML = `${icon} <span style="margin-left: 6px;">${escapedMessage}</span>`; 
+function showToast(message, type = 'default', duration = 3000) {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    const colors = { success: '#00e676', error: '#ff5252', info: '#29b6f6', warning: '#ffa726', default: '#e0e0e0' };
+    toast.style.borderLeft = `3px solid ${colors[type] || colors.default}`;
+    toast.textContent = message;
     container.appendChild(toast);
     setTimeout(() => toast.classList.add('visible'), 10);
-    setTimeout(() => { toast.classList.remove('visible'); setTimeout(() => toast.remove(), 400); }, 3000);
+    setTimeout(() => {
+        toast.classList.remove('visible');
+        setTimeout(() => toast.remove(), 400);
+    }, duration);
 }
 
 function clearPatchList() {
@@ -309,7 +311,11 @@ function parsePatchXML(xmlString) {
         for (let i = 0; i < tempFixtures.length; i++) {
             let f = tempFixtures[i];
             
-            // 4-Tier Smart Footprint Logic
+            // 4-Tier Smart Footprint Logic:
+            // Tier 1 (Manual Override): User-saved override in dmxDictionary takes highest priority.
+            // Tier 2 (Regex): Extract footprint explicitly stated in fixture type names (e.g. "16ch" -> 16).
+            // Tier 3 (Gap/Tags Unified Estimation): Infers footprint from the smallest DMX gap between consecutive fixtures of the same type, reconciled against the max XML <Channel> tag count.
+            // Tier 4 (Dimmer Special Case): Hardcoded 1-channel footprint for standard "dimmer 00" types.
             if (dmxDictionary[f.type]) {
                 // Tier 1: Manual Dictionary Override
                 f.footprint = parseInt(dmxDictionary[f.type]);
@@ -448,7 +454,7 @@ function renderGrid() {
         if (block.fixture) {
             colorHex = getFixtureColorHex(block.fixture);
             blockEl.style.backgroundColor = colorHex + '15'; // 15% opacity
-            headerHtml = `<div class="fixture-header" style="background-color: ${colorHex}40;">${block.fixture.name}</div>`;
+            headerHtml = `<div class="fixture-header" style="background-color: ${colorHex}40;">${escXML(block.fixture.name)}</div>`;
         }
 
         let channelsHtml = `<div class="channels-container">
@@ -466,18 +472,18 @@ function renderGrid() {
             blockEl.addEventListener('mouseenter', () => {
                 let f = block.fixture;
                 tooltip.innerHTML = `
-                    <div class="tooltip-title">${f.id} : ${f.name}</div>
+                    <div class="tooltip-title">${escXML(f.id)} : ${escXML(f.name)}</div>
                     <div class="tooltip-row">
                         <span class="tooltip-label">Type:</span>
-                        <span class="tooltip-value">${f.type}</span>
+                        <span class="tooltip-value">${escXML(f.type)}</span>
                     </div>
                     <div class="tooltip-row">
                         <span class="tooltip-label">Mode:</span>
-                        <span class="tooltip-value">${f.mode}</span>
+                        <span class="tooltip-value">${escXML(f.mode)}</span>
                     </div>
                     <div class="tooltip-row">
                         <span class="tooltip-label">Address:</span>
-                        <span class="tooltip-value">${f.universe}.${String(f.address).padStart(3, '0')}</span>
+                        <span class="tooltip-value">${escXML(f.universe)}.${String(f.address).padStart(3, '0')}</span>
                     </div>
                 `;
                 tooltip.classList.add('visible');
@@ -521,9 +527,9 @@ function renderGrid() {
             el.innerHTML = `
                 <div class="legend-item-left">
                     <div class="color-swatch" style="background-color: ${t.color}"></div>
-                    <div class="legend-name" title="Layer: ${t.layer}">${t.layer}</div>
+                    <div class="legend-name" title="Layer: ${escXML(t.layer)}">${escXML(t.layer)}</div>
                 </div>
-                <button class="btn-icon" onclick="openLayerEditor(decodeURIComponent('${safeLayer}'))">
+                <button class="dmx-btn-icon" onclick="openLayerEditor(decodeURIComponent('${safeLayer}'))">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="3"></circle>
                         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -621,8 +627,8 @@ function openLayerEditor(layerName) {
             let row = document.createElement('div');
             row.className = 'layer-editor-row';
             
-            // Safe type string for data attribute
-            let safeType = type.replace(/"/g, '&quot;');
+            // Safe type string for data attribute and label
+            let safeType = escXML(type);
             
             row.innerHTML = `
                 <div class="layer-editor-label" title="${safeType}">${safeType}</div>

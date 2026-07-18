@@ -1,7 +1,7 @@
 {
   "name": "grandma2-hub",
   "productName": "GrandMA2 Hub",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A smart utility and bridge application for managing the MA Lighting GrandMA2 console.",
   "main": "main.js",
   "author": "zokuse",
@@ -17,6 +17,7 @@
     "electron-builder": "^26.0.0"
   },
   "dependencies": {
+    "electron-log": "^5.4.4",
     "electron-updater": "^6.3.0",
     "fast-xml-parser": "^5.10.0",
     "pdf-lib": "^1.17.1"
@@ -54,8 +55,8 @@
       "icon": "assets/icon.ico"
     },
     "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
+      "oneClick": true,
+      "allowToChangeInstallationDirectory": false,
       "deleteAppDataOnUninstall": false,
       "installerIcon": "assets/icon.ico",
       "uninstallerIcon": "assets/icon.ico",

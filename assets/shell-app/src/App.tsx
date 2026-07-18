@@ -63,6 +63,24 @@ function App() {
 
   return (
     <>
+      <div className="titlebar">
+        <div className="titlebar-left">
+          <img src="../../icon.ico" className="titlebar-icon-img" alt="App Icon" />
+          <span className="titlebar-title">GrandMA2 Hub</span>
+        </div>
+        <div className="window-controls">
+          <button onClick={() => (window as any).electronWindow?.minimize()} title="Minimize">
+            <svg viewBox="0 0 10 1"><rect width="10" height="1" fill="currentColor"/></svg>
+          </button>
+          <button onClick={() => (window as any).electronWindow?.maximize()} title="Maximize">
+            <svg viewBox="0 0 10 10"><rect width="10" height="10" fill="none" stroke="currentColor" strokeWidth="1"/></svg>
+          </button>
+          <button className="close" onClick={() => (window as any).electronWindow?.close()} title="Close">
+            <svg viewBox="0 0 10 10"><path d="M 0,0 L 10,10 M 10,0 L 0,10" stroke="currentColor" strokeWidth="1.2"/></svg>
+          </button>
+        </div>
+      </div>
+      
       <div 
         id="sidebar" 
         ref={sidebarRef}

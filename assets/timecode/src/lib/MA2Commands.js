@@ -10,7 +10,7 @@ export function buildFollowUpCommands(sequenceIndex, options = {}) {
     const commands = [];
 
     function sanitizeQuotes(str) {
-        return String(str).replace(/"/g, '');
+        return String(str).replace(/["\r\n;]/g, ' ').trim();
     }
 
     if (parsedData) {

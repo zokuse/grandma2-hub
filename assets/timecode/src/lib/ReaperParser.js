@@ -16,6 +16,7 @@ export function parseReaperProject(fileContent) {
   let inSourceBlock = false;
   let blockDepth = 0;
   let trackDepth = -1;
+  let itemDepth = -1;
   let isTrackMuted = false;
   let isItemMuted = false;
 
@@ -114,6 +115,7 @@ export function parseReaperProject(fileContent) {
 
     if (currentTrack && trimmedLine === '<ITEM') {
       inItem = true;
+      itemDepth = blockDepth;
       currentItem = { time: 0, name: '' };
       isItemMuted = false;
     }
@@ -128,11 +130,12 @@ export function parseReaperProject(fileContent) {
       }
     }
 
-    if (inItem && trimmedLine === '>') {
+    if (inItem && trimmedLine === '>' && blockDepth < itemDepth) {
       if (currentItem && currentItem.name) {
         currentTrack.items.push(currentItem);
       }
       inItem = false;
+      itemDepth = -1;
       currentItem = null;
     }
   }

@@ -16,6 +16,7 @@ export function parseOffset(offsetStr, fps = 30) {
 }
 
 export function formatTimecodeString(seconds, fps) {
+  seconds = Math.max(0, seconds);
   const pad = (n, len) => String(n).padStart(len, '0');
   const f = Math.floor((seconds % 1) * fps);
   const s = Math.floor(seconds) % 60;

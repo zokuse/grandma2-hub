@@ -24,7 +24,7 @@
             <button class="btn-header btn-header-ghost" onclick="clearPatchList()" title="Clear List and start a new session">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 1 0 2.6-6.4L2 9"/></svg> New Session
             </button>
-            <div style="width: 1px; height: 24px; background: var(--surface-border); margin: 0 4px;"></div>
+            <div class="header-divider"></div>
             
             <button class="btn-header btn-header-pull" onclick="pullFromGrandMA2()" title="Pull directly from GrandMA2 via Telnet">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="16" width="6" height="6" rx="1"></rect><rect x="2" y="16" width="6" height="6" rx="1"></rect><rect x="9" y="2" width="6" height="6" rx="1"></rect><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"></path><path d="M12 12V8"></path></svg> Pull from MA2
@@ -33,7 +33,7 @@
             <button class="btn-header btn-header-ghost" onclick="importPatchXMLNative()" title="Select Patch XML File">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg> Import XML
             </button>
-            <div style="width: 1px; height: 24px; background: var(--surface-border); margin: 0 4px;"></div>
+            <div class="header-divider"></div>
 
 
 
@@ -65,9 +65,9 @@
             <table id="patch-table">
                 <thead>
                     <tr>
-                        <th onclick="sortBy('unit')">Unit <span class="sort-icon" id="sort-unit">&#9650;</span></th>
-                        <th onclick="sortBy('id')">Fixture ID <span class="sort-icon" id="sort-id">&#9650;</span></th>
-                        <th onclick="sortBy('name')">Name <span class="sort-icon" id="sort-name">&#9650;</span></th>
+                        <th onclick="sortBy('unit')">Unit <span class="sort-icon" id="sort-unit">↓</span></th>
+                        <th onclick="sortBy('id')">Fixture ID <span class="sort-icon" id="sort-id">↓</span></th>
+                        <th onclick="sortBy('name')">Name <span class="sort-icon" id="sort-name">↓</span></th>
                         <th onclick="sortBy('type')">Type <span class="sort-icon" id="sort-type">↕</span></th>
                         <th onclick="sortBy('patch')">Patch <span class="sort-icon" id="sort-patch">↕</span></th>
                     </tr>
@@ -156,14 +156,12 @@
             </div>
         </div>
     </div>
-            </div>
-        </div>
-    </div>
 
 
 
 
     <div id="toast-container"></div>
+    <div class="copyright-text">© GrandMA2 Hub</div>
     <script src="script.js"></script>
 </body>
 </html>

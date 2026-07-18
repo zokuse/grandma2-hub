@@ -10,7 +10,7 @@ window.switchView = switchView;
 window.filterTextures = filterTextures;
 window.closeLightbox = closeLightbox;
 
-let backend = null;
+let pyBridge = null;
 let currentFilePath = null;
 let currentView = '2d';
 
@@ -27,21 +27,21 @@ function initBridge() {
   if (typeof qt !== 'undefined' && qt.webChannelTransport) {
       new QWebChannel(qt.webChannelTransport, function (channel) {
           window.pyBridge = channel.objects.backend;
-          backend = window.pyBridge;
+          pyBridge = window.pyBridge;
           
-          backend.progress_update.connect(function(msg) {
+          pyBridge.progress_update.connect(function(msg) {
               log(msg);
           });
           
-          backend.analyze_complete.connect(function(response) {
+          pyBridge.analyze_complete.connect(function(response) {
               handleAnalyzeResponse(response);
           });
           
-          backend.unpack_complete.connect(function(response) {
+          pyBridge.unpack_complete.connect(function(response) {
               handleUnpackResponse(response);
           });
           
-          backend.file_selected.connect(function(response) {
+          pyBridge.file_selected.connect(function(response) {
               try {
                   const res = JSON.parse(response);
                   if (res.success) {
@@ -128,8 +128,14 @@ document.addEventListener('drop', (e) => {
     elDragOverlay.classList.remove('active');
     if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
         const file = e.dataTransfer.files[0];
-        if (file.path && (file.path.toLowerCase().endsWith('.glb') || file.path.toLowerCase().endsWith('.gltf'))) {
+        if (!file.path) {
+            showToast('Drag & Drop native path blocked by browser security. Please use the Select File button instead.', 'error');
+            return;
+        }
+        if (file.path.toLowerCase().endsWith('.glb') || file.path.toLowerCase().endsWith('.gltf')) {
             handleDroppedFile(file.path);
+        } else {
+            showToast('Please drop a .glb or .gltf file', 'error');
         }
     }
 });
@@ -154,22 +160,21 @@ function filterTextures() {
 
 function log(msg) {
     elLogOutput.textContent += `\n[${new Date().toLocaleTimeString()}] ${msg}`;
+    if (elLogOutput.textContent.length > 5000) {
+        elLogOutput.textContent = elLogOutput.textContent.slice(-5000);
+    }
     elLogOutput.scrollTop = elLogOutput.scrollHeight;
 }
 
-function showToast(message, type = 'info', duration = 3200) {
-    if (!elToastContainer) return;
-    
-    if (type === true) type = 'error';
-    else if (message.toLowerCase().includes('success')) type = 'success';
-    else if (type === false) type = 'info';
-
-    const icons = { success: '✓', error: '✕', info: 'ℹ', warning: '⚠' };
+function showToast(message, type = 'default', duration = 3000) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
     const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    let escapedMessage = esc(message);
-    toast.innerHTML = `<span>${icons[type] || '●'}</span><span style="margin-left: 6px;">${escapedMessage}</span>`;
-    elToastContainer.appendChild(toast);
+    toast.className = 'toast';
+    const colors = { success: '#00e676', error: '#ff5252', info: '#29b6f6', warning: '#ffa726', default: '#e0e0e0' };
+    toast.style.borderLeft = `3px solid ${colors[type] || colors.default}`;
+    toast.textContent = message;
+    container.appendChild(toast);
     setTimeout(() => toast.classList.add('visible'), 10);
     setTimeout(() => {
         toast.classList.remove('visible');
@@ -191,7 +196,6 @@ function switchView(view) {
         
         if (view === '3d' && renderer) {
             resize3D();
-            if (window._animationFrameId) cancelAnimationFrame(window._animationFrameId);
             animate3D(); // restart loop
         }
     } else {
@@ -202,14 +206,14 @@ function switchView(view) {
 }
 
 async function selectFile() {
-    if (!backend) return;
+    if (!pyBridge) return;
     
     log("Opening file dialog...");
-    backend.select_file();
+    pyBridge.select_file();
 }
 
 function handleDroppedFile(path) {
-    if (!backend) return;
+    if (!pyBridge) return;
     log(`File dropped: ${path}`);
     
     currentFilePath = path;
@@ -225,7 +229,7 @@ function handleDroppedFile(path) {
 
 function loadTextures(path) {
     log("Requesting texture analysis (running in background thread)...");
-    backend.analyze_glb(path);
+    pyBridge.analyze_glb(path);
 }
 
 function handleAnalyzeResponse(response) {
@@ -294,27 +298,27 @@ function handleAnalyzeResponse(response) {
         
         // Ensure UI is showing the selected view
         switchView(currentView);
-        showToast("File loaded successfully");
+        showToast("File loaded successfully", 'success');
     } else {
-        log(`Error analyzing model: ${res.error}`);
-        showToast("Failed to load model", true);
+        log("Error: " + res.error);
+        showToast("Failed to load model", 'error');
     }
     } catch(e) { log("Error parsing analyze response."); }
 }
 
 function unpackGLB() {
-    if (!backend || !currentFilePath) return;
+    if (!pyBridge || !currentFilePath) return;
     
     elBtnUnpack.disabled = true;
     log("Starting unpack process (running in background thread)...");
     
-    backend.unpack_glb(currentFilePath);
+    pyBridge.unpack_glb(currentFilePath);
     
     if (window._unpackTimeout) clearTimeout(window._unpackTimeout);
     window._unpackTimeout = setTimeout(() => {
         if (elBtnUnpack.disabled) {
             elBtnUnpack.disabled = false;
-            showToast("Unpack operation timed out", true);
+            showToast("Unpack operation timed out", 'error');
             log("Error: Unpack operation timed out after 60 seconds.");
         }
     }, 60000);
@@ -325,20 +329,20 @@ function handleUnpackResponse(response) {
     try {
         const res = JSON.parse(response);
         if (res.success) {
-            showToast("Unpack completed successfully!");
+            showToast("Unpack completed successfully!", 'success');
             log(res.message);
         } else {
-            showToast("Failed to unpack model", true);
-            log(`Unpack Error: ${res.error}`);
+            log("Error: " + res.error);
+            showToast("Failed to unpack model", 'error');
         }
     } catch(e) { log("Error parsing unpack response."); }
     elBtnUnpack.disabled = false;
 }
 
 function downloadTexture(index, name, dataUrl) {
-    if (!backend || !currentFilePath) return;
-    showToast(`Saving ${name}...`);
-    backend.save_single_texture(currentFilePath, index, dataUrl, name);
+    if (!pyBridge || !currentFilePath) return;
+    showToast(`Saving ${name}...`, 'info');
+    pyBridge.save_single_texture(currentFilePath, index, dataUrl, name);
 }
 
 // --- 3D Viewer Logic ---
@@ -457,7 +461,6 @@ function resize3D() {
 
 function animate3D() {
     if (currentView !== '3d') return; // Stop loop when inactive
-    if (window._animationFrameId) cancelAnimationFrame(window._animationFrameId);
     window._animationFrameId = requestAnimationFrame(animate3D);
     if (currentView === '3d') {
         // Handle smooth reset lerping for Pan and Zoom only (leave rotation untouched)
@@ -560,7 +563,7 @@ function load3DModel(url) {
         function (error) {
             console.error(error);
             elLoadingBarContainer.style.display = 'none';
-            showToast("Error loading 3D model", true);
+            showToast("Error loading 3D model", 'error');
         }
     );
 }

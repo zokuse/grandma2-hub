@@ -123,7 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById(id).addEventListener('input', generateXMLFromState);
         document.getElementById(id).addEventListener('change', generateXMLFromState);
     });
-    document.getElementById('enable-assign').addEventListener('change', generateXMLFromState);
 });
 
 // ============================================================
