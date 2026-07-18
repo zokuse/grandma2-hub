@@ -175,7 +175,7 @@ body {
     padding: 0;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Prevent vertical clipping on small screens */
+    align-items: center; /* Center vertically on desktop */
     min-height: 100vh;
     width: 100%;
     overflow-x: hidden;
@@ -185,8 +185,8 @@ body {
 .workspace-container {
     width: 100%;
     max-width: 1000px;
-    margin: 0 auto; /* Moves it up even higher */
-    padding: 10px 40px 20px 40px;
+    margin: auto; /* Auto margin safely centers in flex container */
+    padding: 20px 40px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
