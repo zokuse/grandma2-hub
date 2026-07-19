@@ -12,20 +12,20 @@ function initBridge() {
             window.pyBridge = channel.objects.backend;
             pyBridge = window.pyBridge;
             if (pyBridge.progress_update) {
-                pyBridge.progress_update.connect(updateLoadingOverlay);
+                pyBridge.progress_update.connect(showLoading);
             }
             if (pyBridge.layout_pulled) {
                 pyBridge.layout_pulled.connect(function(resStr) {
-                    hideLoadingOverlay();
+                    hideLoading();
                     try {
                         let response = JSON.parse(resStr);
-                        if (!response.success) { if (response.error !== "Cancelled") showToast("Error: " + response.error, "error"); return; }
+                        if (!response.success) { if (response.error !== "Cancelled") showToast(response.error, "error"); return; }
                         if (response.showName) {
                             let fnInput = document.getElementById('export-filename');
                             if (fnInput) fnInput.value = response.showName;
                         }
                         if (parseLayoutXML(response.data)) {
-                              updateLoadingOverlay("Connecting to MA2 for Patch...");
+                              showLoading("Connecting to MA2...");
                               pyBridge.pull_patch(window._tempLoginStr);
                         }
                     } catch(e) { showToast("Error parsing layout response", "error"); }
@@ -33,14 +33,14 @@ function initBridge() {
             }
             if (pyBridge.patch_pulled) {
                 pyBridge.patch_pulled.connect(function(resStr) {
-                    hideLoadingOverlay();
+                    hideLoading();
                     try {
                         let patchResponse = JSON.parse(resStr);
                         if (patchResponse.success) {
                             let matches = parsePatchXML(patchResponse.data);
                             showToast(`Layout pulled and ${matches} fixtures labeled!`, "success");
                         } else {
-                            if (patchResponse.error !== "Cancelled") showToast("Patch Error: " + patchResponse.error, "error");
+                            if (patchResponse.error !== "Cancelled") showToast(patchResponse.error, "error");
                         }
                         finishImport();
                     } catch(e) { showToast("Error parsing patch response", "error"); finishImport(); }
@@ -48,7 +48,7 @@ function initBridge() {
             }
             if (pyBridge.macros_sent) {
                 pyBridge.macros_sent.connect(function(resStr) {
-                    hideLoadingOverlay();
+                    hideLoading();
                     try {
                         let response = JSON.parse(resStr);
                         if(response.success) showToast(response.message, "success");
@@ -100,6 +100,7 @@ function escXML(str) {
 
 function showToast(message, type = 'default', duration = 3000) {
     const container = document.getElementById('toast-container');
+    if (!container) return;
     const toast = document.createElement('div');
     toast.className = 'toast';
     const colors = { success: '#00e67660', error: '#ff525260', info: '#29b6f660', warning: '#ffa72660', default: 'rgba(255, 255, 255, 0.1)' };
@@ -112,12 +113,11 @@ function showToast(message, type = 'default', duration = 3000) {
         setTimeout(() => toast.remove(), 400);
     }, duration);
 }
-
 function importMA2LayoutNative() {
     if(!pyBridge) return showToast("Bridge not ready", "error");
     pyBridge.import_layout(function(resStr) {
         let response = JSON.parse(resStr);
-        if (!response.success) { if (response.error !== "Cancelled") showToast("Error: " + response.error, "error"); return; }
+        if (!response.success) { if (response.error !== "Cancelled") showToast(response.error, "error"); return; }
         if (response.showName) {
             let fnInput = document.getElementById('export-filename');
             if (fnInput) fnInput.value = response.showName;
@@ -130,7 +130,7 @@ function importPatchXMLNative() {
     if(!pyBridge) return showToast("Bridge not ready", "error");
     pyBridge.import_patch(function(resStr) {
         let response = JSON.parse(resStr);
-        if (!response.success) { if (response.error !== "Cancelled") showToast("Error: " + response.error, "error"); return; }
+        if (!response.success) { if (response.error !== "Cancelled") showToast(response.error, "error"); return; }
         if (response.showName) {
             let fnInput = document.getElementById('export-filename');
             if (fnInput && (fnInput.value === "MA2_CLONE_MACROS" || fnInput.value.trim() === "")) {
@@ -159,7 +159,7 @@ function submitLayoutPull() {
                     if (creds.ip && creds.ip.trim() !== '') {
                         window._tempLoginStr = credsStr;
                         let layoutId = document.getElementById('layout-target-id').value || "1";
-                        updateLoadingOverlay("Connecting to MA2...");
+                        showLoading("Connecting to MA2...");
                         pyBridge.pull_layout(credsStr, layoutId);
                         return;
                     }
@@ -184,14 +184,14 @@ function submitLogin() {
     
     if (window._pendingAction === 'layout') {
         let layoutId = document.getElementById('layout-target-id').value || "1";
-        updateLoadingOverlay("Connecting to MA2...");
+        showLoading("Connecting to MA2...");
         pyBridge.pull_layout(loginStr, layoutId);
     } else if (window._pendingAction === 'macro') {
         let baseId = document.getElementById('macro-target-id').value;
         if (baseId && isNaN(parseInt(baseId))) {
             return showToast("Please enter a valid numeric ID", "error");
         }
-        updateLoadingOverlay("Connecting to MA2...");
+        showLoading("Connecting to MA2...");
         pyBridge.send_to_console(JSON.stringify(macroPool), loginStr, baseId);
     }
 }
@@ -281,7 +281,7 @@ function submitMacroSend() {
                         if (baseId && isNaN(parseInt(baseId))) {
                             return showToast("Please enter a valid numeric ID", "error");
                         }
-                        updateLoadingOverlay("Connecting to MA2...");
+                        showLoading("Connecting to MA2...");
                         pyBridge.send_to_console(JSON.stringify(macroPool), credsStr, baseId);
                         return;
                     }
@@ -729,15 +729,13 @@ function render() {
 }
 
 // --- MODALS & LOADING ---
-function openModal(id) { document.getElementById(id).classList.add('active'); }
-function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-function updateLoadingOverlay(msg) {
+function showLoading(msg) {
     const overlay = document.getElementById('loading-overlay');
     const textEl = document.getElementById('loading-text');
-    if (textEl) textEl.textContent = msg;
+    if (textEl) textEl.textContent = msg || 'Working...';
     if (overlay) overlay.classList.add('active');
 }
-function hideLoadingOverlay() { 
+function hideLoading() { 
     const overlay = document.getElementById('loading-overlay');
     if (overlay) overlay.classList.remove('active'); 
 }

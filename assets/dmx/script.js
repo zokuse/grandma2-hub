@@ -19,18 +19,18 @@ function initBridge() {
             window.pyBridge = channel.objects.backend;
             pyBridge = window.pyBridge;
             if (pyBridge.progress_update) {
-                pyBridge.progress_update.connect(updateLoadingOverlay);
+                pyBridge.progress_update.connect(showLoading);
             }
             if (pyBridge.patch_pulled) {
                 pyBridge.patch_pulled.connect(function(patchResStr) {
-                    hideLoadingOverlay();
+                    hideLoading();
                     try {
                         let response = JSON.parse(patchResStr);
                         if (response.success) {
                             parsePatchXML(response.data);
                             showToast(`Patch pulled successfully!`, "success");
                         } else {
-                            if (response.error !== "Cancelled") showToast("Patch Error: " + response.error, "error");
+                            if (response.error !== "Cancelled") showToast(response.error, "error");
                         }
                     } catch (e) {
                         showToast("Error parsing patch response", "error");
@@ -122,21 +122,20 @@ function closeModal(id) {
     const modal = document.getElementById(id);
     if (modal) modal.classList.remove('active');
 }
-function updateLoadingOverlay(msg) {
+function showLoading(msg) {
     const overlay = document.getElementById('loading-overlay');
-    const text = document.getElementById('loading-text');
-    if (overlay && text) {
-        text.textContent = msg;
-        overlay.classList.add('active');
-    }
+    const textEl = document.getElementById('loading-text');
+    if (textEl) textEl.textContent = msg || 'Working...';
+    if (overlay) overlay.classList.add('active');
 }
-function hideLoadingOverlay() {
+function hideLoading() {
     const overlay = document.getElementById('loading-overlay');
     if (overlay) overlay.classList.remove('active');
 }
 
 function showToast(message, type = 'default', duration = 3000) {
     const container = document.getElementById('toast-container');
+    if (!container) return;
     const toast = document.createElement('div');
     toast.className = 'toast';
     const colors = { success: '#00e67660', error: '#ff525260', info: '#29b6f660', warning: '#ffa72660', default: 'rgba(255, 255, 255, 0.1)' };
@@ -171,7 +170,7 @@ function importPatchXMLNative() {
     if(!pyBridge) return showToast("Bridge not ready", "error");
     pyBridge.import_patch(function(resStr) {
         let response = JSON.parse(resStr);
-        if (!response.success) { if (response.error !== "Cancelled") showToast("Error: " + response.error, "error"); return; }
+        if (!response.success) { if (response.error !== "Cancelled") showToast(response.error, "error"); return; }
         parsePatchXML(response.data);
     });
 }
@@ -184,7 +183,7 @@ function pullFromGrandMA2() {
                 try {
                     const creds = JSON.parse(credsStr);
                     if (creds.ip && creds.ip.trim() !== '') {
-                        updateLoadingOverlay("Connecting to MA2 for Patch...");
+                        showLoading("Connecting to MA2...");
                         pyBridge.pull_patch(credsStr);
                         return;
                     }
@@ -206,7 +205,7 @@ function submitLogin() {
     };
     let loginStr = JSON.stringify(creds);
     
-    updateLoadingOverlay("Connecting to MA2 for Patch...");
+    showLoading("Connecting to MA2...");
     pyBridge.pull_patch(loginStr);
 }
 

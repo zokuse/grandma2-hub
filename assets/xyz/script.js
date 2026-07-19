@@ -583,11 +583,14 @@ function closeModal(id) { document.getElementById(id).classList.remove('active')
 // LOADING OVERLAY
 // ============================================================
 function showLoading(msg) {
-    document.getElementById('loading-text').textContent = msg || 'Working...';
-    document.getElementById('loading-overlay').classList.add('active');
+    const overlay = document.getElementById('loading-overlay');
+    const textEl = document.getElementById('loading-text');
+    if (textEl) textEl.textContent = msg || 'Working...';
+    if (overlay) overlay.classList.add('active');
 }
 function hideLoading() {
-    document.getElementById('loading-overlay').classList.remove('active');
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay) overlay.classList.remove('active');
 }
 
 // ============================================================
@@ -595,6 +598,7 @@ function hideLoading() {
 // ============================================================
 function showToast(message, type = 'default', duration = 3000) {
     const container = document.getElementById('toast-container');
+    if (!container) return;
     const toast = document.createElement('div');
     toast.className = 'toast';
     const colors = { success: '#00e67660', error: '#ff525260', info: '#29b6f660', warning: '#ffa72660', default: 'rgba(255, 255, 255, 0.1)' };

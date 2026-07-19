@@ -184,7 +184,7 @@ class MA2Client {
         const creds = credentials || this.credentials;
         if (!creds || !creds.ip) throw new Error("No credentials provided");
 
-        if (onProgress) onProgress("Connecting to MA2 Telnet (Port 30000)...");
+        if (onProgress) onProgress("Connecting to MA2...");
         
         return new Promise((resolve, reject) => {
             const socket = new net.Socket();
