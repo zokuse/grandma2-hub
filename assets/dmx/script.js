@@ -332,7 +332,7 @@ function parsePatchXML(xmlString) {
             const addressNode = n.querySelector('SubFixture Patch Address');
             if (addressNode) {
                 let absoluteAddr = parseInt(addressNode.textContent.trim());
-                if (!isNaN(absoluteAddr)) {
+                if (!isNaN(absoluteAddr) && absoluteAddr > 0) {
                     let universe = Math.floor((absoluteAddr - 1) / 512) + 1;
                     let relativeAddr = ((absoluteAddr - 1) % 512) + 1;
                     
