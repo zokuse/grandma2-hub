@@ -28,11 +28,11 @@ function initBridge() {
             window.pyBridge = channel.objects.backend;
             pyBridge = window.pyBridge;
             if (pyBridge.progress_update) {
-                pyBridge.progress_update.connect(updateLoadingOverlay);
+                pyBridge.progress_update.connect(showLoading);
             }
             if (pyBridge.patch_pulled) {
                 pyBridge.patch_pulled.connect(function(patchResStr) {
-                    hideLoadingOverlay();
+                    hideLoading();
                     try {
                         let response = JSON.parse(patchResStr);
                         if (response.success) {
@@ -43,7 +43,7 @@ function initBridge() {
                             }
                             showToast(`Patch pulled successfully!`, "success");
                         } else {
-                            if (response.error !== "Cancelled") showToast("Patch Error: " + response.error, "error");
+                            if (response.error !== "Cancelled") showToast(response.error, "error");
                         }
                     } catch (e) {
                         showToast("Error parsing patch response", "error");
@@ -67,11 +67,11 @@ function initBridge() {
             }
             if (pyBridge.pdf_exported) {
                 pyBridge.pdf_exported.connect(function(resStr) {
-                    hideLoadingOverlay();
+                    hideLoading();
                     try {
                         let response = JSON.parse(resStr);
                         if(response.success) showToast("PDF Saved to: " + response.path, "success");
-                        else showToast("Export Failed: " + response.error, "error");
+                        else showToast(response.error, "error");
                     } catch(e) { showToast("Error parsing export response", "error"); }
                 });
             }
@@ -105,22 +105,21 @@ function closeModal(id) {
 }
 
 
-function updateLoadingOverlay(msg) {
+function showLoading(msg) {
     const overlay = document.getElementById('loading-overlay');
-    const text = document.getElementById('loading-text');
-    if (overlay && text) {
-        text.textContent = msg;
-        overlay.classList.add('active');
-    }
+    const textEl = document.getElementById('loading-text');
+    if (textEl) textEl.textContent = msg || 'Working...';
+    if (overlay) overlay.classList.add('active');
 }
-function hideLoadingOverlay() {
+function hideLoading() {
     const overlay = document.getElementById('loading-overlay');
     if (overlay) overlay.classList.remove('active');
 }
 
-// Fungsi untuk memunculkan notifikasi Toast
+// Helper function to display Toast notification
 function showToast(message, type = 'default', duration = 3000) {
     const container = document.getElementById('toast-container');
+    if (!container) return;
     const toast = document.createElement('div');
     toast.className = 'toast';
     const colors = { success: '#00e67660', error: '#ff525260', info: '#29b6f660', warning: '#ffa72660', default: 'rgba(255, 255, 255, 0.1)' };
@@ -134,12 +133,12 @@ function showToast(message, type = 'default', duration = 3000) {
     }, duration);
 }
 
-// Fungsi helper untuk sanitize string ke HTML
+// Helper function to sanitize string to HTML
 function escXML(str) {
     return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
 }
 
-// Fungsi untuk mereset/membersihkan list patch
+// Function to reset/clear the patch list
 function clearPatchList() {
     fixtures = [];
     document.getElementById('fixture-count').textContent = '0';
@@ -152,12 +151,12 @@ function clearPatchList() {
     showToast("Patch list cleared. Ready for a new patch!", "success");
 }
 
-// Fungsi untuk mengimpor file XML dari penyimpanan lokal (Native)
+// Function to import XML file from local storage
 function importPatchXMLNative() {
     if(!pyBridge) return showToast("Bridge not ready", "error");
     pyBridge.import_patch(function(resStr) {
         let response = JSON.parse(resStr);
-        if (!response.success) { if (response.error !== "Cancelled") showToast("Error: " + response.error, "error"); return; }
+        if (!response.success) { if (response.error !== "Cancelled") showToast(response.error, "error"); return; }
         if (response.showName) {
             let fnInput = document.getElementById('export-filename');
             if (fnInput) fnInput.value = response.showName;
@@ -166,7 +165,7 @@ function importPatchXMLNative() {
     });
 }
 
-// Fungsi untuk menarik data patch langsung via Telnet grandma2
+// Function to pull patch data directly via grandMA2 Telnet
 function pullFromGrandMA2() {
     if(!pyBridge) return showToast("Bridge not ready", "error");
     if (pyBridge.get_saved_credentials) {
@@ -175,7 +174,7 @@ function pullFromGrandMA2() {
                 try {
                     const creds = JSON.parse(credsStr);
                     if (creds.ip && creds.ip.trim() !== '') {
-                        updateLoadingOverlay("Connecting to MA2 for Patch...");
+                        showLoading("Connecting to MA2...");
                         pyBridge.pull_patch(credsStr);
                         return;
                     }
@@ -197,11 +196,11 @@ function submitLogin() {
     };
     let loginStr = JSON.stringify(creds);
     
-    updateLoadingOverlay("Connecting to MA2 for Patch...");
+    updateLoadingOverlay("Connecting to MA2...");
     pyBridge.pull_patch(loginStr);
 }
 
-// 1. UPDATE FUNGSI parsePatchXML
+// 1. UPDATE parsePatchXML FUNCTION
 function parsePatchXML(xmlString) {
     try {
         const parser = new DOMParser(); 
@@ -210,7 +209,7 @@ function parsePatchXML(xmlString) {
         
         fixtures = []; 
 
-        // Kumpulkan semua data tanpa memberi nomor Unit terlebih dahulu
+        // Collect all data without assigning Unit numbers first
         if (layers.length === 0) {
             const fallbackNodes = xmlDoc.querySelectorAll('Fixture');
             fallbackNodes.forEach(n => processFixtureNode(n, "Default Layer"));
@@ -222,11 +221,11 @@ function parsePatchXML(xmlString) {
             });
         }
         
-        // --- LOGIKA PERBAIKAN UNIT ---
-        // A. Urutkan semua data berdasarkan Fixture ID / Channel ID terkecil
+        // --- UNIT FIX LOGIC ---
+        // A. Sort all data by smallest Fixture ID / Channel ID
         fixtures.sort((a, b) => a.id - b.id);
 
-        // B. Berikan nomor Unit secara berurutan per tipe lampu
+        // B. Assign Unit numbers sequentially per fixture type
         let unitCounters = {};
         fixtures.forEach(f => {
             unitCounters[f.type] = (unitCounters[f.type] || 0) + 1;
@@ -236,7 +235,7 @@ function parsePatchXML(xmlString) {
         document.getElementById('fixture-count').textContent = `${fixtures.length}`;
         recalculateSpecsAndRender();
         
-        // C. Terapkan sorting tabel sesuai dengan yang sedang aktif (misal user sedang sort by Patch)
+        // C. Apply active table sorting (e.g. if user is sorting by Patch)
         applyCurrentSort();
         
     } catch(err) { 
@@ -259,7 +258,7 @@ function recalculateSpecsAndRender() {
     if (document.getElementById('total-weight')) document.getElementById('total-weight').textContent = `${totalWeight.toLocaleString('en-US')}`;
 }
 
-// 2. UPDATE FUNGSI processFixtureNode (Hapus parameter layerIndex dan kalkulasi specs)
+// 2. UPDATE processFixtureNode FUNCTION (Removed layerIndex param and spec calculation)
 function processFixtureNode(n, layerName) {
     let rawFid = parseInt(n.getAttribute('fixture_id') || "0");
     let rawCid = parseInt(n.getAttribute('channel_id') || "0");
@@ -301,7 +300,7 @@ function processFixtureNode(n, layerName) {
     fixtures.push({ layerName, unit: 0, displayId, id: sortId, name, type, patch, watt: 0, weight: 0 });
 }
 
-// 3. TAMBAHKAN FUNGSI BARU applyCurrentSort (Agar urutan tidak acak saat update)
+// 3. ADD NEW FUNCTION applyCurrentSort (So order doesn't randomize on update)
 function applyCurrentSort() {
     fixtures.sort((a, b) => {
         let valA = a[currentSortColumn];
@@ -327,7 +326,7 @@ function applyCurrentSort() {
     renderTable();
 }
 
-// 4. UPDATE FUNGSI sortBy (Dipersingkat agar memanggil applyCurrentSort)
+// 4. UPDATE sortBy FUNCTION (Shortened to call applyCurrentSort)
 function sortBy(column) {
     if (currentSortColumn === column) {
         sortAscending = !sortAscending;
@@ -442,7 +441,7 @@ function getBase64Image(url) {
     });
 }
 
-// FUNGSI UTAMA EXPORT PDF
+// MAIN PDF EXPORT FUNCTION
 async function submitPDFExport(layoutMode) {
     let separatePages = document.getElementById('page-break-checkbox').checked;
     let useWatermark = document.getElementById('watermark-checkbox').checked;
@@ -496,7 +495,7 @@ async function submitPDFExport(layoutMode) {
     let watermarkHTML = "";
     if (useWatermark) {
         try {
-            updateLoadingOverlay("Preparing watermark...");
+            showLoading("Preparing watermark...");
             let watermarkBase64 = await getBase64Image('watermark.png');
             watermarkCSS = `
             .watermark-bg {
@@ -650,18 +649,18 @@ async function submitPDFExport(layoutMode) {
     </html>`;
 
     if(pyBridge) {
-        updateLoadingOverlay("Processing PDF Export...");
+        showLoading("Processing PDF Export...");
         pyBridge.export_pdf(htmlContent, exportFilename, layoutMode, function(resStr) {
             let response = JSON.parse(resStr);
             if(response.success) {
                 if (response.status === "started") {
-                    updateLoadingOverlay("Generating PDF...");
+                    showLoading("Generating PDF...");
                 } else if (response.path) {
-                    hideLoadingOverlay();
+                    hideLoading();
                     showToast("PDF Saved to: " + response.path, "success");
                 }
             } else {
-                hideLoadingOverlay();
+                hideLoading();
                 if (response.error !== "Cancelled") showToast("Export Failed: " + response.error, "error");
             }
         });

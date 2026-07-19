@@ -11,12 +11,28 @@ const signalCallbacks = {
     pdf_exported: [], progress_update: [], analyze_complete: [], unpack_complete: []
 };
 
+// Map each signal channel back to the invoke channel(s) that trigger it
+const signalToInvokeMap = {
+    file_selected: ['select_file'],
+    layout_pulled: ['pull_layout'],
+    macros_sent: ['send_xyz_macro', 'export_macros'],
+    patch_pulled: ['pull_patch'],
+    pdf_exported: ['export_pdf'],
+    analyze_complete: ['analyze_glb'],
+    unpack_complete: ['unpack_glb'],
+    progress_update: ['pull_layout', 'pull_patch', 'send_xyz_macro', 'export_macros', 'analyze_glb', 'unpack_glb']
+};
+
 // Register ONE listener per channel, broadcasting to all registered callbacks
 Object.keys(signalCallbacks).forEach(channel => {
     ipcRenderer.on(channel, (e, ...args) => {
         signalCallbacks[channel] = signalCallbacks[channel].filter(obj => !obj.dead);
         signalCallbacks[channel].forEach(obj => {
-            if (activeRequesterByChannel[channel] === obj.myId) {
+            let matches = false;
+            if (signalToInvokeMap[channel]) {
+                matches = signalToInvokeMap[channel].some(invokeCh => activeRequesterByChannel[invokeCh] === obj.myId);
+            }
+            if (matches) {
                 try { obj.cb(...args); } catch (err) { obj.dead = true; }
             }
         });

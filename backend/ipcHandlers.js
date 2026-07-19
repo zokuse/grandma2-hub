@@ -269,24 +269,24 @@ function registerIpcHandlers() {
             const creds = JSON.parse(loginStr);
             ma2Client.saveCredentials(creds);
             
-            const socket = await ma2Client.telnetSession(creds, msg => e.sender.send('progress_update', msg));
+            const socket = await ma2Client.telnetSession(creds, msg => e.senderFrame.send('progress_update', msg));
             
-            e.sender.send('progress_update', `Exporting Layout ${layoutId}...`);
+            e.senderFrame.send('progress_update', `Exporting Layout ${layoutId}...`);
             const exportRes = await socket.sendCommand(`Export Layout ${layoutId} "cloner_temp_layout" /noconfirm`, 10000);
             const lowerExport = exportRes.toLowerCase();
             
             if (lowerExport.includes('error')) {
-                e.sender.send('layout_pulled', JSON.stringify({ success: false, error: "GrandMA2 rejected the layout export. Please check if the Layout ID exists and menus are closed." }));
+                e.senderFrame.send('layout_pulled', JSON.stringify({ success: false, error: "GrandMA2 rejected the layout export. Please check if the Layout ID exists and menus are closed." }));
                 return;
             }
             
             socket.destroy();
 
             const tempFile = path.join(ma2Client.layoutDir, "cloner_temp_layout.xml");
-            e.sender.send('progress_update', "Reading XML file...");
+            e.senderFrame.send('progress_update', "Reading XML file...");
             
             if (!await ma2Client.waitForFile(tempFile, 10000)) {
-                e.sender.send('layout_pulled', JSON.stringify({ success: false, error: `Failed to pull Layout ${layoutId}. Took too long to save.` }));
+                e.senderFrame.send('layout_pulled', JSON.stringify({ success: false, error: `Failed to pull Layout ${layoutId}. Took too long to save.` }));
                 return;
             }
 
@@ -298,9 +298,9 @@ function registerIpcHandlers() {
             if (showMatch && showMatch[1]) showName = showMatch[1];
             showName = cleanShowName(showName);
             
-            e.sender.send('layout_pulled', JSON.stringify({ success: true, data: data, showName: showName }));
+            e.senderFrame.send('layout_pulled', JSON.stringify({ success: true, data: data, showName: showName }));
         } catch (err) {
-            e.sender.send('layout_pulled', JSON.stringify({ success: false, error: err.message }));
+            e.senderFrame.send('layout_pulled', JSON.stringify({ success: false, error: err.message }));
         }
     });
 
@@ -309,18 +309,18 @@ function registerIpcHandlers() {
             const creds = JSON.parse(loginStr);
             ma2Client.saveCredentials(creds);
             
-            const socket = await ma2Client.telnetSession(creds, msg => e.sender.send('progress_update', msg));
+            const socket = await ma2Client.telnetSession(creds, msg => e.senderFrame.send('progress_update', msg));
             
-            e.sender.send('progress_update', "Navigating to Patch Layers...");
+            e.senderFrame.send('progress_update', "Navigating to Patch Layers...");
             await socket.sendCommand('CD Root');
             await socket.sendCommand('CD EditSetup');
             const layerRes = await socket.sendCommand('CD Layers');
             if (layerRes.toLowerCase().includes('error #14')) {
                 socket.destroy();
-                e.sender.send('patch_pulled', JSON.stringify({ success: false, error: "No fixtures are patched in this showfile. (Error: Layers object does not exist)" }));
+                e.senderFrame.send('patch_pulled', JSON.stringify({ success: false, error: "No fixtures are patched in this showfile. (Error: Layers object does not exist)" }));
                 return;
             }
-            e.sender.send('progress_update', "Exporting Patch (This may take ~10 seconds)...");
+            e.senderFrame.send('progress_update', "Exporting Patch (This may take ~10 seconds)...");
             const exportRes = await socket.sendCommand('Export 1 Thru 256 "temp_patch" /noconfirm', 15000);
             const lowerExport = exportRes.toLowerCase();
             
@@ -328,13 +328,13 @@ function registerIpcHandlers() {
             socket.destroy();
             
             if (lowerExport.includes('error') && !lowerExport.includes('no cue source given') && !lowerExport.includes('error #28')) {
-                e.sender.send('patch_pulled', JSON.stringify({ success: false, error: "GrandMA2 rejected the patch export. Please close the 'Patch & Fixture Schedule' window on your console and try again." }));
+                e.senderFrame.send('patch_pulled', JSON.stringify({ success: false, error: "GrandMA2 rejected the patch export. Please close the 'Patch & Fixture Schedule' window on your console and try again." }));
                 return;
             }
 
             const tempFile = path.join(ma2Client.patchDir, "temp_patch.xml");
             if (!await ma2Client.waitForFile(tempFile, 15000)) {
-                e.sender.send('patch_pulled', JSON.stringify({ success: false, error: "Failed to pull Patch. File never appeared in 'fixture_layers'." }));
+                e.senderFrame.send('patch_pulled', JSON.stringify({ success: false, error: "Failed to pull Patch. File never appeared in 'fixture_layers'." }));
                 return;
             }
 
@@ -346,9 +346,9 @@ function registerIpcHandlers() {
             if (showMatch && showMatch[1]) showName = showMatch[1];
             showName = cleanShowName(showName);
             
-            e.sender.send('patch_pulled', JSON.stringify({ success: true, data: data, showName: showName }));
+            e.senderFrame.send('patch_pulled', JSON.stringify({ success: true, data: data, showName: showName }));
         } catch (err) {
-            e.sender.send('patch_pulled', JSON.stringify({ success: false, error: err.message }));
+            e.senderFrame.send('patch_pulled', JSON.stringify({ success: false, error: err.message }));
         }
     });
 
@@ -409,8 +409,8 @@ function registerIpcHandlers() {
             const macros = JSON.parse(macrosJson);
             let currentBaseId = baseIdStr ? parseInt(baseIdStr) : null;
             
-            const socket = await ma2Client.telnetSession(creds, msg => e.sender.send('progress_update', msg));
-            e.sender.send('progress_update', "Flushing Programmer...");
+            const socket = await ma2Client.telnetSession(creds, msg => e.senderFrame.send('progress_update', msg));
+            e.senderFrame.send('progress_update', "Flushing Programmer...");
             await socket.sendCommand('ClearAll');
             await socket.sendCommand('BlindEdit On');
 
@@ -418,7 +418,7 @@ function registerIpcHandlers() {
                 const m = macros[i];
                 const mId = currentBaseId !== null ? currentBaseId : m.index;
                 const name = (m.name || "").replace(/"/g, "'").replace(/\r/g, "").replace(/\n/g, "");
-                e.sender.send('progress_update', `Storing Macro ${mId} (${name}) - ${i+1}/${macros.length}`);
+                e.senderFrame.send('progress_update', `Storing Macro ${mId} (${name}) - ${i+1}/${macros.length}`);
                 
                 await socket.sendCommand(`Delete Macro ${mId} /noconfirm`);
                 await socket.sendCommand(`Store Macro ${mId}`);
@@ -437,9 +437,9 @@ function registerIpcHandlers() {
             await socket.sendCommand('BlindEdit Off', 15000);
             await new Promise(r => setTimeout(r, 1000));
             socket.destroy();
-            e.sender.send('macros_sent', JSON.stringify({ success: true, message: `Successfully sent ${macros.length} macros to MA2!` }));
+            e.senderFrame.send('macros_sent', JSON.stringify({ success: true, message: `Successfully sent ${macros.length} macros to MA2!` }));
         } catch (err) {
-            e.sender.send('macros_sent', JSON.stringify({ success: false, error: err.message }));
+            e.senderFrame.send('macros_sent', JSON.stringify({ success: false, error: err.message }));
         }
     });
     
@@ -449,8 +449,8 @@ function registerIpcHandlers() {
             ma2Client.saveCredentials(creds);
             const mappings = JSON.parse(mappingsJson);
             
-            const socket = await ma2Client.telnetSession(creds, msg => e.sender.send('progress_update', msg));
-            e.sender.send('progress_update', "Flushing Programmer...");
+            const socket = await ma2Client.telnetSession(creds, msg => e.senderFrame.send('progress_update', msg));
+            e.senderFrame.send('progress_update', "Flushing Programmer...");
             await socket.sendCommand('ClearAll');
             await socket.sendCommand('BlindEdit On');
 
@@ -461,7 +461,7 @@ function registerIpcHandlers() {
                 const m = mappings[key];
                 if (!m.ma2_fixture_id) continue;
                 
-                e.sender.send('progress_update', `Assigning Position Fix ${m.ma2_fixture_id} - ${i+1}/${keys.length}`);
+                e.senderFrame.send('progress_update', `Assigning Position Fix ${m.ma2_fixture_id} - ${i+1}/${keys.length}`);
                 
                 const x = Math.round((m.pos_x||0) * 1000) / 1000;
                 const y = Math.round((m.pos_y||0) * 1000) / 1000;
@@ -480,9 +480,9 @@ function registerIpcHandlers() {
             await socket.sendCommand('BlindEdit Off', 15000);
             await new Promise(r => setTimeout(r, 1000));
             socket.destroy();
-            e.sender.send('macros_sent', JSON.stringify({ success: true, message: `Successfully pushed XYZ positions for ${count} fixtures to MA2!` }));
+            e.senderFrame.send('macros_sent', JSON.stringify({ success: true, message: `Successfully pushed XYZ positions for ${count} fixtures to MA2!` }));
         } catch (err) {
-            e.sender.send('macros_sent', JSON.stringify({ success: false, error: err.message }));
+            e.senderFrame.send('macros_sent', JSON.stringify({ success: false, error: err.message }));
         }
     });
 
@@ -499,7 +499,7 @@ function registerIpcHandlers() {
             const filePath = path.join(ma2Client.layoutDir, filename);
             fs.writeFileSync(filePath, xmlData, 'utf8');
 
-            const socket = await ma2Client.telnetSession(creds, msg => e.sender.send('progress_update', msg));
+            const socket = await ma2Client.telnetSession(creds, msg => e.senderFrame.send('progress_update', msg));
             
             const doMain = settings.exportMode.includes('main') || settings.exportMode.includes('sub');
             const doTc = !settings.exportMode.includes('only') || settings.exportMode === 'tc-only' || settings.exportMode.includes('tc');
@@ -509,7 +509,7 @@ function registerIpcHandlers() {
             }
             let followUpErrors = 0;
             if (settings.followUpCommands && settings.followUpCommands.length > 0) {
-                e.sender.send('progress_update', `Applying Cues and Sequence settings...`);
+                e.senderFrame.send('progress_update', `Applying Cues and Sequence settings...`);
                 for (let cmd of settings.followUpCommands) {
                     try {
                         cmd = (cmd || "").replace(/\r/g, "").replace(/\n/g, "");
@@ -522,11 +522,11 @@ function registerIpcHandlers() {
             }
 
             if (doTc) {
-                e.sender.send('progress_update', `Importing Timecode...`);
+                e.senderFrame.send('progress_update', `Importing Timecode...`);
                 await socket.sendCommand(`Import "${filename}" At Timecode ${settings.startTimecodeIndex} /noconfirm`, 10000);
                 
                 if (settings.executor) {
-                    e.sender.send('progress_update', `Linking Timecode to Executor...`);
+                    e.senderFrame.send('progress_update', `Linking Timecode to Executor...`);
                     await socket.sendCommand(`Assign Executor ${settings.executor.page}.${settings.executor.number} At Timecode ${settings.startTimecodeIndex} Track 1`, 3000);
                 }
             }
@@ -537,12 +537,12 @@ function registerIpcHandlers() {
             try { fs.unlinkSync(filePath); } catch(err) {}
 
             if (followUpErrors > 0) {
-                e.sender.send('macros_sent', JSON.stringify({ success: true, message: `Timecode imported, but ${followUpErrors} styling commands failed. Check executor/cue states.` }));
+                e.senderFrame.send('macros_sent', JSON.stringify({ success: true, message: `Timecode imported, but ${followUpErrors} styling commands failed. Check executor/cue states.` }));
             } else {
-                e.sender.send('macros_sent', JSON.stringify({ success: true, message: `Successfully imported Timecode data to MA2!` }));
+                e.senderFrame.send('macros_sent', JSON.stringify({ success: true, message: `Successfully imported Timecode data to MA2!` }));
             }
         } catch (err) {
-            e.sender.send('macros_sent', JSON.stringify({ success: false, error: err.message }));
+            e.senderFrame.send('macros_sent', JSON.stringify({ success: false, error: err.message }));
         }
     });
 
@@ -630,38 +630,38 @@ function registerIpcHandlers() {
             filters: [{ name: '3D Models', extensions: ['glb', 'gltf'] }, { name: 'All Files', extensions: ['*'] }]
         });
         if (!canceled && filePaths.length > 0) {
-            e.sender.send('file_selected', JSON.stringify({ success: true, path: filePaths[0], filename: path.basename(filePaths[0]) }));
+            e.senderFrame.send('file_selected', JSON.stringify({ success: true, path: filePaths[0], filename: path.basename(filePaths[0]) }));
         }
     });
 
     ipcMain.handle('analyze_glb', async (e, filePath) => {
         try {
             const res = await gltfUnpacker.analyzeGlb(filePath, (msg) => {
-                e.sender.send('progress_update', msg);
+                e.senderFrame.send('progress_update', msg);
             });
-            e.sender.send('analyze_complete', JSON.stringify(res));
+            e.senderFrame.send('analyze_complete', JSON.stringify(res));
         } catch (err) {
-            e.sender.send('analyze_complete', JSON.stringify({ success: false, error: err.message }));
+            e.senderFrame.send('analyze_complete', JSON.stringify({ success: false, error: err.message }));
         }
     });
 
     ipcMain.handle('unpack_glb', async (e, filePath) => {
         try {
             const res = await gltfUnpacker.unpackGlb(filePath, (msg) => {
-                e.sender.send('progress_update', msg);
+                e.senderFrame.send('progress_update', msg);
             });
-            e.sender.send('unpack_complete', JSON.stringify(res));
+            e.senderFrame.send('unpack_complete', JSON.stringify(res));
         } catch (err) {
-            e.sender.send('unpack_complete', JSON.stringify({ success: false, error: err.message }));
+            e.senderFrame.send('unpack_complete', JSON.stringify({ success: false, error: err.message }));
         }
     });
 
     ipcMain.handle('save_single_texture', async (e, filePath, texIndex, dataUrl, texName) => {
         try {
             const msg = gltfUnpacker.saveSingleTexture(filePath, texIndex, dataUrl, texName);
-            e.sender.send('progress_update', msg);
+            e.senderFrame.send('progress_update', msg);
         } catch (err) {
-            e.sender.send('progress_update', `Failed to save texture: ${err.message}`);
+            e.senderFrame.send('progress_update', `Failed to save texture: ${err.message}`);
         }
     });
 }
