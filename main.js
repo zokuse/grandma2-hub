@@ -51,8 +51,9 @@ function createWindow() {
         show: false,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
-            contextIsolation: false,
-            nodeIntegration: true,
+            contextIsolation: true,
+            nodeIntegration: false,
+            nodeIntegrationInSubFrames: true,
             sandbox: false
         }
     });
@@ -82,6 +83,26 @@ function createWindow() {
 app.whenReady().then(() => {
     const { registerIpcHandlers } = require('./backend/ipcHandlers');
     registerIpcHandlers();
+
+    // ─── Security Hardening ──────────────────────────────────────────────────
+    app.on('web-contents-created', (event, contents) => {
+        contents.on('will-navigate', (e, url) => {
+            if (!url.startsWith('file://')) {
+                console.warn('[Security] Blocked navigation to:', url);
+                e.preventDefault();
+            }
+        });
+        contents.setWindowOpenHandler(({ url }) => {
+            console.warn('[Security] Blocked window.open to:', url);
+            return { action: 'deny' };
+        });
+    });
+
+    ipcMain.on('switch-tab', (event, toolId) => {
+        if (mainWindow) {
+            mainWindow.webContents.send('switch-tab-request', toolId);
+        }
+    });
 
     // ─── Update Restart Handler ────────────────────────────────────────────
     ipcMain.on('restart-and-install', () => {

@@ -1,45 +1,35 @@
-const { ipcRenderer } = require('electron');
-window.appVersion = require('./package.json').version;
+const { contextBridge, ipcRenderer } = require('electron');
+const pkg = require('./package.json');
 
-let activeRequester = null;
 let instanceCounter = 0;
 
-// Global signal registry to prevent memory leaks and MaxListenersExceededWarning on reload
+// Track the most recent invoker PER CHANNEL
+const activeRequesterByChannel = {};
+
 const signalCallbacks = {
-    file_selected: [],
-    layout_pulled: [],
-    macros_sent: [],
-    patch_pulled: [],
-    pdf_exported: [],
-    progress_update: [],
-    analyze_complete: [],
-    unpack_complete: []
+    file_selected: [], layout_pulled: [], macros_sent: [], patch_pulled: [],
+    pdf_exported: [], progress_update: [], analyze_complete: [], unpack_complete: []
 };
 
-// Register ONE listener per channel
+// Register ONE listener per channel, broadcasting to all registered callbacks
 Object.keys(signalCallbacks).forEach(channel => {
     ipcRenderer.on(channel, (e, ...args) => {
+        signalCallbacks[channel] = signalCallbacks[channel].filter(obj => !obj.dead);
         signalCallbacks[channel].forEach(obj => {
-            if (activeRequester === obj.myId) {
-                try {
-                    obj.cb(...args);
-                } catch (err) {
-                    obj.dead = true;
-                }
+            if (activeRequesterByChannel[channel] === obj.myId) {
+                try { obj.cb(...args); } catch (err) { obj.dead = true; }
             }
         });
-        // Cleanup dead callbacks
-        signalCallbacks[channel] = signalCallbacks[channel].filter(obj => !obj.dead);
     });
 });
 
-window.qt = { webChannelTransport: true };
-window.QWebChannel = function(transport, callback) {
+function buildBridgeAPI() {
     const myId = ++instanceCounter;
+    const registeredChannels = []; // for cleanup on unload
 
     function makeInvoke(channel) {
         return (...args) => {
-            activeRequester = myId; // Tandai iframe ini sebagai peminta aktif
+            activeRequesterByChannel[channel] = myId;
             let cb = null;
             if (args.length > 0 && typeof args[args.length - 1] === 'function') {
                 cb = args.pop();
@@ -53,7 +43,17 @@ window.QWebChannel = function(transport, callback) {
         };
     }
 
-    // Setiap iframe mendapatkan instance objek backend-nya sendiri
+    function makeSignal(channel) {
+        registeredChannels.push(channel);
+        return {
+            connect: (cb) => signalCallbacks[channel].push({ myId, cb, dead: false }),
+            disconnect: (cb) => {
+                signalCallbacks[channel] = signalCallbacks[channel]
+                    .filter(obj => obj.myId !== myId || obj.cb !== cb);
+            }
+        };
+    }
+
     const api = {
         clear_credentials: makeInvoke('clear_credentials'),
         export_macros: makeInvoke('export_macros'),
@@ -79,51 +79,56 @@ window.QWebChannel = function(transport, callback) {
         analyze_glb: makeInvoke('analyze_glb'),
         unpack_glb: makeInvoke('unpack_glb'),
         save_single_texture: makeInvoke('save_single_texture'),
+
         switch_to: (toolId) => {
-            if (window.parent && typeof window.parent.switchTab === 'function') {
-                window.parent.switchTab(toolId);
-            } else {
-                console.error("switchTab not found on parent window");
-            }
+            ipcRenderer.send('switch-tab', toolId);
         },
 
-        // Signals: Dispatch via global registry
-        file_selected: { connect: (cb) => signalCallbacks.file_selected.push({ myId, cb }), disconnect: (cb) => signalCallbacks.file_selected = signalCallbacks.file_selected.filter(obj => obj.myId !== myId || obj.cb !== cb) },
-        layout_pulled: { connect: (cb) => signalCallbacks.layout_pulled.push({ myId, cb }), disconnect: (cb) => signalCallbacks.layout_pulled = signalCallbacks.layout_pulled.filter(obj => obj.myId !== myId || obj.cb !== cb) },
-        macros_sent: { connect: (cb) => signalCallbacks.macros_sent.push({ myId, cb }), disconnect: (cb) => signalCallbacks.macros_sent = signalCallbacks.macros_sent.filter(obj => obj.myId !== myId || obj.cb !== cb) },
-        patch_pulled: { connect: (cb) => signalCallbacks.patch_pulled.push({ myId, cb }), disconnect: (cb) => signalCallbacks.patch_pulled = signalCallbacks.patch_pulled.filter(obj => obj.myId !== myId || obj.cb !== cb) },
-        pdf_exported: { connect: (cb) => signalCallbacks.pdf_exported.push({ myId, cb }), disconnect: (cb) => signalCallbacks.pdf_exported = signalCallbacks.pdf_exported.filter(obj => obj.myId !== myId || obj.cb !== cb) },
-        progress_update: { connect: (cb) => signalCallbacks.progress_update.push({ myId, cb }), disconnect: (cb) => signalCallbacks.progress_update = signalCallbacks.progress_update.filter(obj => obj.myId !== myId || obj.cb !== cb) },
-        analyze_complete: { connect: (cb) => signalCallbacks.analyze_complete.push({ myId, cb }), disconnect: (cb) => signalCallbacks.analyze_complete = signalCallbacks.analyze_complete.filter(obj => obj.myId !== myId || obj.cb !== cb) },
-        unpack_complete: { connect: (cb) => signalCallbacks.unpack_complete.push({ myId, cb }), disconnect: (cb) => signalCallbacks.unpack_complete = signalCallbacks.unpack_complete.filter(obj => obj.myId !== myId || obj.cb !== cb) }
+        file_selected: makeSignal('file_selected'),
+        layout_pulled: makeSignal('layout_pulled'),
+        macros_sent: makeSignal('macros_sent'),
+        patch_pulled: makeSignal('patch_pulled'),
+        pdf_exported: makeSignal('pdf_exported'),
+        progress_update: makeSignal('progress_update'),
+        analyze_complete: makeSignal('analyze_complete'),
+        unpack_complete: makeSignal('unpack_complete')
     };
 
-    setTimeout(() => {
-        callback({
-            objects: {
-                backend: api
-            }
+    // Cleanup: prune this instance's callbacks when its frame unloads
+    window.addEventListener('unload', () => {
+        registeredChannels.forEach(channel => {
+            signalCallbacks[channel] = signalCallbacks[channel].filter(obj => obj.myId !== myId);
         });
-    }, 50);
-};
+    });
 
-// ─── Update Bridge ─────────────────────────────────────────────────────────
-// Exposes a clean API for the shell app to respond to auto-update events.
-window.electronUpdater = {
-    onUpdateReady: (callback) => {
-        ipcRenderer.on('update-ready', (event, info) => {
-            callback(info);
-        });
-    },
-    restartAndInstall: () => {
-        ipcRenderer.send('restart-and-install');
-    }
-};
+    return api;
+}
 
-// ─── Window Controls Bridge ────────────────────────────────────────────────
-window.electronWindow = {
+contextBridge.exposeInMainWorld('qt', { webChannelTransport: true });
+contextBridge.exposeInMainWorld('QWebChannel', function (transport, callback) {
+    const api = buildBridgeAPI();
+    setTimeout(() => callback({ objects: { backend: api } }), 50);
+});
+contextBridge.exposeInMainWorld('appVersion', pkg.version);
+
+contextBridge.exposeInMainWorld('electronUpdater', {
+    onUpdateReady: (callback) => ipcRenderer.on('update-ready', (event, info) => callback(info)),
+    restartAndInstall: () => ipcRenderer.send('restart-and-install')
+});
+
+contextBridge.exposeInMainWorld('electronWindow', {
     minimize: () => ipcRenderer.send('window-minimize'),
     maximize: () => ipcRenderer.send('window-maximize'),
     close: () => ipcRenderer.send('window-close')
-};
-// ──────────────────────────────────────────────────────────────────────────
+});
+
+contextBridge.exposeInMainWorld('shellAPI', {
+    onSwitchTabRequest: (callback) => ipcRenderer.on('switch-tab-request', (event, toolId) => callback(toolId))
+});
+
+// Broadcast clicks inside tool iframes back to the shell to trigger sidebar collapse
+if (window !== window.top) {
+    document.addEventListener('click', () => {
+        window.parent.postMessage({ type: 'iframe-click' }, '*');
+    }, { passive: true });
+}
