@@ -138,33 +138,39 @@
         </div>
 
         <!-- WORKSPACE: File Drop & Preview -->
-        <div class="glassy-surface workspace-container" style="display: flex; flex-direction: column; position: relative; height: calc(100vh - 120px);">
-            <input type="file" id="file-input" accept=".rpp" style="display:none;">
-
-            <!-- Empty State / Drop Zone -->
-            <div id="file-drop-zone" class="file-drop-zone" onclick="browseFile()">
-                <div class="empty-state" id="empty-state" style="pointer-events: none;">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14 2 14 8 20 8"/>
-                        <line x1="12" y1="18" x2="12" y2="12"/>
-                        <polyline points="9 15 12 12 15 15"/>
-                    </svg>
-                    <h3>No Project Loaded</h3>
-                    <p>Click or drag a REAPER .rpp file here to get started.</p>
-                </div>
+        <div class="glassy-surface workspace-container" style="display: flex; flex-direction: column; position: relative; height: calc(100vh - 120px); padding: 0; overflow: hidden;">
+            <div class="workspace-header">
+                <div class="workspace-header-title">TIMECODE CUES</div>
             </div>
+            
+            <div class="workspace-viewport" style="flex-direction: column;">
+                <input type="file" id="file-input" accept=".rpp" style="display:none;">
 
-            <div id="table-view" style="display: none; flex-direction: column; flex-grow: 1; overflow: hidden;">
-                <div class="mapping-col-header" style="padding-right: 16px;">
-                    <div class="col-h center">Cue</div>
-                    <div class="col-h center">Timecode</div>
-                    <div class="col-h">Name</div>
-                    <div class="col-h center">Length</div>
+                <!-- Empty State / Drop Zone -->
+                <div id="file-drop-zone" class="file-drop-zone" onclick="browseFile()">
+                    <div class="empty-state" id="empty-state" style="pointer-events: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="12" y1="18" x2="12" y2="12"/>
+                            <polyline points="9 15 12 12 15 15"/>
+                        </svg>
+                        <h3>No Project Loaded</h3>
+                        <p>Click or drag a REAPER .rpp file here to get started.</p>
+                    </div>
                 </div>
-                
-                <div class="table-scroll-wrapper" id="preview-container" style="flex-grow: 1; overflow-y: auto; padding-bottom: 16px;">
-                    <!-- Rows rendered here by JS -->
+
+                <div id="table-view" style="display: none; flex-direction: column; flex-grow: 1; overflow: hidden;">
+                    <div class="mapping-col-header" style="padding-right: 16px;">
+                        <div class="col-h center">Cue</div>
+                        <div class="col-h center">Timecode</div>
+                        <div class="col-h">Name</div>
+                        <div class="col-h center">Length</div>
+                    </div>
+                    
+                    <div class="table-scroll-wrapper" id="preview-container" style="flex-grow: 1; overflow-y: auto; padding-bottom: 16px;">
+                        <!-- Rows rendered here by JS -->
+                    </div>
                 </div>
             </div>
         </div>

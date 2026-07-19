@@ -81,36 +81,116 @@ initBridge();
     });
 });
 
-let displayedUniversesCount = 8;
+let activeUniversesList = [1];
+let showEmptyUniverses = false;
 
 function initUniverseSelector() {
     const list = document.getElementById('universe-sidebar-list');
-    if (!list) return;
+    const statsStrip = document.getElementById('universe-stats-strip');
+    if (!list || !statsStrip) return;
+    
+    // Compute total stats
+    let populatedCount = 0;
+    let totalFixtures = 0;
+    let totalChannels = 0;
+    let maxUniverseNum = 1;
+    
+    if (Object.keys(parsedUniverses).length > 0) {
+        maxUniverseNum = Math.max(...Object.keys(parsedUniverses).map(Number));
+        for (let u in parsedUniverses) {
+            let fixturesInUni = parsedUniverses[u];
+            if (fixturesInUni && fixturesInUni.length > 0) {
+                populatedCount++;
+                totalFixtures += fixturesInUni.length;
+                totalChannels += fixturesInUni.reduce((sum, f) => sum + (f.footprint || 1), 0);
+            }
+        }
+    }
+    
+    statsStrip.style.display = 'flex';
+    statsStrip.innerHTML = `
+        <div class="universe-stat">
+            <span class="universe-stat-val">${populatedCount}</span>
+            <span class="universe-stat-label">Populated</span>
+        </div>
+        <div class="universe-stat">
+            <span class="universe-stat-val">${totalFixtures}</span>
+            <span class="universe-stat-label">Fixtures</span>
+        </div>
+        <div class="universe-stat">
+            <span class="universe-stat-val">${totalChannels}</span>
+            <span class="universe-stat-label">Channels</span>
+        </div>
+    `;
+
     list.innerHTML = '';
-    for (let i = 1; i <= displayedUniversesCount; i++) {
+    
+    let emptyHiddenCount = 0;
+    
+    // If we have populated data, maxUniverseNum dictates the range.
+    for (let i = 1; i <= Math.max(1, maxUniverseNum); i++) {
+        let fixturesInUni = parsedUniverses[i] || [];
+        let count = fixturesInUni.length;
+        let chCount = fixturesInUni.reduce((sum, f) => sum + (f.footprint || 1), 0);
+        let occupancyPercent = Math.min(100, (chCount / 512) * 100);
+        
+        let isEmpty = (count === 0);
+        
+        // Hide empty universes unless toggled on, or if it's the currently selected one
+        if (isEmpty && !showEmptyUniverses && i !== currentUniverse && maxUniverseNum > 1) {
+            emptyHiddenCount++;
+            continue;
+        }
+
         const btn = document.createElement('div');
         btn.className = `universe-btn ${i === currentUniverse ? 'active' : ''}`;
         btn.id = `uni-btn-${i}`;
         btn.onclick = () => changeUniverse(i);
         
+        let warningClass = occupancyPercent >= 50 ? 'warning' : '';
+        
         btn.innerHTML = `
-            <span>Universe ${i}</span>
-            <span class="universe-btn-badge" id="uni-badge-${i}">0 Fix • 0 Ch</span>
+            <div class="universe-btn-top">
+                <div class="universe-btn-label">
+                    <span class="universe-chip">${i}</span>
+                    <span>Universe ${i}</span>
+                </div>
+                <div class="universe-btn-stats">${count} Fix • ${Math.round(occupancyPercent)}%</div>
+            </div>
+            <div class="universe-loading-track">
+                <div class="universe-loading-fill ${warningClass}" style="width: ${occupancyPercent}%"></div>
+            </div>
         `;
         list.appendChild(btn);
+    }
+    
+    // Append the toggle button if there are hidden empty universes
+    if (emptyHiddenCount > 0) {
+        const toggleBtn = document.createElement('div');
+        toggleBtn.className = 'empty-universe-toggle';
+        toggleBtn.textContent = `Show ${emptyHiddenCount} empty universes`;
+        toggleBtn.onclick = () => {
+            showEmptyUniverses = true;
+            initUniverseSelector();
+        };
+        list.appendChild(toggleBtn);
+    } else if (showEmptyUniverses && maxUniverseNum > 1) {
+        const toggleBtn = document.createElement('div');
+        toggleBtn.className = 'empty-universe-toggle';
+        toggleBtn.textContent = `Hide empty universes`;
+        toggleBtn.onclick = () => {
+            showEmptyUniverses = false;
+            initUniverseSelector();
+        };
+        list.appendChild(toggleBtn);
     }
 }
 
 function changeUniverse(num) {
     currentUniverse = num;
-    for (let i = 1; i <= displayedUniversesCount; i++) {
-        const btn = document.getElementById(`uni-btn-${i}`);
-        if (btn) {
-            if (i === num) btn.classList.add('active');
-            else btn.classList.remove('active');
-        }
-    }
+    initUniverseSelector(); // Re-render to update 'active' class and empty state logic
     renderGrid();
+    renderLegend();
 }
 
 // Modal and Loading Functions
@@ -151,12 +231,9 @@ function showToast(message, type = 'default', duration = 3000) {
 
 function clearPatchList() {
     parsedUniverses = {};
-    displayedUniversesCount = 8;
+    activeUniversesList = [1];
+    showEmptyUniverses = false;
     initUniverseSelector();
-    for (let i = 1; i <= displayedUniversesCount; i++) {
-        let badge = document.getElementById(`uni-badge-${i}`);
-        if (badge) badge.textContent = `0 Fix • 0 Ch`;
-    }
     document.getElementById('empty-state').style.display = 'flex';
     document.getElementById('dmx-grid-container').style.display = 'none';
     
@@ -353,12 +430,11 @@ function parsePatchXML(xmlString) {
         }
         
         let populatedUniverses = Object.keys(parsedUniverses).map(Number).sort((a, b) => a - b);
-        let highestPopulated = populatedUniverses.length > 0 ? Math.max(...populatedUniverses) : 8;
-        displayedUniversesCount = Math.max(8, highestPopulated);
+        activeUniversesList = populatedUniverses.length > 0 ? populatedUniverses : [1];
         initUniverseSelector();
         
         // Auto-select first populated universe within limits
-        for (let i = 1; i <= displayedUniversesCount; i++) {
+        for (let i of activeUniversesList) {
             let badge = document.getElementById(`uni-badge-${i}`);
             if (badge) {
                 let count = 0;
@@ -371,7 +447,7 @@ function parsePatchXML(xmlString) {
             }
         }
         
-        let targetUni = populatedUniverses.find(u => u <= 8);
+        let targetUni = populatedUniverses[0];
         
         if (targetUni) {
             changeUniverse(targetUni);
@@ -497,43 +573,50 @@ function renderGrid() {
     });
     container.appendChild(grid);
     
-    // --- Generate Legend ---
+}
+
+function renderLegend() {
     const legendContainer = document.getElementById('fixture-legend-container');
     const legendList = document.getElementById('fixture-legend-list');
     
     let uniqueLayers = {};
-    // Gather all fixtures in the showfile, not just current universe, to show accurate layer data
-    Object.values(parsedUniverses).flat().forEach(f => {
+    let currentFixtures = parsedUniverses[currentUniverse] || [];
+    
+    // Scope to current universe
+    currentFixtures.forEach(f => {
         let layerName = f.layer || 'No Layer';
         if (!uniqueLayers[layerName]) {
-            uniqueLayers[layerName] = { layer: layerName, color: getFixtureColorHex(f), fixtureTypes: {} };
+            uniqueLayers[layerName] = { layer: layerName, color: getFixtureColorHex(f), fixtureTypes: {}, count: 0, channels: 0 };
         }
         uniqueLayers[layerName].fixtureTypes[f.type] = f.footprint;
+        uniqueLayers[layerName].count++;
+        uniqueLayers[layerName].channels += (f.footprint || 1);
     });
 
     legendList.innerHTML = '';
     let uniqueArr = Object.values(uniqueLayers);
-    // Expose globally for the modal editor
-    window.currentUniqueLayers = uniqueLayers;
+    window.currentUniqueLayers = uniqueLayers; // Still expose for modal editor
 
     if (uniqueArr.length > 0) {
         legendContainer.style.display = 'block';
         uniqueArr.forEach(t => {
             let el = document.createElement('div');
             el.className = 'legend-item';
-            // We use encodeURIComponent in case layer name has quotes or special chars
             let safeLayer = encodeURIComponent(t.layer);
             el.innerHTML = `
                 <div class="legend-item-left">
                     <div class="color-swatch" style="background-color: ${t.color}"></div>
                     <div class="legend-name" title="Layer: ${escXML(t.layer)}">${escXML(t.layer)}</div>
                 </div>
-                <button class="dmx-btn-icon" onclick="openLayerEditor(decodeURIComponent('${safeLayer}'))">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="3"></circle>
-                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                    </svg>
-                </button>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 11px; color: #888;">${t.count} Fix • ${t.channels} Ch</span>
+                    <button class="dmx-btn-icon" onclick="openLayerEditor(decodeURIComponent('${safeLayer}'))">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                    </button>
+                </div>
             `;
             legendList.appendChild(el);
         });
