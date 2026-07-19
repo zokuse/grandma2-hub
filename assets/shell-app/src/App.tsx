@@ -14,15 +14,7 @@ const TOOLS = [
   { id: 'settings', label: 'Settings', url: '../../settings-app/dist/index.html', icon: <svg viewBox="0 0 24 24" fill="none" stroke="#e0e0e0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> }
 ];
 
-// Helper to inject qt objects into iframes
-const injectQtPolyfill = (iframe: HTMLIFrameElement) => {
-  if (iframe && iframe.contentWindow) {
-    if ((window as any).qt) {
-      (iframe.contentWindow as any).qt = (window as any).qt;
-      (iframe.contentWindow as any).QWebChannel = (window as any).QWebChannel;
-    }
-  }
-};
+
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
@@ -32,11 +24,12 @@ function App() {
   const sidebarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Expose switchTab globally so child iframes can call window.parent.switchTab('...')
-    (window as any).switchTab = (tabId: string) => {
-      setActiveTab(tabId);
-      setLoadedTabs(prev => new Set(prev).add(tabId));
-    };
+    if ((window as any).shellAPI) {
+      (window as any).shellAPI.onSwitchTabRequest((tabId: string) => {
+        setActiveTab(tabId);
+        setLoadedTabs(prev => new Set(prev).add(tabId));
+      });
+    }
 
     // Listen for update-ready event from the auto-updater
     if ((window as any).electronUpdater) {
@@ -50,8 +43,26 @@ function App() {
         setExpanded(false);
       }
     };
+    
+    const handleMessage = (e: MessageEvent) => {
+      // Validate that the message actually came from one of our mounted tool iframes
+      const isFromKnownTool = TOOLS.some(t => {
+        const frame = document.getElementById(`frame-${t.id}`) as HTMLIFrameElement;
+        return frame && frame.contentWindow === e.source;
+      });
+
+      if (isFromKnownTool && e.data?.type === 'iframe-click') {
+        setExpanded(false);
+      }
+    };
+
     document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+    window.addEventListener('message', handleMessage);
+    
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+      window.removeEventListener('message', handleMessage);
+    };
   }, []);
 
   const handleSidebarClick = (e: React.MouseEvent) => {
@@ -151,7 +162,6 @@ function App() {
               src={tool.url}
               title={tool.label}
               style={{ display: activeTab === tool.id ? 'block' : 'none' }}
-              onLoad={(e) => injectQtPolyfill(e.currentTarget)}
             />
           ) : null
         ))}
