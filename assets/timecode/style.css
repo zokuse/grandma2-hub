@@ -21,12 +21,13 @@
 
 .gen-summary-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
     gap: 6px;
     margin-bottom: 6px;
 }
 .gen-summary-stat {
     background: rgba(0,0,0,0.25);
+    border: 1px solid var(--surface-border);
     border-radius: var(--radius-s);
     padding: 8px 4px;
     text-align: center;
