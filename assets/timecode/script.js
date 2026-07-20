@@ -8,6 +8,7 @@ window.downloadXML = downloadXML;
 window.triggerSendToMA2 = triggerSendToMA2;
 window.closeModal = closeModal;
 window.submitLogin = submitLogin;
+window.toggleExecutorSection = toggleExecutorSection;
 
 let pyBridge = null;
 let currentXML = null;
@@ -120,9 +121,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // Auto-generate XML on settings change
     const inputs = ['export-mode', 'fps', 'tc-offset', 'start-seq', 'start-tc', 'tc-name', 'exec-page', 'exec-number'];
     inputs.forEach(id => {
-        document.getElementById(id).addEventListener('input', generateXMLFromState);
-        document.getElementById(id).addEventListener('change', generateXMLFromState);
+        const el = document.getElementById(id);
+        el.addEventListener('input', generateXMLFromState);
+        el.addEventListener('change', generateXMLFromState);
+        
+        if (id === 'export-mode') {
+            el.addEventListener('change', updateExportModeHint);
+        }
+        if (id === 'tc-offset') {
+            el.addEventListener('input', validateOffsetInput);
+            el.addEventListener('change', validateOffsetInput);
+        }
     });
+    
+    // Initial calls
+    updateExportModeHint();
+    validateOffsetInput();
 });
 
 // ============================================================
@@ -195,6 +209,110 @@ function renderPreview() {
     });
 }
 
+const EXPORT_MODE_DESCRIPTIONS = {
+    'main-tc':     'Exports only the main marker track as one Sequence, plus a Timecode track.',
+    'main-sub-tc': "Exports every track's sequence, plus one shared Timecode track.",
+    'sub-tc':      'Exports each REAPER track as its own Sequence, plus a Timecode track.',
+    'tc-only':     'Exports a standalone Timecode track with no Sequences.'
+};
+
+function updateExportModeHint() {
+    const mode = document.getElementById('export-mode').value;
+    document.getElementById('export-mode-hint').textContent = EXPORT_MODE_DESCRIPTIONS[mode] || '';
+}
+
+function validateOffsetInput() {
+    const input = document.getElementById('tc-offset');
+    const hint = document.getElementById('tc-offset-hint');
+    const value = input.value.trim();
+
+    const isDefaultValue = value === '00:00:00.00';
+    const isValidFormat = /^\d{1,2}:\d{1,2}:\d{1,2}(\.\d+)?$/.test(value);
+
+    const isValid = isDefaultValue || isValidFormat;
+    input.classList.toggle('input-invalid', !isValid);
+    hint.style.display = isValid ? 'none' : 'block';
+}
+
+function toggleExecutorSection() {
+    const content = document.getElementById('executor-binding-content');
+    const chevron = document.getElementById('executor-toggle-chevron');
+    const isHidden = content.style.display === 'none';
+    content.style.display = isHidden ? 'block' : 'none';
+    chevron.classList.toggle('expanded', isHidden);
+}
+
+function computeGenerationSummary() {
+    if (!currentParsedData) return null;
+
+    const exportMode = document.getElementById('export-mode').value;
+    const exportMain = exportMode.includes('main');
+    const exportSub  = exportMode.includes('sub');
+    const exportTc   = exportMode.includes('tc');
+
+    let sequenceCount = 0;
+    let cueCount = 0;
+
+    if (exportMain && currentParsedData.mainMarkers.length > 0) {
+        sequenceCount++;
+        cueCount += currentParsedData.mainMarkers.length;
+    }
+    if (exportSub) {
+        currentParsedData.tracks.forEach(track => {
+            if (track.items.length > 0) {
+                sequenceCount++;
+                cueCount += track.items.length;
+            }
+        });
+    }
+
+    const execPage = parseInt(document.getElementById('exec-page').value, 10) || 1;
+    const execNumber = parseInt(document.getElementById('exec-number').value, 10) || 1;
+    const hasExecutor = true; // Mandatory
+
+    return {
+        sequenceCount,
+        cueCount,
+        timecodeCount: exportTc ? 1 : 0,
+        executorLabel: hasExecutor ? `${execPage}.${execNumber}` : null
+    };
+}
+
+function renderGenerationSummary() {
+    const summary = computeGenerationSummary();
+    const grid = document.getElementById('gen-summary-grid');
+    const execRow = document.getElementById('gen-summary-executor');
+    const execValue = document.getElementById('gen-summary-executor-value');
+
+    if (!summary) {
+        grid.innerHTML = '<p style="grid-column: 1 / -1; font-size: 11px; color: #555; text-align: center; padding: 8px 0;">Load a project to preview</p>';
+        execRow.style.display = 'none';
+        return;
+    }
+
+    grid.innerHTML = `
+        <div class="gen-summary-stat">
+            <span class="gen-summary-stat-value">${summary.sequenceCount}</span>
+            <span class="gen-summary-stat-label">Sequences</span>
+        </div>
+        <div class="gen-summary-stat">
+            <span class="gen-summary-stat-value">${summary.cueCount}</span>
+            <span class="gen-summary-stat-label">Cues</span>
+        </div>
+        <div class="gen-summary-stat">
+            <span class="gen-summary-stat-value">${summary.timecodeCount}</span>
+            <span class="gen-summary-stat-label">Timecode</span>
+        </div>
+    `;
+
+    if (summary.executorLabel) {
+        execValue.textContent = summary.executorLabel;
+        execRow.style.display = 'flex';
+    } else {
+        execRow.style.display = 'none';
+    }
+}
+
 function generateXMLFromState() {
     if (!currentParsedData) return;
 
@@ -226,6 +344,8 @@ function generateXMLFromState() {
         exportMode: exportMode,
         parsedData: currentParsedData
     });
+    
+    renderGenerationSummary();
 }
 
 // ============================================================

@@ -14,6 +14,108 @@
     gap: 12px;
     height: 100%;
 }
+
+.gen-summary {
+    margin-bottom: 8px;
+}
+.gen-summary-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #888;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+.gen-summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+.gen-summary-stat {
+    background: rgba(0,0,0,0.25);
+    border-radius: var(--radius-s);
+    padding: 8px 4px;
+    text-align: center;
+}
+.gen-summary-stat-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    display: block;
+}
+.gen-summary-stat-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    color: var(--text-muted-color);
+    letter-spacing: 0.3px;
+}
+.gen-summary-executor {
+    background: rgba(253, 216, 53, 0.1);
+    border: 1px solid rgba(253, 216, 53, 0.3);
+    border-radius: var(--radius-s);
+    padding: 8px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.gen-summary-executor-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    font-weight: 600;
+    color: var(--accent-color);
+}
+.gen-summary-executor-value {
+    font-size: 14px;
+    font-weight: 700;
+    font-family: monospace;
+    color: var(--accent-color);
+}
+
+.settings-section-toggle {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: #888;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 0 8px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--surface-border);
+}
+.settings-section-toggle:hover {
+    color: #aaa;
+}
+.optional-tag {
+    color: #555;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+}
+.toggle-chevron {
+    transition: transform 0.2s;
+}
+.toggle-chevron.expanded {
+    transform: rotate(180deg);
+}
+
+.field-hint {
+    font-size: 10px;
+    color: #666;
+    margin-top: 4px;
+    padding-left: 2px;
+}
+.field-hint-error {
+    color: var(--error-color);
+}
+.form-control.input-invalid {
+    border-color: var(--error-color) !important;
+}
 .file-drop-zone:hover {
     border-color: rgba(255, 255, 255, 0.25);
     background: rgba(255, 255, 255, 0.02);
