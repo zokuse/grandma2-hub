@@ -4,12 +4,14 @@ A simple, all-in-one companion utility for MA Lighting programmers. Connect dire
 
 > **Note:** This is an independent, third-party personal workflow utility shared with the community. It is not affiliated with, endorsed by, or associated with MA Lighting in any way. Use it at your own risk!
 
-## Features
+## Included Tools
 
-- **Direct Connection:** Send commands and pull patch data directly from the console via Telnet.
-- **Workflow Tools:** Visual fixture cloner, XYZ position injector, and DMX patch viewer.
-- **Timecode Generator:** Convert REAPER `.rpp` projects directly into MA2 XML timecode shows.
-- **3D Assets:** Simple `gltf`/`glb` unpacker for your 3D models.
+- **Visual Cloner:** Visually map clone sources to destinations from your layouts and automatically push the clone macros to the console.
+- **DMX View:** A visual footprint of your universes. See channel occupancy, fixture counts, and color-coded layers at a glance.
+- **Patch List:** Pull your current patch straight from the console and export clean, professional PDF reports for your crew.
+- **XYZ Injector:** Map real-world 3D spatial coordinates from pre-viz software (like Capture) directly into your MA2 patch.
+- **Timecode Cues:** Generate MA2 XML timecode shows directly from REAPER `.rpp` project markers with auto-assigned sequences.
+- **glTF Unpacker:** Easily unpack and manage `.glb`/`.gltf` 3D model files for MA2 3D environment integration.
 
 ## Development
 
