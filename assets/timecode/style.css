@@ -21,7 +21,7 @@
 
 .gen-summary-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 6px;
     margin-bottom: 6px;
 }
