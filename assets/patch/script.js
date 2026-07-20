@@ -12,7 +12,7 @@ function getTypeBadgeClass(typeStr) {
         hash = s.charCodeAt(i) + ((hash << 5) - hash);
     }
     
-    const colorIndex = Math.abs(hash) % 7;
+    const colorIndex = Math.abs(hash) % 5;
     return `type-badge-c${colorIndex}`;
 }
 
