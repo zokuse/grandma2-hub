@@ -3,18 +3,7 @@ let currentSortColumn = 'id';
 let sortAscending = true;
 let pyBridge = null;
 let fixtureSpecs = [];
-function getTypeBadgeClass(typeStr) {
-    const s = (typeStr || '').toLowerCase();
-    if (!s) return 'type-badge-default';
-    
-    let hash = 0;
-    for (let i = 0; i < s.length; i++) {
-        hash = s.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    
-    const colorIndex = Math.abs(hash) % 5;
-    return `type-badge-c${colorIndex}`;
-}
+
 
 function getSpecsForType(typeName) {
     let typeUpper = typeName.toUpperCase();
@@ -389,7 +378,7 @@ function renderTable() {
             <td>${f.unit}</td>
             <td><strong>${escXML(f.displayId)}</strong></td>
             <td>${escXML(f.name)}</td>
-            <td><span class="type-badge-v2 ${getTypeBadgeClass(f.type)}">${escXML(f.type)}</span></td>
+            <td><span class="type-badge">${escXML(f.type)}</span></td>
             <td><code>${escXML(f.patch)}</code></td>
         `;
         tbody.appendChild(tr);
