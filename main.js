@@ -167,6 +167,19 @@ app.whenReady().then(() => {
             console.error('[AutoUpdater] Error:', err.message);
         });
 
+        // Clear updater cache to prevent stale latest.yml caching issues
+        try {
+            const fs = require('fs');
+            const localAppData = process.env.LOCALAPPDATA || path.join(app.getPath('home'), 'AppData', 'Local');
+            const updaterCacheDir = path.join(localAppData, `${app.name}-updater`);
+            if (fs.existsSync(updaterCacheDir)) {
+                fs.rmSync(updaterCacheDir, { recursive: true, force: true });
+                console.log('[AutoUpdater] Cleared stale updater cache');
+            }
+        } catch (cacheErr) {
+            console.error('[AutoUpdater] Failed to clear cache:', cacheErr.message);
+        }
+
         autoUpdater.checkForUpdates();
     } catch (e) {
         console.log('[AutoUpdater] Not available in this build:', e.message);
