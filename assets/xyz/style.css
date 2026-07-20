@@ -11,12 +11,6 @@
 
 .stat-count { font-weight: 600; font-size: 11px; margin-left: 4px; color: #ccc;}
 
-/* Glassy Stat Boxes */
-.xyz-stat-strip { display: flex; gap: 8px; align-items: center; }
-.xyz-stat-box { background: rgba(0,0,0,0.15); border: 1px solid var(--surface-border); border-radius: var(--radius-m); padding: 4px 12px; text-align: center; }
-.xyz-stat-value { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 2px; }
-.xyz-stat-label { font-size: 10px; color: var(--text-muted-color); text-transform: uppercase; letter-spacing: 0.5px; }
-
 /* ===== MAIN TABLE CONTAINER ===== */
 .mapping-col-header {
     display: grid;
