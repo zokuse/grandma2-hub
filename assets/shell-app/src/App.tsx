@@ -77,7 +77,7 @@ function App() {
       <div className="titlebar">
         <div className="titlebar-left">
           <img src="../../icon.ico" className="titlebar-icon-img" alt="App Icon" />
-          <span className="titlebar-title">GrandMA2 Hub</span>
+          <span className="titlebar-title">MA2 Hub</span>
         </div>
         <div className="window-controls">
           <button onClick={() => (window as any).electronWindow?.minimize()} title="Minimize">
@@ -132,7 +132,7 @@ function App() {
               <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
             </svg>
             <span className="update-banner__text">
-              GrandMA2 Hub <strong>v{updateReady.version}</strong> is ready to install.
+              MA2 Hub <strong>v{updateReady.version}</strong> is ready to install.
             </span>
             <button
               id="btn-restart-update"
