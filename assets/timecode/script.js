@@ -275,8 +275,6 @@ function renderGenerationSummary() {
     const summary = computeGenerationSummary();
     const container = document.querySelector('.gen-summary');
     const grid = document.getElementById('gen-summary-grid');
-    const execRow = document.getElementById('gen-summary-executor');
-    const execValue = document.getElementById('gen-summary-executor-value');
 
     if (!summary) {
         container.style.display = 'none';
@@ -298,14 +296,11 @@ function renderGenerationSummary() {
             <span class="gen-summary-stat-value">${summary.timecodeCount}</span>
             <span class="gen-summary-stat-label">Timecode</span>
         </div>
+        <div class="gen-summary-stat">
+            <span class="gen-summary-stat-value">${summary.executorLabel}</span>
+            <span class="gen-summary-stat-label">Target Exec</span>
+        </div>
     `;
-
-    if (summary.executorLabel) {
-        execValue.textContent = summary.executorLabel;
-        execRow.style.display = 'flex';
-    } else {
-        execRow.style.display = 'none';
-    }
 }
 
 function generateXMLFromState() {
