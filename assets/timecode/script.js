@@ -296,7 +296,7 @@ function renderGenerationSummary() {
             <span class="gen-summary-stat-value">${summary.timecodeCount}</span>
             <span class="gen-summary-stat-label">Timecode</span>
         </div>
-        <div class="gen-summary-stat" style="grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; padding: 8px 12px;">
+        <div class="gen-summary-stat" style="grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; padding: 10px 14px;">
             <span class="gen-summary-stat-label" style="margin: 0;">Target Executor</span>
             <span style="font-size: 13px; font-weight: 600; color: #fff;">${summary.executorLabel}</span>
         </div>
