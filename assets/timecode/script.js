@@ -274,14 +274,17 @@ function computeGenerationSummary() {
 function renderGenerationSummary() {
     const summary = computeGenerationSummary();
     const container = document.querySelector('.gen-summary');
+    const divider = document.getElementById('gen-summary-divider');
     const grid = document.getElementById('gen-summary-grid');
 
     if (!summary) {
         container.style.display = 'none';
+        if (divider) divider.style.display = 'none';
         return;
     }
 
     container.style.display = 'block';
+    if (divider) divider.style.display = 'block';
 
     grid.innerHTML = `
         <div class="gen-summary-stat">
