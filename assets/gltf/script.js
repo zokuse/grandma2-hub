@@ -92,7 +92,6 @@ const elLblFilename = document.getElementById('lbl-filename');
 const elBtnUnpack = document.getElementById('btn-unpack');
 const elLblTextures = document.getElementById('lbl-textures');
 const elLblSize = document.getElementById('lbl-size');
-const elLblEstimatedSize = document.getElementById('lbl-estimated-size');
 
 let textureCardsCache = [];
 
@@ -263,19 +262,6 @@ function handleAnalyzeResponse(response) {
             
         elTextureGrid.innerHTML = '';
         textureCardsCache = []; // Reset the in-memory cache
-        
-        // Calculate estimated unpack size
-        let totalBase64Length = 0;
-        res.textures.forEach(tex => {
-            if (tex.data_url) totalBase64Length += tex.data_url.length;
-        });
-        const estimatedSizeMb = (totalBase64Length * 0.75) / (1024 * 1024);
-        if (estimatedSizeMb > 0) {
-            elLblEstimatedSize.textContent = `Estimated size: ~${estimatedSizeMb.toFixed(1)} MB`;
-            elLblEstimatedSize.style.display = 'block';
-        } else {
-            elLblEstimatedSize.style.display = 'none';
-        }
         
         if (res.texture_count === 0) {
             elTextureGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #888; padding: 40px;">No textures found in this model.</div>';
