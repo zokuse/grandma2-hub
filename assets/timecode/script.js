@@ -287,22 +287,10 @@ function renderGenerationSummary() {
     if (divider) divider.style.display = 'block';
 
     grid.innerHTML = `
-        <div class="gen-summary-stat">
-            <span class="gen-summary-stat-value">${summary.sequenceCount}</span>
-            <span class="gen-summary-stat-label">Sequences</span>
-        </div>
-        <div class="gen-summary-stat">
-            <span class="gen-summary-stat-value">${summary.cueCount}</span>
-            <span class="gen-summary-stat-label">Cues</span>
-        </div>
-        <div class="gen-summary-stat">
-            <span class="gen-summary-stat-value">${summary.timecodeCount}</span>
-            <span class="gen-summary-stat-label">Timecode</span>
-        </div>
-        <div class="gen-summary-stat" style="grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; padding: 10px 14px;">
-            <span class="gen-summary-stat-label" style="margin: 0;">Target Executor</span>
-            <span style="font-size: 13px; font-weight: 600; color: #fff;">${summary.executorLabel}</span>
-        </div>
+        <div class="match-stat muted"><span>${summary.sequenceCount}</span> Sequences</div>
+        <div class="match-stat muted"><span>${summary.cueCount}</span> Cues</div>
+        <div class="match-stat muted"><span>${summary.timecodeCount}</span> Timecode</div>
+        <div class="match-stat warning" style="margin-left: auto;">Target Exec: <span>${summary.executorLabel}</span></div>
     `;
 }
 

@@ -18,31 +18,7 @@
 .gen-summary {
 }
 
-.gen-summary-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 6px;
-    margin-bottom: 6px;
-}
-.gen-summary-stat {
-    background: rgba(0,0,0,0.25);
-    border: 1px solid var(--surface-border);
-    border-radius: var(--radius-s);
-    padding: 8px 4px;
-    text-align: center;
-}
-.gen-summary-stat-value {
-    font-size: 16px;
-    font-weight: 700;
-    color: #fff;
-    display: block;
-}
-.gen-summary-stat-label {
-    font-size: 9px;
-    text-transform: uppercase;
-    color: var(--text-muted-color);
-    letter-spacing: 0.3px;
-}
+
 
 
 .field-hint {
