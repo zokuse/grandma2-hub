@@ -39,7 +39,7 @@
         <!-- SIDEBAR: Settings Panel -->
         <div class="glassy-surface sidebar-card h-fit">
 
-                <div class="gen-summary">
+                <div class="gen-summary" style="display: none;">
                     <div class="gen-summary-label">Will Generate</div>
                     <div class="gen-summary-grid" id="gen-summary-grid">
                         <!-- populated by JS -->
@@ -122,12 +122,8 @@
                 <div class="sidebar-divider"></div>
 
                 <div class="settings-group">
-                    <button type="button" class="settings-section-toggle" id="executor-toggle" onclick="toggleExecutorSection()">
-                        <span>Executor Binding</span>
-                        <span class="toggle-chevron" id="executor-toggle-chevron">▾</span>
-                    </button>
-                    <div id="executor-binding-content" style="display: none;">
-                        <div style="display: flex; gap: 8px;">
+                    <h3 class="settings-section-title">Executor Binding</h3>
+                    <div style="display: flex; gap: 8px;">
                         <div class="form-group" style="flex: 1;">
                             <label for="exec-page">Page</label>
                             <div class="number-stepper">
@@ -152,7 +148,6 @@
                                 </button>
                             </div>
                         </div>
-                    </div>
                     </div>
                 </div>
         </div>

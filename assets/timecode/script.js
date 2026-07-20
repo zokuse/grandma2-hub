@@ -8,7 +8,6 @@ window.downloadXML = downloadXML;
 window.triggerSendToMA2 = triggerSendToMA2;
 window.closeModal = closeModal;
 window.submitLogin = submitLogin;
-window.toggleExecutorSection = toggleExecutorSection;
 
 let pyBridge = null;
 let currentXML = null;
@@ -234,13 +233,7 @@ function validateOffsetInput() {
     hint.style.display = isValid ? 'none' : 'block';
 }
 
-function toggleExecutorSection() {
-    const content = document.getElementById('executor-binding-content');
-    const chevron = document.getElementById('executor-toggle-chevron');
-    const isHidden = content.style.display === 'none';
-    content.style.display = isHidden ? 'block' : 'none';
-    chevron.classList.toggle('expanded', isHidden);
-}
+
 
 function computeGenerationSummary() {
     if (!currentParsedData) return null;
@@ -280,15 +273,17 @@ function computeGenerationSummary() {
 
 function renderGenerationSummary() {
     const summary = computeGenerationSummary();
+    const container = document.querySelector('.gen-summary');
     const grid = document.getElementById('gen-summary-grid');
     const execRow = document.getElementById('gen-summary-executor');
     const execValue = document.getElementById('gen-summary-executor-value');
 
     if (!summary) {
-        grid.innerHTML = '<p style="grid-column: 1 / -1; font-size: 11px; color: #555; text-align: center; padding: 8px 0;">Load a project to preview</p>';
-        execRow.style.display = 'none';
+        container.style.display = 'none';
         return;
     }
+
+    container.style.display = 'block';
 
     grid.innerHTML = `
         <div class="gen-summary-stat">
