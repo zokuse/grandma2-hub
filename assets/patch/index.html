@@ -49,19 +49,10 @@
                 <input type="text" id="search-fixtures" class="search-input" placeholder="Search ID, Name, or Patch..." oninput="handleSearch()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </div>
-            <div class="patch-stat-strip">
-                <div class="patch-stat-box">
-                    <div class="patch-stat-value" id="fixture-count">0</div>
-                    <div class="patch-stat-label">Fixtures</div>
-                </div>
-                <div class="patch-stat-box">
-                    <div class="patch-stat-value"><span id="total-watt">0</span> W</div>
-                    <div class="patch-stat-label">Power</div>
-                </div>
-                <div class="patch-stat-box">
-                    <div class="patch-stat-value"><span id="total-weight">0</span> kg</div>
-                    <div class="patch-stat-label">Weight</div>
-                </div>
+            <div class="match-stats">
+                <div class="match-stat muted"><span id="fixture-count">0</span> Fixtures</div>
+                <div class="match-stat muted"><span id="total-watt">0</span> W</div>
+                <div class="match-stat muted"><span id="total-weight">0</span> kg</div>
             </div>
         </div>
         
