@@ -47,3 +47,14 @@
 .drag-overlay.active .drag-content { transform: scale(1); }
 .drag-content svg { animation: bounce 1s infinite; }
 @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+/* --- Analytics Strip --- */
+.stat-strip { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
+.stat-box { background: rgba(0,0,0,0.3); border: 1px solid var(--surface-border); border-radius: var(--radius-m); padding: 10px; text-align: center; }
+.stat-value { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.stat-label { font-size: 11px; color: var(--text-muted-color); text-transform: uppercase; letter-spacing: 0.5px; }
+
+
+/* --- Texture Type Badges --- */
+.tex-type-badge { font-size: 10px; font-weight: 600; padding: 4px 8px; border-radius: 4px; border: 1px solid transparent; white-space: nowrap; }
+.badge-in-grid { position: absolute; bottom: 8px; left: 8px; backdrop-filter: blur(4px); pointer-events: none; z-index: 2; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }

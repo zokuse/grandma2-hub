@@ -92,11 +92,28 @@ const elLblFilename = document.getElementById('lbl-filename');
 const elBtnUnpack = document.getElementById('btn-unpack');
 const elLblTextures = document.getElementById('lbl-textures');
 const elLblSize = document.getElementById('lbl-size');
-const elLblMeshes = document.getElementById('lbl-meshes');
-const elLblMaterials = document.getElementById('lbl-materials');
-const elLblAnimations = document.getElementById('lbl-animations');
+const elLblEstimatedSize = document.getElementById('lbl-estimated-size');
 
 let textureCardsCache = [];
+
+const TEXTURE_TYPE_COLORS = {
+    'BaseColor':         { bg: 'rgba(76,175,80,0.15)',  fg: '#4caf50' },
+    'Normal':            { bg: 'rgba(41,182,246,0.15)', fg: '#29b6f6' },
+    'MetallicRoughness': { bg: 'rgba(171,71,188,0.15)', fg: '#ab47bc' },
+    'Emissive':          { bg: 'rgba(255,167,38,0.15)', fg: '#ffa726' },
+    'Occlusion':         { bg: 'rgba(120,144,156,0.15)',fg: '#90a4ae' },
+    'default':           { bg: 'rgba(255,255,255,0.08)',fg: '#aaa' }
+};
+
+function getTextureTypeColor(name) {
+    const n = (name || '').toLowerCase();
+    if (n.includes('basecolor')) return { type: 'BaseColor', ...TEXTURE_TYPE_COLORS['BaseColor'] };
+    if (n.includes('normal')) return { type: 'Normal', ...TEXTURE_TYPE_COLORS['Normal'] };
+    if (n.includes('metallicroughness') || n.includes('orm')) return { type: 'MetallicRoughness', ...TEXTURE_TYPE_COLORS['MetallicRoughness'] };
+    if (n.includes('emissive')) return { type: 'Emissive', ...TEXTURE_TYPE_COLORS['Emissive'] };
+    if (n.includes('occlusion')) return { type: 'Occlusion', ...TEXTURE_TYPE_COLORS['Occlusion'] };
+    return { type: 'Texture', ...TEXTURE_TYPE_COLORS['default'] };
+}
 
 function esc(s) {
     return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
@@ -239,9 +256,6 @@ function handleAnalyzeResponse(response) {
         elLblTextures.textContent = res.texture_count;
         if (res.stats) {
             elLblSize.textContent = res.stats.size_mb + ' MB';
-            elLblMeshes.textContent = res.stats.meshes;
-            elLblMaterials.textContent = res.stats.materials;
-            elLblAnimations.textContent = res.stats.animations;
         }
         
         elTextureSearchContainer.style.display = 'block';
@@ -249,6 +263,19 @@ function handleAnalyzeResponse(response) {
             
         elTextureGrid.innerHTML = '';
         textureCardsCache = []; // Reset the in-memory cache
+        
+        // Calculate estimated unpack size
+        let totalBase64Length = 0;
+        res.textures.forEach(tex => {
+            if (tex.data_url) totalBase64Length += tex.data_url.length;
+        });
+        const estimatedSizeMb = (totalBase64Length * 0.75) / (1024 * 1024);
+        if (estimatedSizeMb > 0) {
+            elLblEstimatedSize.textContent = `Estimated size: ~${estimatedSizeMb.toFixed(1)} MB`;
+            elLblEstimatedSize.style.display = 'block';
+        } else {
+            elLblEstimatedSize.style.display = 'none';
+        }
         
         if (res.texture_count === 0) {
             elTextureGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #888; padding: 40px;">No textures found in this model.</div>';
@@ -263,9 +290,13 @@ function handleAnalyzeResponse(response) {
                 
                 const badgeHtml = tex.resolution ? `<div class="texture-badge">${esc(tex.resolution)}</div>` : '';
                 
+                const typeInfo = getTextureTypeColor(tex.name);
+                const typeBadgeHtml = `<div class="tex-type-badge badge-in-grid" style="background: ${typeInfo.bg}; color: ${typeInfo.fg}; border-color: ${typeInfo.fg}40;">${typeInfo.type}</div>`;
+                
                 card.innerHTML = `
                     <div class="texture-preview">
                         ${badgeHtml}
+                        ${typeBadgeHtml}
                         <div class="texture-download-btn" title="Quick Save">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                         </div>
