@@ -3,22 +3,17 @@ let currentSortColumn = 'id';
 let sortAscending = true;
 let pyBridge = null;
 let fixtureSpecs = [];
-
-const TYPE_BADGE_RULES = [
-    { keywords: ['moving head', 'spot', 'beam', 'hybrid'], cls: 'type-badge-moving' },
-    { keywords: ['led bar', 'led par', 'pixel', 'strip'],   cls: 'type-badge-led' },
-    { keywords: ['fresnel'],                                 cls: 'type-badge-fresnel' },
-    { keywords: ['dimmer', 'relay'],                          cls: 'type-badge-dimmer' }
-];
-
 function getTypeBadgeClass(typeStr) {
-    const lower = (typeStr || '').toLowerCase();
-    for (const rule of TYPE_BADGE_RULES) {
-        if (rule.keywords.some(kw => lower.includes(kw))) {
-            return rule.cls;
-        }
+    const s = (typeStr || '').toLowerCase();
+    if (!s) return 'type-badge-default';
+    
+    let hash = 0;
+    for (let i = 0; i < s.length; i++) {
+        hash = s.charCodeAt(i) + ((hash << 5) - hash);
     }
-    return 'type-badge-default';
+    
+    const colorIndex = Math.abs(hash) % 7;
+    return `type-badge-c${colorIndex}`;
 }
 
 function getSpecsForType(typeName) {
