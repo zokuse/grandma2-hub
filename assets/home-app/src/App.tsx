@@ -30,7 +30,7 @@ function App() {
     <div className="workspace-container">
       <header className="app-header">
         <div className="header-title">
-          <h1>GrandMA2 <span>Hub</span></h1>
+          <h1>MA2 <span>Hub</span></h1>
         </div>
         <p className="subtitle">The ultimate companion toolkit for advanced show programming and 3D visualization.</p>
       </header>
