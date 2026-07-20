@@ -4,6 +4,23 @@ let sortAscending = true;
 let pyBridge = null;
 let fixtureSpecs = [];
 
+const TYPE_BADGE_RULES = [
+    { keywords: ['moving head', 'spot', 'beam', 'hybrid'], cls: 'type-badge-moving' },
+    { keywords: ['led bar', 'led par', 'pixel', 'strip'],   cls: 'type-badge-led' },
+    { keywords: ['fresnel'],                                 cls: 'type-badge-fresnel' },
+    { keywords: ['dimmer', 'relay'],                          cls: 'type-badge-dimmer' }
+];
+
+function getTypeBadgeClass(typeStr) {
+    const lower = (typeStr || '').toLowerCase();
+    for (const rule of TYPE_BADGE_RULES) {
+        if (rule.keywords.some(kw => lower.includes(kw))) {
+            return rule.cls;
+        }
+    }
+    return 'type-badge-default';
+}
+
 function getSpecsForType(typeName) {
     let typeUpper = typeName.toUpperCase();
     for (let spec of fixtureSpecs) {
@@ -323,7 +340,14 @@ function applyCurrentSort() {
         }
     });
 
+    updateSortIcons();
     renderTable();
+}
+
+function updateSortIcons() {
+    document.querySelectorAll('.sort-icon').forEach(el => el.textContent = '↕');
+    let sortEl = document.getElementById(`sort-${currentSortColumn}`);
+    if (sortEl) sortEl.textContent = sortAscending ? '↓' : '↑';
 }
 
 // 4. UPDATE sortBy FUNCTION (Shortened to call applyCurrentSort)
@@ -334,11 +358,6 @@ function sortBy(column) {
         currentSortColumn = column;
         sortAscending = true;
     }
-
-    document.querySelectorAll('.sort-icon').forEach(el => el.textContent = '↕');
-    
-    let sortEl = document.getElementById(`sort-${column}`);
-    if (sortEl) sortEl.textContent = sortAscending ? '↓' : '↑';
 
     applyCurrentSort(); // <-- Gunakan helper baru ini
 }
@@ -375,7 +394,7 @@ function renderTable() {
             <td>${f.unit}</td>
             <td><strong>${escXML(f.displayId)}</strong></td>
             <td>${escXML(f.name)}</td>
-            <td><span class="type-badge">${escXML(f.type)}</span></td>
+            <td><span class="type-badge-v2 ${getTypeBadgeClass(f.type)}">${escXML(f.type)}</span></td>
             <td><code>${escXML(f.patch)}</code></td>
         `;
         tbody.appendChild(tr);

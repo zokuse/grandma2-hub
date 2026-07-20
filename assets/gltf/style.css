@@ -21,8 +21,7 @@
 
 .view-toggle { display: flex; background: rgba(0,0,0,0.3); border-radius: var(--radius-m); padding: 4px; border: 1px solid var(--surface-border); width: 100%; }
 .view-btn { flex: 1; text-align: center; padding: 8px 0; font-size: 13px; font-weight: 600; color: var(--text-muted-color); cursor: pointer; border-radius: 4px; transition: all 0.2s; border: 1px solid transparent; }
-.view-btn:hover:not(.active) { color: #fff; background: rgba(255,255,255,0.05); }
-.view-btn.active { background: rgba(253, 216, 53, 0.15); border: 1px solid var(--accent-color); color: var(--accent-color); }
+.view-btn.active { background: rgba(253, 216, 53, 0.1); border: 1px solid rgba(253, 216, 53, 0.3); color: var(--accent-color); }
 
 .texture-name { color: #fff; font-weight: 600; margin-bottom: 4px; word-break: break-all; line-height: 1.4; display: block; }
 .texture-idx { color: var(--accent-color); font-family: monospace; display: block; }
