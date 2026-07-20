@@ -32,6 +32,6 @@ code { background: #222; padding: 4px 8px; border-radius: 4px; font-family: mono
 
 /* Stat Boxes for Header */
 .patch-stat-strip { display: flex; gap: 12px; align-items: center; }
-.patch-stat-box { background: rgba(0,0,0,0.3); border: 1px solid var(--surface-border); border-radius: var(--radius-m); padding: 6px 16px; text-align: center; }
+.patch-stat-box { background: rgba(0,0,0,0.15); border: 1px solid var(--surface-border); border-radius: var(--radius-m); padding: 6px 16px; text-align: center; }
 .patch-stat-value { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 2px; }
 .patch-stat-label { font-size: 10px; color: var(--text-muted-color); text-transform: uppercase; letter-spacing: 0.5px; }
