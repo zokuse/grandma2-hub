@@ -34284,7 +34284,6 @@ void main() {
       var elBtnUnpack = document.getElementById("btn-unpack");
       var elLblTextures = document.getElementById("lbl-textures");
       var elLblSize = document.getElementById("lbl-size");
-      var elLblEstimatedSize = document.getElementById("lbl-estimated-size");
       var textureCardsCache = [];
       var TEXTURE_TYPE_COLORS = {
         "BaseColor": { bg: "rgba(76,175,80,0.15)", fg: "#4caf50" },
@@ -34432,17 +34431,6 @@ void main() {
             elTextureSearch.value = "";
             elTextureGrid.innerHTML = "";
             textureCardsCache = [];
-            let totalBase64Length = 0;
-            res.textures.forEach((tex) => {
-              if (tex.data_url) totalBase64Length += tex.data_url.length;
-            });
-            const estimatedSizeMb = totalBase64Length * 0.75 / (1024 * 1024);
-            if (estimatedSizeMb > 0) {
-              elLblEstimatedSize.textContent = `Estimated size: ~${estimatedSizeMb.toFixed(1)} MB`;
-              elLblEstimatedSize.style.display = "block";
-            } else {
-              elLblEstimatedSize.style.display = "none";
-            }
             if (res.texture_count === 0) {
               elTextureGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #888; padding: 40px;">No textures found in this model.</div>';
             } else {
