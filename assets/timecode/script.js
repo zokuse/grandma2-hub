@@ -273,21 +273,17 @@ function computeGenerationSummary() {
 
 function renderGenerationSummary() {
     const summary = computeGenerationSummary();
-    const container = document.querySelector('.gen-summary');
-    const divider = document.getElementById('gen-summary-divider');
     const grid = document.getElementById('gen-summary-grid');
 
     if (!summary) {
-        container.style.display = 'none';
-        if (divider) divider.style.display = 'none';
+        if (grid) grid.style.display = 'none';
         return;
     }
 
-    container.style.display = 'block';
-    if (divider) divider.style.display = 'block';
+    if (grid) grid.style.display = 'flex';
 
     grid.innerHTML = `
-        <div class="gen-summary-stats-strip">
+        <div class="gen-summary-stats-strip" style="margin: 0; padding: 4px 12px; gap: 16px;">
             <div class="gen-summary-stat">
                 <span class="gen-summary-stat-val">${summary.sequenceCount}</span>
                 <span class="gen-summary-stat-label">Sequences</span>
@@ -301,7 +297,7 @@ function renderGenerationSummary() {
                 <span class="gen-summary-stat-label">Timecode</span>
             </div>
         </div>
-        <div class="gen-summary-target-strip">
+        <div class="gen-summary-target-strip" style="margin: 0; padding: 4px 12px; gap: 12px;">
             <span class="gen-summary-stat-label" style="margin: 0; color: #888;">Target Executor</span>
             <span style="font-size: 13px; font-weight: 600; color: var(--accent-color);">${summary.executorLabel}</span>
         </div>
