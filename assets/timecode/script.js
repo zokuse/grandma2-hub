@@ -283,23 +283,11 @@ function renderGenerationSummary() {
     if (grid) grid.style.display = 'flex';
 
     grid.innerHTML = `
-        <div class="gen-summary-stats-strip" style="margin: 0; padding: 4px 12px; gap: 16px;">
-            <div class="gen-summary-stat">
-                <span class="gen-summary-stat-val">${summary.sequenceCount}</span>
-                <span class="gen-summary-stat-label">Sequences</span>
-            </div>
-            <div class="gen-summary-stat">
-                <span class="gen-summary-stat-val">${summary.cueCount}</span>
-                <span class="gen-summary-stat-label">Cues</span>
-            </div>
-            <div class="gen-summary-stat">
-                <span class="gen-summary-stat-val">${summary.timecodeCount}</span>
-                <span class="gen-summary-stat-label">Timecode</span>
-            </div>
-        </div>
-        <div class="gen-summary-target-strip" style="margin: 0; padding: 4px 12px; gap: 12px;">
-            <span class="gen-summary-stat-label" style="margin: 0; color: #888;">Target Executor</span>
-            <span style="font-size: 13px; font-weight: 600; color: var(--accent-color);">${summary.executorLabel}</span>
+        <div class="match-stats">
+            <div class="match-stat muted"><span>${summary.sequenceCount}</span> Sequences</div>
+            <div class="match-stat muted"><span>${summary.cueCount}</span> Cues</div>
+            <div class="match-stat muted"><span>${summary.timecodeCount}</span> Timecode</div>
+            <div class="match-stat warning" style="margin-left: auto;">Target Exec: <span>${summary.executorLabel}</span></div>
         </div>
     `;
 }
