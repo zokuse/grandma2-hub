@@ -143,6 +143,16 @@ function importPatchXMLNative() {
     });
 }
 
+function openModal(id) {
+    const m = document.getElementById(id);
+    if (m) m.classList.add('active');
+}
+
+function closeModal(id) {
+    const m = document.getElementById(id);
+    if (m) m.classList.remove('active');
+}
+
 function pullFromGrandMA2() {
     if(!pyBridge) return showToast("Bridge not ready", "error");
     openModal('layout-modal');
