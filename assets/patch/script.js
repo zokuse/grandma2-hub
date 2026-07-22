@@ -142,9 +142,10 @@ function escXML(str) {
 // Function to reset/clear the patch list
 function clearPatchList() {
     fixtures = [];
-    document.getElementById('fixture-count').textContent = '0';
-    if(document.getElementById('total-watt')) document.getElementById('total-watt').textContent = '0';
-    if(document.getElementById('total-weight')) document.getElementById('total-weight').textContent = '0';
+    if(document.getElementById('fixture-count')) document.getElementById('fixture-count').textContent = '0';
+    // TODO: Watt and weight features are temporarily disabled due to inaccurate data.
+    // if(document.getElementById('total-watt')) document.getElementById('total-watt').textContent = '0';
+    // if(document.getElementById('total-weight')) document.getElementById('total-weight').textContent = '0';
     document.getElementById('search-fixtures').value = '';
     const exportNameInput = document.getElementById('export-filename');
     if (exportNameInput) exportNameInput.value = '';
@@ -255,8 +256,9 @@ function recalculateSpecsAndRender() {
         totalWatt += f.watt;
         totalWeight += f.weight;
     });
-    if (document.getElementById('total-watt')) document.getElementById('total-watt').textContent = `${totalWatt.toLocaleString('en-US')}`;
-    if (document.getElementById('total-weight')) document.getElementById('total-weight').textContent = `${totalWeight.toLocaleString('en-US')}`;
+    // TODO: Watt and weight features are temporarily disabled due to inaccurate data.
+    // if (document.getElementById('total-watt')) document.getElementById('total-watt').textContent = `${totalWatt.toLocaleString('en-US')}`;
+    // if (document.getElementById('total-weight')) document.getElementById('total-weight').textContent = `${totalWeight.toLocaleString('en-US')}`;
 }
 
 // 2. UPDATE processFixtureNode FUNCTION (Removed layerIndex param and spec calculation)
@@ -567,6 +569,7 @@ async function submitPDFExport(layoutMode) {
                                 <strong style="color: #000; font-size: 12px;">${escXML(exportFilename)}</strong>
                             </div>
                             <div style="display: flex; gap: 25px; text-align: right; white-space: nowrap; line-height: 1.4;">
+                                <!-- TODO: Watt and weight features temporarily disabled
                                 <div>
                                     <div style="margin-bottom: 2px;">Total Watt</div>
                                     <strong style="color: #000; font-size: 12px;">${pdfTotalWatt.toLocaleString('en-US')} W</strong>
@@ -575,6 +578,7 @@ async function submitPDFExport(layoutMode) {
                                     <div style="margin-bottom: 2px;">Total Weight</div>
                                     <strong style="color: #000; font-size: 12px;">${pdfTotalWeight.toLocaleString('en-US')} kg</strong>
                                 </div>
+                                -->
                                 <div>
                                     <div style="margin-bottom: 2px;">Total Fixtures</div>
                                     <strong style="color: #000; font-size: 12px;">${totalFixtures}</strong>
