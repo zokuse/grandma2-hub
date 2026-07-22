@@ -31,11 +31,20 @@ body {
     z-index: 100;
 }
 
-#sidebar:hover, #sidebar.expanded {
+#sidebar.expanded {
     transition: width 0.2s ease-out, box-shadow 0.2s ease-out;
     width: 200px;
     box-shadow: 5px 0 20px rgba(0, 0, 0, 0.4);
     border-right: 1px solid #444444;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    #sidebar:hover {
+        transition: width 0.2s ease-out, box-shadow 0.2s ease-out;
+        width: 200px;
+        box-shadow: 5px 0 20px rgba(0, 0, 0, 0.4);
+        border-right: 1px solid #444444;
+    }
 }
 
 .nav-btn {
