@@ -81,8 +81,9 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-    const { registerIpcHandlers } = require('./backend/ipcHandlers');
+    const { registerIpcHandlers, registerArtnetHandlers } = require('./backend/ipcHandlers');
     registerIpcHandlers();
+    registerArtnetHandlers();
 
     // ─── Security Hardening ──────────────────────────────────────────────────
     app.on('web-contents-created', (event, contents) => {

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Art-Net Viewer</title>
+    
+    <link rel="stylesheet" href="../shared.css" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+</head>
+<body>
+
+    <div class="status-header-card glassy-surface">
+        <div>
+            <h1 class="main-title">Art-Net Viewer</h1>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header btn-header-ghost" onclick="pollNetwork()" title="Broadcast ArtPoll to discover nodes">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> ArtPoll
+            </button>
+        </div>
+    </div>
+    <div class="layout-grid">
+        <div class="glassy-surface sidebar-card">
+            
+            <div class="sidebar-section" style="margin-bottom: 16px;">
+                <h2 class="list-header" style="margin-bottom: 12px;">Network Traffic</h2>
+                <div class="universe-stats-strip" style="margin-bottom: 8px;">
+                    <div class="universe-stat">
+                        <span class="universe-stat-val" id="stat-net">0</span>
+                        <span class="universe-stat-label">Network</span>
+                    </div>
+                    <div class="universe-stat">
+                        <span class="universe-stat-val" id="stat-sub">0</span>
+                        <span class="universe-stat-label">Subnet</span>
+                    </div>
+                    <div class="universe-stat">
+                        <span class="universe-stat-val" id="stat-uni">0</span>
+                        <span class="universe-stat-label">Universe</span>
+                    </div>
+                </div>
+                <div style="background: rgba(253, 216, 53, 0.1); border: 1px solid rgba(253, 216, 53, 0.2); border-radius: var(--radius-m); padding: 8px; text-align: center;">
+                    <span id="header-packets-rate" style="color: var(--accent-color); font-size: 16px; font-weight: 700;">0</span>
+                    <span style="color: var(--accent-color); font-size: 11px; font-weight: 600; text-transform: uppercase;">Packets/s</span>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h2 class="list-header" style="margin-bottom: 12px;">Network</h2>
+                <div style="display: flex; gap: 12px;">
+                    <div class="form-group" style="flex: 1; min-width: 0;">
+                        <label>Adapter</label>
+                        <select class="form-control" id="network-adapter" style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+                            <option value="0.0.0.0">0.0.0.0 (All Interfaces)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h2 class="list-header" style="margin-bottom: 8px;">Subnets</h2>
+                <div class="button-grid" id="subnet-grid"></div>
+            </div>
+
+            <div class="sidebar-section">
+                <h2 class="list-header" style="margin-bottom: 8px;">Universes</h2>
+                <div class="button-grid" id="universe-grid"></div>
+            </div>
+            
+            <div class="sidebar-section" style="margin-top: 16px;">
+                <h2 class="list-header" style="margin-bottom: 8px;">Discovered Nodes</h2>
+                <div id="node-list-container" style="display: flex; flex-direction: column; gap: 6px;">
+                    <div id="empty-node-state" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius-m); padding: 24px 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px; color: rgba(255,255,255,0.2);"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                        <p style="font-size: 12px; color: var(--text-muted-color); margin: 0; line-height: 1.4;">No nodes found.<br/><span style="color: rgba(255,255,255,0.3); font-size: 11px;">Broadcast ArtPoll to discover.</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glassy-surface workspace-container">
+            <div class="workspace-header">
+                <div class="workspace-header-title">DMX DATA</div>
+            </div>
+            
+            <div class="workspace-viewport" style="position: relative;">
+                <canvas id="dmx-canvas" style="display: block; cursor: crosshair;"></canvas>
+            </div>
+
+            <!-- Chart Section integrated directly into workspace-container -->
+            <div class="chart-section" style="height: 180px; display: flex; flex-direction: column; border-top: 1px solid var(--surface-border); background: rgba(0,0,0,0.2); flex-shrink: 0; position: relative; padding: 12px;">
+                <div class="chart-context-row" style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span id="chart-mode-label" style="font-size: 10px; color: var(--accent-color); font-weight: 700; text-transform: uppercase;">Packets/s</span>
+                        <div id="chart-current-value" class="chart-current-badge"></div>
+                    </div>
+                </div>
+                
+                <div style="flex: 1; position: relative; width: 100%;">
+                    <canvas id="chart-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block;"></canvas>
+                </div>
+            </div>
+            
+            <!-- Workspace-wide No Signal Overlay -->
+            <div class="empty-state" id="no-signal-overlay" style="display: none; background: rgba(0,0,0,0.6); pointer-events: auto;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="2"></circle>
+                    <path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path>
+                </svg>
+                <h3>Waiting for Traffic</h3>
+                <p>Start monitoring to view live Art-Net data.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tooltip Element -->
+    <div id="fixture-tooltip" class="fixture-tooltip"></div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
+    
+    <!-- Loading Overlay -->
+    <div class="modal-overlay" id="loading-overlay">
+        <div class="modal-content" style="text-align: center; background: var(--surface-color); padding: 24px; border-radius: var(--radius-m); border: 1px solid var(--surface-border);">
+            <div style="margin-bottom: 12px;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-color)" stroke-width="2" style="width: 32px; height: 32px; animation: pulse 1.5s infinite;"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"></path></svg></div>
+            <div id="loading-text" style="color: var(--text-color); font-weight: 500;">Working...</div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+</html>
