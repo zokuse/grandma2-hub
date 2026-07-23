@@ -11,7 +11,20 @@
     "start": "electron .",
     "build-installer": "electron-builder --win"
   },
-  "keywords": [],
+  "keywords": [
+    "grandma2",
+    "ma-lighting",
+    "dmx",
+    "artnet",
+    "lighting-control"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zokuse/grandma2-hub.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zokuse/grandma2-hub/issues"
+  },
   "devDependencies": {
     "electron": "^43.1.0",
     "electron-builder": "^26.0.0"
