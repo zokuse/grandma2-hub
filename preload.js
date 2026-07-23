@@ -8,7 +8,8 @@ const activeRequesterByChannel = {};
 
 const signalCallbacks = {
     file_selected: [], layout_pulled: [], macros_sent: [], patch_pulled: [],
-    pdf_exported: [], progress_update: [], analyze_complete: [], unpack_complete: []
+    pdf_exported: [], progress_update: [], analyze_complete: [], unpack_complete: [],
+    artnet_universe_data: [], artnet_node_update: [], artnet_error: []
 };
 
 // Map each signal channel back to the invoke channel(s) that trigger it
@@ -20,7 +21,10 @@ const signalToInvokeMap = {
     pdf_exported: ['export_pdf'],
     analyze_complete: ['analyze_glb'],
     unpack_complete: ['unpack_glb'],
-    progress_update: ['pull_layout', 'pull_patch', 'send_xyz_macro', 'export_macros', 'analyze_glb', 'unpack_glb']
+    progress_update: ['pull_layout', 'pull_patch', 'send_xyz_macro', 'export_macros', 'analyze_glb', 'unpack_glb'],
+    artnet_universe_data: ['artnet_start'],
+    artnet_node_update: ['artnet_start'],
+    artnet_error: ['artnet_start']
 };
 
 // Register ONE listener per channel, broadcasting to all registered callbacks
@@ -95,6 +99,10 @@ function buildBridgeAPI() {
         analyze_glb: makeInvoke('analyze_glb'),
         unpack_glb: makeInvoke('unpack_glb'),
         save_single_texture: makeInvoke('save_single_texture'),
+        artnet_start: makeInvoke('artnet_start'),
+        artnet_stop: makeInvoke('artnet_stop'),
+        artnet_poll: makeInvoke('artnet_poll'),
+        artnet_get_active_universes: makeInvoke('artnet_get_active_universes'),
 
         switch_to: (toolId) => {
             ipcRenderer.send('switch-tab', toolId);
@@ -107,7 +115,10 @@ function buildBridgeAPI() {
         pdf_exported: makeSignal('pdf_exported'),
         progress_update: makeSignal('progress_update'),
         analyze_complete: makeSignal('analyze_complete'),
-        unpack_complete: makeSignal('unpack_complete')
+        unpack_complete: makeSignal('unpack_complete'),
+        artnet_universe_data: makeSignal('artnet_universe_data'),
+        artnet_node_update: makeSignal('artnet_node_update'),
+        artnet_error: makeSignal('artnet_error')
     };
 
     // Cleanup: prune this instance's callbacks when its frame unloads

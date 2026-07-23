@@ -5,6 +5,7 @@ const path = require('path');
 const { XMLParser } = require('fast-xml-parser');
 const MA2Client = require('./MA2Client');
 const gltfUnpacker = require('./gltfUnpacker');
+const ArtnetClient = require('./ArtnetClient');
 
 function cleanShowName(name) {
     if (!name) return "";
@@ -666,4 +667,84 @@ function registerIpcHandlers() {
     });
 }
 
-module.exports = { registerIpcHandlers };
+let artnetClient = null;
+let activeArtnetSubscriber = null;
+
+function safeSend(frame, channel, ...args) {
+    if (frame && !frame.isDestroyed()) {
+        try {
+            frame.send(channel, ...args);
+        } catch (e) {
+            console.error(`Failed to send ${channel} to frame:`, e);
+        }
+    }
+}
+
+function registerArtnetHandlers() {
+    if (!artnetClient) {
+        artnetClient = new ArtnetClient();
+    }
+
+    ipcMain.handle('artnet_start', (e, bindIp = '0.0.0.0') => {
+        try {
+            if (activeArtnetSubscriber && activeArtnetSubscriber !== e.senderFrame) {
+                artnetClient.onUniverseUpdate = null;
+                artnetClient.onNodeUpdate = null;
+                artnetClient.onError = null;
+                artnetClient.stop();
+            } else if (activeArtnetSubscriber === e.senderFrame) {
+                artnetClient.stop();
+            }
+            activeArtnetSubscriber = e.senderFrame;
+
+            artnetClient.onUniverseUpdate = (universe, data, sourceIp) => {
+                safeSend(activeArtnetSubscriber, 'artnet_universe_data', universe, data, sourceIp);
+            };
+
+            artnetClient.onNodeUpdate = (ip, info) => {
+                safeSend(activeArtnetSubscriber, 'artnet_node_update', ip, info);
+            };
+
+            artnetClient.onError = (msg) => {
+                safeSend(activeArtnetSubscriber, 'artnet_error', msg);
+            };
+
+            artnetClient.start(bindIp);
+            return JSON.stringify({ success: true });
+        } catch (err) {
+            return JSON.stringify({ success: false, error: err.message });
+        }
+    });
+
+    ipcMain.handle('artnet_stop', (e) => {
+        try {
+            artnetClient.stop();
+            if (activeArtnetSubscriber === e.senderFrame) {
+                activeArtnetSubscriber = null;
+            }
+            return JSON.stringify({ success: true });
+        } catch (err) {
+            return JSON.stringify({ success: false, error: err.message });
+        }
+    });
+
+    ipcMain.handle('artnet_poll', (e) => {
+        try {
+            artnetClient.poll();
+            return JSON.stringify({ success: true });
+        } catch (err) {
+            return JSON.stringify({ success: false, error: err.message });
+        }
+    });
+
+    ipcMain.handle('artnet_get_active_universes', (e) => {
+        try {
+            const universes = artnetClient.getActiveUniverses();
+            return JSON.stringify({ success: true, data: universes });
+        } catch (err) {
+            return JSON.stringify({ success: false, error: err.message });
+        }
+    });
+}
+
+module.exports = { registerIpcHandlers, registerArtnetHandlers };
