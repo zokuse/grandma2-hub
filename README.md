@@ -27,3 +27,7 @@ To build a Windows installer (`.exe`):
 ```bash
 npm run build-installer
 ```
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
