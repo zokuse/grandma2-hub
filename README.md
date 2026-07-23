@@ -1,4 +1,4 @@
-# GrandMA2 Hub
+# MA2 Hub
 
 ![Version](https://img.shields.io/github/package-json/v/zokuse/grandma2-hub?color=fdd835&style=flat-square)
 ![License](https://img.shields.io/github/license/zokuse/grandma2-hub?color=00e676&style=flat-square)
@@ -15,14 +15,14 @@ A desktop companion tool built for MA Lighting GrandMA2 programmers. It seamless
 - **Art-Net Viewer**
   Monitor live Art-Net traffic on your network in real-time. Features a heat-mapped 512-channel DMX grid, smart network adapter binding, Node discovery via ArtPoll, and a fluid packets-per-second chart.
 - **Visual Cloner**
-  Visually map clone sources to destinations from your layouts and automatically push the generated clone macros straight to the console.
+  Visually select source and target fixtures directly from your imported MA2 layouts to build and manage complex clone mapping macros, then push them straight to the console.
 - **DMX View**
   A visual footprint of your universes. Check channel occupancy, fixture counts, and color-coded layers at a glance.
 - **Patch List**
   Pull your current patch directly from the console and export clean, professional PDF reports for your crew and technicians.
 - **XYZ Injector**
   Map real-world 3D spatial coordinates from pre-viz software (like Capture) directly into your MA2 patch for pixel-perfect 3D environments.
-- **Timecode Cues**
+- **Timecode Creator**
   Generate MA2 XML timecode shows directly from REAPER `.rpp` project markers with auto-assigned sequences.
 - **glTF Unpacker**
   Easily unpack, extract textures, and manage `.glb`/`.gltf` 3D model files for MA2 3D environment integration.
