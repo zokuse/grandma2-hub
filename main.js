@@ -26,8 +26,8 @@ let splashWindow = null;
 
 function createSplashWindow() {
     splashWindow = new BrowserWindow({
-        width: 700,
-        height: 250,
+        width: 720,
+        height: 270,
         transparent: true,
         frame: false,
         alwaysOnTop: true,
@@ -44,7 +44,7 @@ function createWindow() {
         width: 1800,
         height: 950,
         title: 'GrandMA2 Hub',
-        backgroundColor: '#1e1e1e',
+        backgroundColor: '#121212',
         icon: path.join(__dirname, 'assets', 'icon.ico'),
         frame: false,
         titleBarStyle: 'hidden',
