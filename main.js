@@ -44,7 +44,7 @@ function createWindow() {
         width: 1800,
         height: 950,
         title: 'GrandMA2 Hub',
-        backgroundColor: '#1e1e1e',
+        backgroundColor: '#0f0f0f',
         icon: path.join(__dirname, 'assets', 'icon.ico'),
         frame: false,
         titleBarStyle: 'hidden',
