@@ -106,10 +106,10 @@ function App() {
         {/* LEFT PANEL */}
         <div className="settings-left-panel">
           <svg className="settings-illustration" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
-            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
-            <line x1="6" y1="6" x2="6.01" y2="6"></line>
-            <line x1="6" y1="18" x2="6.01" y2="18"></line>
+            <rect x="2" y="3" width="20" height="8" rx="2" ry="2"></rect>
+            <rect x="2" y="13" width="20" height="8" rx="2" ry="2"></rect>
+            <line x1="6" y1="7" x2="6.01" y2="7"></line>
+            <line x1="6" y1="17" x2="6.01" y2="17"></line>
           </svg>
           <div className="settings-version-tag">
             V {(window as any).appVersion || '1.0.0'}
