@@ -181,7 +181,8 @@ body {
 .settings-illustration {
     width: 140px;
     height: 140px;
-    color: rgba(255,255,255,0.8);
+    color: #ffffff;
+    opacity: 0.8;
     z-index: 1;
     margin-bottom: 30px;
     filter: drop-shadow(0 0 15px rgba(253, 216, 53, 0.15));
