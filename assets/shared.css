@@ -40,7 +40,7 @@ button, .btn-header, .btn-icon, .btn-primary, .btn-accent-action,
 ::-webkit-scrollbar-thumb:hover { background: #666; }
 
 body { 
-    background-color: #121212; 
+    background-color: #0f0f0f; 
     color: var(--text-color); 
     font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif; 
     margin: 0; 
