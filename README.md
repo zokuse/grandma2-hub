@@ -14,7 +14,7 @@ A desktop companion tool built for MA Lighting GrandMA2 programmers. It seamless
 
 - **Art-Net Viewer**
   Monitor live Art-Net traffic on your network in real-time. Features a heat-mapped 512-channel DMX grid, smart network adapter binding, Node discovery via ArtPoll, and a fluid packets-per-second chart.
-- **Visual Cloner**
+- **Value Copier**
   Visually select source and target fixtures directly from your imported MA2 layouts to build and manage complex clone mapping macros, then push them straight to the console.
 - **DMX View**
   A visual footprint of your universes. Check channel occupancy, fixture counts, and color-coded layers at a glance.
