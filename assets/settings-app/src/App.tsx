@@ -100,84 +100,107 @@ function App() {
   };
 
   return (
-    <div style={{ padding: '40px', display: 'flex', justifyContent: 'center' }}>
-      <div style={{ width: '100%', maxWidth: '800px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <div style={{ padding: '40px', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 'calc(100vh - 80px)', position: 'relative' }}>
+      <div className="settings-split-card">
         
-        <div className="glassy-surface" style={{ padding: '35px', boxSizing: 'border-box' }}>
-          <h2 style={{ fontSize: '18px', fontWeight: 'bold', color: 'white', marginTop: 0, marginBottom: '5px' }}>
-            Console Connection
-          </h2>
-          <p style={{ fontSize: '13px', color: '#a0a0a0', marginTop: 0, marginBottom: '25px' }}>
-            Credentials used for Telnet macro injection and patch pulling.
+        {/* LEFT PANEL */}
+        <div className="settings-left-panel">
+          <svg className="settings-illustration" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+            <line x1="6" y1="6" x2="6.01" y2="6"></line>
+            <line x1="6" y1="18" x2="6.01" y2="18"></line>
+            <line x1="12" y1="10" x2="12" y2="14"></line>
+            <line x1="10" y1="12" x2="14" y2="12"></line>
+          </svg>
+          <div className="settings-version-tag">
+            V {(window as any).appVersion || '1.0.0'}
+          </div>
+        </div>
+
+        {/* RIGHT PANEL */}
+        <div className="settings-right-panel">
+          <h2 className="settings-title">Connection</h2>
+          <p className="settings-subtitle">
+            Configure your console credentials used for Telnet macro injection and patch pulling.
           </p>
           
-          <div className="form-group" style={{ marginBottom: '15px' }}>
-            <label style={{ fontSize: '12px', color: '#a0a0a0', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          <div className="form-group" style={{ marginBottom: '16px' }}>
+            <label style={{ fontSize: '11px', color: '#a0a0a0', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               IP Address
             </label>
-            <input 
-              type="text" 
-              className="form-control" 
-              placeholder="Select or type IP..." 
-              list="ip-list"
-              value={ip}
-              onChange={(e) => setIp(e.target.value)}
-              onFocus={() => setIp('')}
-            />
-            <datalist id="ip-list">
-              {ipList.map(item => (
-                <option key={item} value={item} />
-              ))}
-            </datalist>
+            <div className="input-with-icon-wrapper">
+              <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+              <input 
+                type="text" 
+                className="form-control input-with-icon" 
+                placeholder="Select or type IP..." 
+                list="ip-list"
+                value={ip}
+                onChange={(e) => setIp(e.target.value)}
+                onFocus={() => setIp('')}
+              />
+              <datalist id="ip-list">
+                {ipList.map(item => (
+                  <option key={item} value={item} />
+                ))}
+              </datalist>
+            </div>
           </div>
           
-          <div className="form-group" style={{ marginBottom: '15px' }}>
-            <label style={{ fontSize: '12px', color: '#a0a0a0', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          <div className="form-group" style={{ marginBottom: '16px' }}>
+            <label style={{ fontSize: '11px', color: '#a0a0a0', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               Username
             </label>
-            <input 
-              type="text" 
-              className="form-control" 
-              value={user}
-              onChange={(e) => setUser(e.target.value)}
-            />
+            <div className="input-with-icon-wrapper">
+              <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              <input 
+                type="text" 
+                className="form-control input-with-icon" 
+                value={user}
+                onChange={(e) => setUser(e.target.value)}
+              />
+            </div>
           </div>
           
-          <div className="form-group" style={{ marginBottom: '25px' }}>
-            <label style={{ fontSize: '12px', color: '#a0a0a0', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          <div className="form-group" style={{ marginBottom: '32px' }}>
+            <label style={{ fontSize: '11px', color: '#a0a0a0', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               Password
             </label>
-            <input 
-              type="password" 
-              className="form-control" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="input-with-icon-wrapper">
+              <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              <input 
+                type="password" 
+                className="form-control input-with-icon" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
           </div>
           
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+          <div style={{ display: 'flex', gap: '12px' }}>
             <button 
-              className="btn-glass-danger btn-icon" 
-              style={{ padding: '12px 24px', fontSize: '14px', fontWeight: 'bold', borderRadius: '8px', border: '1px solid rgba(255, 82, 82, 0.4)' }} 
+              className="btn-glass-danger btn-icon btn-clear-animated" 
+              style={{ padding: '0 20px', borderRadius: '8px', border: '1px solid rgba(255, 82, 82, 0.4)' }} 
               onClick={handleClear}
             >
               {clearStatus}
             </button>
             <button 
-              className="btn-primary" 
-              style={{ padding: '12px 24px', fontSize: '14px', fontWeight: 'bold' }} 
+              className="btn-primary btn-save-animated" 
+              style={{ borderRadius: '8px' }} 
               onClick={handleSave}
             >
               {saveStatus}
             </button>
           </div>
-        </div>
-        
-        <footer className="app-footer">
-          <p>&copy; 2026 zokuse. All rights reserved.</p>
-        </footer>
 
+        </div>
       </div>
+      
+      <footer className="app-footer" style={{ position: 'absolute', bottom: '20px', width: '100%' }}>
+        <p>&copy; 2026 zokuse. All rights reserved.</p>
+      </footer>
     </div>
   );
 }
