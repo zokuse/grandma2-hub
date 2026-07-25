@@ -110,8 +110,6 @@ function App() {
             <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
             <line x1="6" y1="6" x2="6.01" y2="6"></line>
             <line x1="6" y1="18" x2="6.01" y2="18"></line>
-            <line x1="12" y1="10" x2="12" y2="14"></line>
-            <line x1="10" y1="12" x2="14" y2="12"></line>
           </svg>
           <div className="settings-version-tag">
             V {(window as any).appVersion || '1.0.0'}
