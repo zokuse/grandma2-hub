@@ -41,8 +41,8 @@ function App() {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
           </div>
           <div className="card-content">
-            <h2>Visual Cloner</h2>
-            <p>Visually clone fixtures directly from your GrandMA2 layouts. Instantly map clone sources and destinations using an intuitive interface.</p>
+            <h2>Value Copier</h2>
+            <p>Visually copy values using the <strong>Fixture X At Fixture Y</strong> syntax. Map source and destination fixtures directly from your layouts.</p>
           </div>
         </div>
 
@@ -52,7 +52,7 @@ function App() {
           </div>
           <div className="card-content">
             <h2>Patch List</h2>
-            <p>Pull the active patch list live from the console. Instantly search, filter, and inspect fixture configurations and addresses.</p>
+            <p>Live sync your console's patch list. Instantly search, filter, and export your fixture configurations and DMX addresses to PDF.</p>
           </div>
         </div>
 
@@ -62,7 +62,7 @@ function App() {
           </div>
           <div className="card-content">
             <h2>XYZ Injector</h2>
-            <p>Map real-world 3D spatial coordinates from pre-viz software like Capture directly into your GrandMA2 fixture patch via telnet macros.</p>
+            <p>Inject 3D coordinates from pre-viz software (e.g. Capture) directly into your fixture patch for pixel-perfect 3D stage layouts.</p>
           </div>
         </div>
 
@@ -72,7 +72,7 @@ function App() {
           </div>
           <div className="card-content">
             <h2>glTF Unpacker</h2>
-            <p>Extract metrics, wireframes, and raw textures from complex 3D stage models (.glb/.gltf) using a blazing fast WebGL engine.</p>
+            <p>Analyze and extract metrics, wireframes, and textures from 3D stage models (.gltf/.glb) using a high-performance WebGL engine.</p>
           </div>
         </div>
 
@@ -81,18 +81,8 @@ function App() {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
           </div>
           <div className="card-content">
-            <h2>DMX View</h2>
-            <p>Monitor live DMX outputs and universes directly from the console in real-time, helping you debug complex patching issues.</p>
-          </div>
-        </div>
-
-        <div className="card" onClick={() => switchTab('timecode')}>
-          <div className="card-icon" style={{ color: '#4dd0e1' }}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-          </div>
-          <div className="card-content">
-            <h2>Timecode Creator</h2>
-            <p>Generate GrandMA2 XML timecode shows directly from REAPER .rpp project files with auto-assigned sequences and cues.</p>
+            <h2>DMX Viewer</h2>
+            <p>Monitor live DMX outputs across all universes in real-time. An essential tool for tracing and debugging complex patch issues.</p>
           </div>
         </div>
 
@@ -102,7 +92,17 @@ function App() {
           </div>
           <div className="card-content">
             <h2>Art-Net Viewer</h2>
-            <p>Monitor live Art-Net traffic on the network with a high-framerate channel heatmap and node discovery.</p>
+            <p>Monitor live Art-Net network traffic with a high-framerate DMX heatmap and automatic node discovery to debug signal issues.</p>
+          </div>
+        </div>
+
+        <div className="card" onClick={() => switchTab('timecode')}>
+          <div className="card-icon" style={{ color: '#4dd0e1' }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          </div>
+          <div className="card-content">
+            <h2>Timecode Creator</h2>
+            <p>Automatically generate GrandMA2 XML timecode shows from REAPER audio project files (.rpp) with perfectly synced sequences and cues.</p>
           </div>
         </div>
 
