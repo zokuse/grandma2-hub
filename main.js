@@ -26,14 +26,14 @@ let splashWindow = null;
 
 function createSplashWindow() {
     splashWindow = new BrowserWindow({
-        width: 400,
-        height: 300,
+        width: 480,
+        height: 180,
         transparent: true,
         frame: false,
         alwaysOnTop: true,
         icon: path.join(__dirname, 'assets', 'icon.ico')
     });
-    splashWindow.loadFile(path.join(__dirname, 'assets', 'splash.html'));
+    splashWindow.loadFile(path.join(__dirname, 'assets', 'splash.html'), { query: { version: app.getVersion() } });
     splashWindow.on('closed', () => {
         splashWindow = null;
     });
