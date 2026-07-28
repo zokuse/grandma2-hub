@@ -143,10 +143,22 @@ app.whenReady().then(() => {
     // ─── Auto-Updater ──────────────────────────────────────────────────────
     try {
         const { autoUpdater } = require('electron-updater');
+        const fs = require('fs');
 
         // Silent background check — no popups
         autoUpdater.autoDownload = true;
         autoUpdater.autoInstallOnAppQuit = true;
+
+        let cacheRetryAttempted = false; // one retry per app session, not per error
+
+        function clearUpdaterCache() {
+            const localAppData = process.env.LOCALAPPDATA || path.join(app.getPath('home'), 'AppData', 'Local');
+            const updaterCacheDir = path.join(localAppData, `${app.name}-updater`);
+            if (fs.existsSync(updaterCacheDir)) {
+                fs.rmSync(updaterCacheDir, { recursive: true, force: true });
+                console.log('[AutoUpdater] Cleared updater cache after error');
+            }
+        }
 
         autoUpdater.on('update-available', (info) => {
             console.log(`[AutoUpdater] Update available: v${info.version}`);
@@ -166,20 +178,24 @@ app.whenReady().then(() => {
 
         autoUpdater.on('error', (err) => {
             console.error('[AutoUpdater] Error:', err.message);
-        });
 
-        // Clear updater cache to prevent stale latest.yml caching issues
-        try {
-            const fs = require('fs');
-            const localAppData = process.env.LOCALAPPDATA || path.join(app.getPath('home'), 'AppData', 'Local');
-            const updaterCacheDir = path.join(localAppData, `${app.name}-updater`);
-            if (fs.existsSync(updaterCacheDir)) {
-                fs.rmSync(updaterCacheDir, { recursive: true, force: true });
-                console.log('[AutoUpdater] Cleared stale updater cache');
+            // Only treat this as a stale-cache problem if the error message
+            // actually looks like one — checksum/blockmap corruption, missing
+            // yml — not network errors, which would also nuke a good
+            // in-progress download over a flaky connection for no reason.
+            const looksLikeStaleCacheError = /checksum|sha512|blockmap|ENOENT.*\.yml|corrupt/i.test(err.message);
+
+            if (looksLikeStaleCacheError && !cacheRetryAttempted) {
+                cacheRetryAttempted = true;
+                console.log('[AutoUpdater] Detected stale-cache-like error, clearing cache and retrying once');
+                try {
+                    clearUpdaterCache();
+                    autoUpdater.checkForUpdates();
+                } catch (cacheErr) {
+                    console.error('[AutoUpdater] Cache clear failed:', cacheErr.message);
+                }
             }
-        } catch (cacheErr) {
-            console.error('[AutoUpdater] Failed to clear cache:', cacheErr.message);
-        }
+        });
 
         autoUpdater.checkForUpdates();
     } catch (e) {
