@@ -16,12 +16,12 @@ const signalCallbacks = {
 const signalToInvokeMap = {
     file_selected: ['select_file'],
     layout_pulled: ['pull_layout'],
-    macros_sent: ['send_xyz_macro', 'export_macros'],
+    macros_sent: ['send_xyz_macro', 'export_macros', 'send_to_console', 'send_timecode_to_ma2'],
     patch_pulled: ['pull_patch'],
     pdf_exported: ['export_pdf'],
     analyze_complete: ['analyze_glb'],
     unpack_complete: ['unpack_glb'],
-    progress_update: ['pull_layout', 'pull_patch', 'send_xyz_macro', 'export_macros', 'analyze_glb', 'unpack_glb'],
+    progress_update: ['pull_layout', 'pull_patch', 'send_xyz_macro', 'export_macros', 'send_to_console', 'send_timecode_to_ma2', 'analyze_glb', 'unpack_glb', 'save_single_texture'],
     artnet_universe_data: ['artnet_start'],
     artnet_node_update: ['artnet_start'],
     artnet_error: ['artnet_start']
