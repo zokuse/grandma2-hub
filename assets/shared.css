@@ -251,4 +251,8 @@ body {
     flex-shrink: 0;
 }
 
+/* TABLE COLUMN HEADERS (shared by table-layout tools) */
+.col-h { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #888; font-weight: 700; }
+.col-h.center { text-align: center; }
+
 @keyframes fadein { from { opacity:0; } to { opacity:1; } }

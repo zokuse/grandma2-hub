@@ -124,7 +124,7 @@ function App() {
           </p>
           
           <div className="form-group" style={{ marginBottom: '16px' }}>
-            <label style={{ fontSize: '11px', color: '#a0a0a0', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            <label style={{ fontSize: '11px', color: 'var(--text-muted-color)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               IP Address
             </label>
             <div className="input-with-icon-wrapper">
@@ -147,7 +147,7 @@ function App() {
           </div>
           
           <div className="form-group" style={{ marginBottom: '16px' }}>
-            <label style={{ fontSize: '11px', color: '#a0a0a0', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            <label style={{ fontSize: '11px', color: 'var(--text-muted-color)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               Username
             </label>
             <div className="input-with-icon-wrapper">
@@ -162,7 +162,7 @@ function App() {
           </div>
           
           <div className="form-group" style={{ marginBottom: '32px' }}>
-            <label style={{ fontSize: '11px', color: '#a0a0a0', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            <label style={{ fontSize: '11px', color: 'var(--text-muted-color)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               Password
             </label>
             <div className="input-with-icon-wrapper">
