@@ -21,6 +21,8 @@ function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [expanded, setExpanded] = useState(false);
   const [loadedTabs, setLoadedTabs] = useState<Set<string>>(new Set(['home']));
+  const [updateInfo, setUpdateInfo] = useState<{ version: string } | null>(null);
+  const [downloadPercent, setDownloadPercent] = useState<number | null>(null);
   const [updateReady, setUpdateReady] = useState<{ version: string } | null>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
 
@@ -32,9 +34,18 @@ function App() {
       });
     }
 
-    // Listen for update-ready event from the auto-updater
+    // Listen for update events from the auto-updater
     if ((window as any).electronUpdater) {
+      (window as any).electronUpdater.onUpdateAvailable((info: { version: string }) => {
+        setUpdateInfo(info);
+        setDownloadPercent(0);
+      });
+      (window as any).electronUpdater.onDownloadProgress((info: { percent: number }) => {
+        setDownloadPercent(info.percent);
+      });
       (window as any).electronUpdater.onUpdateReady((info: { version: string }) => {
+        setUpdateInfo(info);
+        setDownloadPercent(100);
         setUpdateReady(info);
       });
     }
@@ -124,32 +135,69 @@ function App() {
         </div>
       </div>
 
-      {/* Update Banner — slides in when update is downloaded */}
-      {updateReady && (
-        <div className="update-banner" role="alert">
+      {/* Update Banner — progressive: downloading → ready */}
+      {updateInfo && (
+        <div className={`update-banner ${updateReady ? 'update-banner--ready' : 'update-banner--downloading'}`} role="alert">
           <div className="update-banner__inner">
-            <svg className="update-banner__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="23 4 23 10 17 10" />
-              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-            </svg>
-            <span className="update-banner__text">
-              MA2 Hub <strong>v{updateReady.version}</strong> is ready to install.
-            </span>
-            <button
-              id="btn-restart-update"
-              className="update-banner__btn"
-              onClick={() => (window as any).electronUpdater?.restartAndInstall()}
-            >
-              Restart &amp; Update
-            </button>
-            <button
-              id="btn-dismiss-update"
-              className="update-banner__dismiss"
-              onClick={() => setUpdateReady(null)}
-              aria-label="Dismiss update notification"
-            >
-              ✕
-            </button>
+
+            {/* Icon */}
+            {updateReady ? (
+              <svg className="update-banner__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="23 4 23 10 17 10" />
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+              </svg>
+            ) : (
+              <svg className="update-banner__icon update-banner__icon--spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+            )}
+
+            {/* Text + progress */}
+            <div className="update-banner__body">
+              <span className="update-banner__text">
+                {updateReady
+                  ? <><strong>v{updateInfo.version}</strong> ready to install</>  
+                  : <>Downloading <strong>v{updateInfo.version}</strong>&hellip;</>}
+              </span>
+              {!updateReady && downloadPercent !== null && (
+                <div className="update-banner__progress-track">
+                  <div
+                    className="update-banner__progress-fill"
+                    style={{ width: `${downloadPercent}%` }}
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Percent label during download */}
+            {!updateReady && downloadPercent !== null && (
+              <span className="update-banner__percent">{downloadPercent}%</span>
+            )}
+
+            {/* Restart button when ready */}
+            {updateReady && (
+              <button
+                id="btn-restart-update"
+                className="update-banner__btn"
+                onClick={() => (window as any).electronUpdater?.restartAndInstall()}
+              >
+                Restart &amp; Update
+              </button>
+            )}
+
+            {/* Dismiss — only when ready (during download, let it run) */}
+            {updateReady && (
+              <button
+                id="btn-dismiss-update"
+                className="update-banner__dismiss"
+                onClick={() => { setUpdateReady(null); setUpdateInfo(null); }}
+                aria-label="Dismiss update notification"
+              >
+                ✕
+              </button>
+            )}
           </div>
         </div>
       )}

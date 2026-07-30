@@ -139,6 +139,8 @@ contextBridge.exposeInMainWorld('QWebChannel', function (transport, callback) {
 contextBridge.exposeInMainWorld('appVersion', pkg.version);
 
 contextBridge.exposeInMainWorld('electronUpdater', {
+    onUpdateAvailable: (callback) => ipcRenderer.on('update-available', (event, info) => callback(info)),
+    onDownloadProgress: (callback) => ipcRenderer.on('download-progress', (event, info) => callback(info)),
     onUpdateReady: (callback) => ipcRenderer.on('update-ready', (event, info) => callback(info)),
     restartAndInstall: () => ipcRenderer.send('restart-and-install')
 });

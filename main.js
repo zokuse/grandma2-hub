@@ -162,10 +162,17 @@ app.whenReady().then(() => {
 
         autoUpdater.on('update-available', (info) => {
             console.log(`[AutoUpdater] Update available: v${info.version}`);
+            if (mainWindow) {
+                mainWindow.webContents.send('update-available', { version: info.version });
+            }
         });
 
         autoUpdater.on('download-progress', (progress) => {
-            console.log(`[AutoUpdater] Downloading: ${Math.round(progress.percent)}%`);
+            const pct = Math.round(progress.percent);
+            console.log(`[AutoUpdater] Downloading: ${pct}%`);
+            if (mainWindow) {
+                mainWindow.webContents.send('download-progress', { percent: pct });
+            }
         });
 
         autoUpdater.on('update-downloaded', (info) => {
