@@ -1,7 +1,7 @@
 {
   "name": "grandma2-hub",
   "productName": "MA2 Hub",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A smart utility and bridge application for managing the MA Lighting GrandMA2 console.",
   "main": "main.js",
   "author": "zokuse",
