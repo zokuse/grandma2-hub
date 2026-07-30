@@ -43,7 +43,7 @@ function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1800,
         height: 950,
-        title: 'GrandMA2 Hub',
+        title: 'MA2 Hub',
         backgroundColor: '#0f0f0f',
         icon: path.join(__dirname, 'assets', 'icon.ico'),
         frame: false,

@@ -1,6 +1,6 @@
 {
   "name": "grandma2-hub",
-  "productName": "GrandMA2 Hub",
+  "productName": "MA2 Hub",
   "version": "1.2.0",
   "description": "A smart utility and bridge application for managing the MA Lighting GrandMA2 console.",
   "main": "main.js",
@@ -37,7 +37,7 @@
   },
   "build": {
     "appId": "com.zokuse.grandma2hub",
-    "productName": "GrandMA2 Hub",
+    "productName": "MA2 Hub",
     "asar": true,
     "asarUnpack": [
       "node_modules/electron-updater/**/*"
