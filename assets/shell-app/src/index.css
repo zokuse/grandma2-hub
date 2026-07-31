@@ -115,6 +115,45 @@ body {
     margin: 5px 10px;
 }
 
+.sidebar-group-header {
+    display: flex;
+    align-items: center;
+    width: calc(100% - 20px);
+    margin: 12px 10px 4px 10px;
+    min-height: 16px;
+    overflow: hidden;
+    position: relative;
+    user-select: none;
+}
+
+.sidebar-group-line {
+    height: 1px;
+    flex-grow: 1;
+    background-color: rgba(255, 255, 255, 0.12);
+    transition: background-color 0.2s ease;
+}
+
+.sidebar-group-title {
+    font-size: 10px;
+    font-weight: 700;
+    color: #888;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    opacity: 0;
+    max-width: 0;
+    margin-right: 0;
+    transition: opacity 0.2s ease, max-width 0.2s ease, margin-right 0.2s ease;
+    pointer-events: none;
+}
+
+#sidebar:hover .sidebar-group-title,
+#sidebar.expanded .sidebar-group-title {
+    opacity: 1;
+    max-width: 160px;
+    margin-right: 8px;
+}
+
 .spacer {
     flex-grow: 1;
 }
