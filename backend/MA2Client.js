@@ -155,11 +155,11 @@ class MA2Client {
                     }
                 }
 
+                if (!adapters.some(a => a.includes('127.0.0.1'))) {
+                    adapters.unshift('127.0.0.1 - Localhost (Always works locally)');
+                }
                 if (!adapters.some(a => a.includes('2.0.0.1'))) {
                     adapters.unshift('2.0.0.1 - GrandMA2 Loopback');
-                }
-                if (!adapters.some(a => a.includes('127.0.0.1'))) {
-                    adapters.push('127.0.0.1 - Localhost');
                 }
 
                 resolve(JSON.stringify(adapters));
