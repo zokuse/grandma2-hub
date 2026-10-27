@@ -253,3 +253,50 @@
 .tooltip-value {
     font-weight: 500;
 }
+
+/* Scrollable sidebar (panels can grow) */
+.sidebar-card { max-height: calc(100vh - 120px); overflow-y: auto; }
+
+/* Live DMX levels */
+.channel-cell { position: relative; }
+.channel-level { position: absolute; left: 0; right: 0; bottom: 0; height: 0; background: var(--fx-color, var(--info-color)); opacity: 0.55; pointer-events: none; }
+.live-row { margin-top: 10px; display: flex; flex-direction: column; gap: 4px; font-size: 11px; color: var(--text-muted-color); }
+.live-status { margin-top: 8px; font-size: 11px; color: var(--text-muted-color); }
+#btn-live-toggle.live-on { border-color: rgba(0, 230, 118, 0.5); color: var(--success-color); }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success-color); box-shadow: 0 0 6px var(--success-color); display: inline-block; }
+
+/* Drag & drop */
+.fixture-block.is-draggable { cursor: grab; user-select: none; }
+body.dmx-dragging, body.dmx-dragging .fixture-block.is-draggable { cursor: grabbing; user-select: none; }
+.fixture-block.drag-source { opacity: 0.35; }
+.channel-cell.drag-preview { background: rgba(0, 230, 118, 0.25); outline: 1px solid var(--success-color); outline-offset: -1px; }
+.channel-cell.drag-preview-bad { background: rgba(255, 82, 82, 0.3); outline: 1px solid var(--error-color); outline-offset: -1px; }
+.drag-label { position: fixed; z-index: 2000; pointer-events: none; padding: 4px 8px; font-size: 12px; font-weight: 600; background: rgba(20, 20, 20, 0.95); border: 1px solid var(--surface-border); border-radius: var(--radius-s); color: var(--text-color); }
+.drag-label.bad { border-color: var(--error-color); color: var(--error-color); }
+
+/* Fixture state markers */
+.fixture-block.is-moved { outline: 1px solid var(--accent-color); outline-offset: -1px; }
+.fixture-block.is-uncertain { border: 1px dashed rgba(255, 167, 38, 0.7); }
+.fixture-block.is-conflict { background-color: rgba(255, 82, 82, 0.25) !important; border: 1px solid var(--error-color); }
+
+/* Pending changes + warnings */
+.pending-badge:not(:empty) { background: var(--info-color); color: #000; border-radius: 8px; padding: 0 6px; margin-left: 4px; font-size: 10px; font-weight: 700; }
+.pending-list, .issues-list { display: flex; flex-direction: column; gap: 4px; }
+.pending-item { display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: #ccc; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 4px; padding: 4px 8px; }
+.issue-item { font-size: 12px; padding: 5px 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2); color: #ccc; cursor: pointer; }
+.issue-item.error { border-color: rgba(255, 82, 82, 0.4); color: var(--error-color); }
+.issue-item.warning { border-color: rgba(255, 167, 38, 0.4); color: var(--warning-color); }
+.issue-item.info { border-color: rgba(41, 182, 246, 0.3); color: var(--info-color); }
+.issue-item.ok, .issue-item.muted { cursor: default; color: var(--text-muted-color); }
+.issues-count { color: var(--error-color); font-size: 11px; margin-left: 6px; }
+
+/* Live data on channels that are not patched (e.g. the console still outputs the old address) */
+.fixture-block:not(.is-patched) .channel-level { background: var(--warning-color); opacity: 0.45; }
+
+/* Send confirmation modal */
+.confirm-text { font-size: 14px; color: var(--text-color); margin: 12px 0 10px; }
+.confirm-list { max-height: 200px; overflow-y: auto; }
+.confirm-note { font-size: 12px; color: var(--text-muted-color); margin: 12px 0 0; line-height: 1.5; }
+.confirm-note code { background: rgba(255,255,255,0.08); padding: 1px 5px; border-radius: 4px; font-size: 11px; }
+.confirm-actions { display: flex; gap: 8px; margin-top: 18px; }
+.confirm-actions button { flex: 1; }

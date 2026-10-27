@@ -21,7 +21,7 @@ const signalToInvokeMap = {
     pdf_exported: ['export_pdf'],
     analyze_complete: ['analyze_glb'],
     unpack_complete: ['unpack_glb'],
-    progress_update: ['pull_layout', 'pull_patch', 'send_xyz_macro', 'export_macros', 'send_to_console', 'send_timecode_to_ma2', 'analyze_glb', 'unpack_glb', 'save_single_texture'],
+    progress_update: ['pull_layout', 'pull_patch', 'send_xyz_macro', 'export_macros', 'send_to_console', 'send_timecode_to_ma2', 'analyze_glb', 'unpack_glb', 'save_single_texture', 'apply_dmx_changes'],
     artnet_universe_data: ['artnet_start'],
     artnet_node_update: ['artnet_start'],
     artnet_error: ['artnet_start']
@@ -99,6 +99,7 @@ function buildBridgeAPI() {
         analyze_glb: makeInvoke('analyze_glb'),
         unpack_glb: makeInvoke('unpack_glb'),
         save_single_texture: makeInvoke('save_single_texture'),
+        apply_dmx_changes: makeInvoke('apply_dmx_changes'),
         artnet_start: makeInvoke('artnet_start'),
         artnet_stop: makeInvoke('artnet_stop'),
         artnet_poll: makeInvoke('artnet_poll'),

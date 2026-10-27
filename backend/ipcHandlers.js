@@ -353,6 +353,65 @@ function registerIpcHandlers() {
         }
     });
 
+    // Re-address fixtures on the console (DMX Viewer drag & drop). Returns per-fixture results.
+    ipcMain.handle('apply_dmx_changes', async (e, loginStr, changesJson) => {
+        let socket = null;
+        try {
+            const creds = JSON.parse(loginStr);
+            ma2Client.saveCredentials(creds);
+            const changes = JSON.parse(changesJson);
+            if (!Array.isArray(changes) || changes.length === 0) {
+                return JSON.stringify({ success: false, error: "No changes to send." });
+            }
+
+            socket = await ma2Client.telnetSession(creds, msg => e.senderFrame.send('progress_update', msg));
+            await socket.sendCommand('CD Root');
+
+            const applied = [];
+            const failed = [];
+            const unconfirmed = []; // console never answered; the patch may or may not have applied
+            for (let i = 0; i < changes.length; i++) {
+                const c = changes[i];
+                const fixtureNum = parseInt(c.fixtureNum);
+                const universe = parseInt(c.universe);
+                const address = parseInt(c.address);
+                if (!(fixtureNum > 0) || !(universe > 0) || !(address >= 1 && address <= 512)) {
+                    failed.push({ id: c.id, error: "Invalid fixture or address" });
+                    continue;
+                }
+                e.senderFrame.send('progress_update', `Patching Fixture ${fixtureNum} -> ${universe}.${address} (${i + 1}/${changes.length})`);
+                try {
+                    // Re-patching makes the console rebuild its DMX tables, so allow a long reply time
+                    const res = await socket.sendCommand(`Assign Fixture ${fixtureNum} At Dmx ${universe}.${address}`, 20000);
+                    if (/error|exception/i.test(res || '')) {
+                        failed.push({ id: c.id, error: String(res).replace(/[>\r]/g, '').trim().split('\n').filter(Boolean).pop() });
+                    } else {
+                        applied.push(c.id);
+                    }
+                } catch (cmdErr) {
+                    if (!/timed out/i.test(cmdErr.message)) throw cmdErr;
+                    // sendCommand destroyed the socket on timeout: note it and open a fresh session for the rest
+                    unconfirmed.push(c.id);
+                    if (i < changes.length - 1) {
+                        e.senderFrame.send('progress_update', 'No reply from console, reconnecting...');
+                        await new Promise(r => setTimeout(r, 1500));
+                        socket = await ma2Client.telnetSession(creds, msg => e.senderFrame.send('progress_update', msg));
+                        await socket.sendCommand('CD Root');
+                    } else {
+                        socket = null;
+                    }
+                }
+                await new Promise(r => setTimeout(r, 250));
+            }
+
+            if (socket) { socket.destroy(); socket = null; }
+            return JSON.stringify({ success: true, data: { applied, failed, unconfirmed } });
+        } catch (err) {
+            if (socket) { try { socket.destroy(); } catch (x) {} }
+            return JSON.stringify({ success: false, error: err.message });
+        }
+    });
+
     // File paths — stored in AppData\Roaming\grandma2-hub\
     const userData = app.getPath('userData');
     const dmxDictPath = path.join(userData, '.ma2_hub_dmx_dict.json');
@@ -668,7 +727,9 @@ function registerIpcHandlers() {
 }
 
 let artnetClient = null;
-let activeArtnetSubscriber = null;
+// Several tools (Art-Net viewer, DMX viewer) can listen at once; the socket lives while anyone is subscribed.
+const artnetSubscribers = new Set();
+let artnetBindIp = null;
 
 function safeSend(frame, channel, ...args) {
     if (frame && !frame.isDestroyed()) {
@@ -685,31 +746,43 @@ function registerArtnetHandlers() {
         artnetClient = new ArtnetClient();
     }
 
+    const pruneArtnetSubscribers = () => {
+        for (const frame of Array.from(artnetSubscribers)) {
+            let dead = true;
+            try { dead = !frame || frame.isDestroyed(); } catch (err) {}
+            if (dead) artnetSubscribers.delete(frame);
+        }
+    };
+
+    const artnetBroadcast = (channel, ...args) => {
+        pruneArtnetSubscribers();
+        if (artnetSubscribers.size === 0) {
+            artnetClient.stop();
+            artnetBindIp = null;
+            return;
+        }
+        artnetSubscribers.forEach(frame => safeSend(frame, channel, ...args));
+    };
+
+    artnetClient.onUniverseUpdate = (universe, data, sourceIp) => artnetBroadcast('artnet_universe_data', universe, data, sourceIp);
+    artnetClient.onNodeUpdate = (ip, info) => artnetBroadcast('artnet_node_update', ip, info);
+    artnetClient.onError = (msg) => artnetBroadcast('artnet_error', msg);
+
     ipcMain.handle('artnet_start', (e, bindIp = '0.0.0.0') => {
         try {
-            if (activeArtnetSubscriber && activeArtnetSubscriber !== e.senderFrame) {
-                artnetClient.onUniverseUpdate = null;
-                artnetClient.onNodeUpdate = null;
-                artnetClient.onError = null;
-                artnetClient.stop();
-            } else if (activeArtnetSubscriber === e.senderFrame) {
+            pruneArtnetSubscribers();
+            artnetSubscribers.add(e.senderFrame);
+
+            // 'auto' (DMX viewer) joins whatever adapter is already in use
+            if (bindIp === 'auto') bindIp = artnetBindIp || '0.0.0.0';
+            // Restart only if the socket is down or the requested adapter changed
+            if (artnetClient.socket && artnetBindIp !== bindIp) {
                 artnetClient.stop();
             }
-            activeArtnetSubscriber = e.senderFrame;
-
-            artnetClient.onUniverseUpdate = (universe, data, sourceIp) => {
-                safeSend(activeArtnetSubscriber, 'artnet_universe_data', universe, data, sourceIp);
-            };
-
-            artnetClient.onNodeUpdate = (ip, info) => {
-                safeSend(activeArtnetSubscriber, 'artnet_node_update', ip, info);
-            };
-
-            artnetClient.onError = (msg) => {
-                safeSend(activeArtnetSubscriber, 'artnet_error', msg);
-            };
-
-            artnetClient.start(bindIp);
+            if (!artnetClient.socket) {
+                artnetClient.start(bindIp);
+                artnetBindIp = bindIp;
+            }
             return JSON.stringify({ success: true });
         } catch (err) {
             return JSON.stringify({ success: false, error: err.message });
@@ -718,9 +791,11 @@ function registerArtnetHandlers() {
 
     ipcMain.handle('artnet_stop', (e) => {
         try {
-            artnetClient.stop();
-            if (activeArtnetSubscriber === e.senderFrame) {
-                activeArtnetSubscriber = null;
+            artnetSubscribers.delete(e.senderFrame);
+            pruneArtnetSubscribers();
+            if (artnetSubscribers.size === 0) {
+                artnetClient.stop();
+                artnetBindIp = null;
             }
             return JSON.stringify({ success: true });
         } catch (err) {
